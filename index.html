@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studio Klarzeit — Übungsplattform</title>
-  <script type="module" crossorigin src="/index-B-yco6M3.js"></script>
-  <link rel="stylesheet" crossorigin href="/index-DYw_XYY5.css">
+  <script type="module" crossorigin src="/index-DoPy8HRy.js"></script>
+  <link rel="stylesheet" crossorigin href="/index-Dkx1hUXh.css">
 </head>
 <body>
 
@@ -15,8 +15,8 @@
     <div class="save-status" id="saveStatus"><div class="save-dot"></div><span id="saveStatusText">Gespeichert</span></div>
     <span class="admin-badge" id="adminBadge" style="display:none;">Admin</span>
     <button class="header-nav-link" id="adminPanelLink" style="display:none;" onclick="navigateTo('admin')">Verwaltung</button>
-    <a class="header-nav-link" href="https://www.studioklarzeit.ch/kurs-01" target="_top" style="text-decoration:none;">Kurse</a>
-    <button class="header-nav-link" onclick="navigateTo('courses')">Übungen</button>
+    <button class="header-nav-link" onclick="navigateTo('courses')">Kurse</button>
+    <button class="header-nav-link" onclick="navigateToExercises()">Übungen</button>
     <button class="header-nav-link" onclick="navigateTo('tools')">Tools</button>
     <button class="header-nav-link" onclick="navigateTo('contact')">Kontakt</button>
     <button class="header-icon-btn" onclick="navigateTo('profile')" title="Profil"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
@@ -32,8 +32,8 @@
     <button class="mobile-drawer-close" onclick="closeMobileMenu()">✕</button>
   </div>
   <div class="mobile-drawer-body">
-    <a class="mobile-drawer-link" href="https://www.studioklarzeit.ch/kurs-01" target="_top" style="text-decoration:none;"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></span>Kurse</a>
-    <button class="mobile-drawer-link" onclick="closeMobileMenu();navigateTo('courses')"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>Übungen</button>
+    <button class="mobile-drawer-link" onclick="closeMobileMenu();navigateTo('courses')"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>Kurse</button>
+    <button class="mobile-drawer-link" onclick="closeMobileMenu();navigateToExercises()"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>Übungen</button>
     <button class="mobile-drawer-link" onclick="closeMobileMenu();navigateTo('tools')"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Tools</button>
     <button class="mobile-drawer-link" id="mobileAdminLink" style="display:none;" onclick="closeMobileMenu();navigateTo('admin')"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Verwaltung</button>
     <button class="mobile-drawer-link" onclick="closeMobileMenu();navigateTo('profile')"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Profil</button>
@@ -272,12 +272,17 @@
     <div id="salesDetailContent"></div>
   </div>
 
-  <!-- ═══ COURSE PLAYER (Online-Kurs) ═══ -->
+  <!-- ═══ COURSE PLAYER (Kurs-Hub) ═══ -->
   <div class="view" id="viewCoursePlayer">
     <div class="breadcrumb" id="coursePlayerBreadcrumb"></div>
     <div class="chapter-hero" id="coursePlayerHero" style="display:none;"></div>
     <div class="page-title-section" id="coursePlayerTitleSection"></div>
-    <div id="coursePlayerChaptersList"></div>
+    <div class="section-header" id="coursePlayerLektionenHeader"><span class="section-title">Lektionen</span></div>
+    <div class="grid-list image-grid" id="coursePlayerChaptersList"></div>
+    <div class="section-header" id="coursePlayerExercisesHeader" style="margin-top:40px;"><span class="section-title">Übungen</span></div>
+    <div class="grid-list image-grid" id="coursePlayerExercisesList"></div>
+    <div class="section-header" id="coursePlayerExtensionsHeader" style="margin-top:40px;"><span class="section-title">Vertiefungen</span></div>
+    <div class="grid-list image-grid" id="coursePlayerExtensionsList"></div>
   </div>
 
   <!-- ═══ CHAPTER PLAYER (Audio + Text) ═══ -->
@@ -449,14 +454,45 @@
             <input type="hidden" id="chapterAudioUrl" value="">
             <input type="hidden" id="chapterAudioDuration" value="0">
           </div>
-          <div class="form-group">
-            <label class="form-label">Kapiteltext</label>
-            <textarea class="form-textarea" id="chapterTextInput" rows="10" placeholder="Der Text zum Kapitel..."></textarea>
-          </div>
         </div>
 
         <div class="actions"><button class="btn btn-primary btn-sm" id="saveChapterBtn" onclick="saveChapter()"><span class="btn-text">Speichern</span></button><button class="btn btn-ghost btn-sm" onclick="resetChapterForm()">Abbrechen</button></div>
       </div>
+
+      <!-- Chapter Content Blocks Editor (shown after saving a chapter) -->
+      <div id="chapterContentSection" style="display:none;">
+        <div class="admin-form">
+          <h3>Kapitelinhalt bearbeiten</h3>
+          <div class="form-group">
+            <label class="form-label">Was möchtest du hinzufügen?</label>
+            <select class="form-select" id="chapterContentAddType" onchange="onChapterContentAddTypeChange()">
+              <option value="heading">Titel</option>
+              <option value="subheading">Untertitel</option>
+              <option value="text">Textabschnitt</option>
+              <option value="quote">Zitat / Slogan</option>
+              <option value="divider">Trennlinie</option>
+              <option value="image">Bild</option>
+            </select>
+          </div>
+          <input type="hidden" id="editChapterContentId">
+          <div id="chapterContentFieldsWrap">
+            <div class="form-group" id="chapterContentTextGroup"><label class="form-label">Inhalt</label><textarea class="form-textarea" id="chapterContentTextInput" placeholder="Text eingeben …"></textarea></div>
+            <div class="form-group" id="chapterContentImageGroup" style="display:none;">
+              <label class="form-label">Bild hochladen</label>
+              <div class="image-upload-zone" id="chapterContentImagePreview" onclick="document.getElementById('chapterContentImageInput').click()">
+                <span class="image-upload-label">Bild hierher ziehen oder klicken</span>
+              </div>
+              <input type="file" id="chapterContentImageInput" accept="image/*" style="display:none;" onchange="handleImageFileSelect('chapterContentImageInput','chapterContentImagePreview')">
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary btn-sm" id="saveChapterContentBtn" onclick="saveChapterContent()"><span class="btn-text">Hinzufügen</span></button>
+            <button class="btn btn-ghost btn-sm" onclick="resetChapterContentForm()">Abbrechen</button>
+          </div>
+        </div>
+        <div id="adminChapterContentList"></div>
+      </div>
+
       <div id="adminChaptersList"></div>
     </div>
 
