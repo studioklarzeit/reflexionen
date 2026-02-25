@@ -4,21 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studio Klarzeit — Übungsplattform</title>
-  <script type="module" crossorigin src="/reflexionen/index-C_MSQmQC.js"></script>
-  <link rel="stylesheet" crossorigin href="/reflexionen/index-DMRh7XZA.css">
 </head>
 <body>
 
 <header id="mainHeader" style="display:none;">
-  <div class="logo" onclick="navigateTo('courses')">Studio Klarzeit</div>
+  <div class="logo" onclick="navigateTo('courses')">Studio Klarzeit <span class="logo-sub">— Reflexionen</span></div>
   <div class="header-nav">
     <div class="save-status" id="saveStatus"><div class="save-dot"></div><span id="saveStatusText">Gespeichert</span></div>
-    <span class="user-email-display" id="userEmailDisplay"></span>
     <span class="admin-badge" id="adminBadge" style="display:none;">Admin</span>
     <button class="header-nav-link" id="adminPanelLink" style="display:none;" onclick="navigateTo('admin')">Verwaltung</button>
-    <button class="header-nav-link" onclick="navigateTo('courses')">Kurse</button>
-    <button class="header-nav-link" onclick="handleLogout()">Abmelden</button>
-    <button class="dark-toggle" id="darkToggle" onclick="toggleDarkMode()" title="Dark Mode">☾</button>
+    <a class="header-nav-link" href="https://www.studioklarzeit.ch/kurs-01" target="_top" style="text-decoration:none;">Kurse</a>
+    <button class="header-nav-link" onclick="navigateTo('courses')">Übungen</button>
+    <button class="header-nav-link" onclick="navigateTo('tools')">Tools</button>
+    <button class="header-nav-link" onclick="navigateTo('contact')">Kontakt</button>
+    <button class="header-icon-btn" onclick="navigateTo('profile')" title="Profil"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
     <button class="mobile-menu-btn" onclick="openMobileMenu()" aria-label="Menü"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
   </div>
 </header>
@@ -27,16 +26,18 @@
 <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
 <div class="mobile-drawer" id="mobileDrawer">
   <div class="mobile-drawer-header">
-    <span class="mobile-drawer-title">Studio Klarzeit</span>
+    <span class="mobile-drawer-title">Studio Klarzeit <span class="logo-sub">— Reflexionen</span></span>
     <button class="mobile-drawer-close" onclick="closeMobileMenu()">✕</button>
   </div>
   <div class="mobile-drawer-body">
-    <button class="mobile-drawer-link" onclick="closeMobileMenu();navigateTo('courses')"><span class="link-icon">📚</span>Kurse</button>
-    <button class="mobile-drawer-link" id="mobileAdminLink" style="display:none;" onclick="closeMobileMenu();navigateTo('admin')"><span class="link-icon">⚙</span>Verwaltung</button>
+    <a class="mobile-drawer-link" href="https://www.studioklarzeit.ch/kurs-01" target="_top" style="text-decoration:none;"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></span>Kurse</a>
+    <button class="mobile-drawer-link" onclick="closeMobileMenu();navigateTo('courses')"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>Übungen</button>
+    <button class="mobile-drawer-link" onclick="closeMobileMenu();navigateTo('tools')"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Tools</button>
+    <button class="mobile-drawer-link" id="mobileAdminLink" style="display:none;" onclick="closeMobileMenu();navigateTo('admin')"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Verwaltung</button>
+    <button class="mobile-drawer-link" onclick="closeMobileMenu();navigateTo('profile')"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Profil</button>
+    <button class="mobile-drawer-link" onclick="closeMobileMenu();navigateTo('contact')"><span class="link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>Kontakt</button>
     <div class="mobile-drawer-divider"></div>
-    <button class="mobile-drawer-link" onclick="toggleDarkMode();updateMobileDarkLabel()"><span class="link-icon" id="mobileDarkIcon">☾</span><span id="mobileDarkLabel">Dark Mode</span></button>
-    <div class="mobile-drawer-divider"></div>
-    <button class="mobile-drawer-link" onclick="closeMobileMenu();handleLogout()" style="color:var(--accent-rose);"><span class="link-icon">↗</span>Abmelden</button>
+    <button class="mobile-drawer-link" onclick="toggleDarkMode();updateMobileDarkLabel()"><span class="link-icon" id="mobileDarkIcon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span><span id="mobileDarkLabel">Dark Mode</span></button>
   </div>
   <div class="mobile-drawer-footer">
     <div class="mobile-drawer-email" id="mobileEmailDisplay"></div>
@@ -47,30 +48,75 @@
 <!-- Offline indicator -->
 <div class="offline-bar" id="offlineBar">Du bist offline — Änderungen werden gespeichert, sobald du wieder verbunden bist.</div>
 
+<!-- Tool Dock -->
+<nav class="tool-dock" id="toolDock" style="display:none;">
+  <div class="dock-edge dock-left">
+    <span class="dock-user-email" id="dockUserEmail"></span>
+    <span class="user-email-display" id="userEmailDisplay" style="display:none;"></span>
+  </div>
+  <div class="dock-center">
+    <button class="dock-btn" data-tool="journal" onclick="navigateTo('journal')" title="Muster-Tagebuch">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><line x1="8" y1="7" x2="15" y2="7"/><line x1="8" y1="11" x2="13" y2="11"/></svg>
+      <span class="dock-label">Tagebuch</span>
+    </button>
+    <button class="dock-btn" data-tool="friendView" onclick="navigateTo('friendView')" title="Freundinnen-Blick">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span class="dock-label">Freundin</span>
+    </button>
+    <button class="dock-btn" data-tool="checkin" onclick="navigateTo('checkin')" title="Stimmungs-Check-In">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      <span class="dock-label">Check-In</span>
+    </button>
+    <button class="dock-btn" data-tool="bodycheck" onclick="navigateTo('bodycheck')" title="Körper-Check-In">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><path d="M12 8v4"/><path d="M8 12l4 4 4-4"/><path d="M9 22v-5l3-3 3 3v5"/></svg>
+      <span class="dock-label">Körper</span>
+    </button>
+    <button class="dock-btn" data-tool="energy" onclick="navigateTo('energy')" title="Energie-Bilanz">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 7l-5-5-5 5"/><path d="M7 17l5 5 5-5"/></svg>
+      <span class="dock-label">Energie</span>
+    </button>
+    <button class="dock-btn" data-tool="meditation" onclick="navigateTo('meditation')" title="Meditation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      <span class="dock-label">Meditation</span>
+    </button>
+  </div>
+  <div class="dock-edge dock-right">
+    <button class="dock-btn" id="dockDarkBtn" onclick="toggleDarkMode();updateDockDarkIcon()" title="Dark Mode">
+      <svg id="dockDarkIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <span class="dock-label" id="dockDarkLabel">Dunkel</span>
+    </button>
+  </div>
+</nav>
+
 <div class="container">
   <div class="view" id="viewLoading"><div class="state-screen visible" style="display:block;"><div class="spinner"></div><div class="state-title">Einen Moment …</div><div class="state-text" id="loadingText">Daten werden geladen.</div></div></div>
 
   <div class="view active" id="viewAuth">
-    <div class="state-screen visible" style="display:block;">
-      <span class="state-icon">—</span>
-      <div class="state-title" id="authTitle">Willkommen</div>
-      <div class="state-text" id="authSubtitle">Erstelle dein persönliches Konto für die Übungsplattform.</div>
-      <div class="auth-box" style="margin-top:28px;">
-        <input type="email" id="emailInput" class="auth-input" placeholder="deine@email.ch" autocomplete="email">
-        <div class="password-wrap">
-          <input type="password" id="passwordInput" class="auth-input" placeholder="Passwort wählen" autocomplete="new-password">
-          <button type="button" class="pw-toggle" onclick="togglePasswordVisibility('passwordInput',this)" tabindex="-1" aria-label="Passwort anzeigen"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        </div>
-        <div class="password-wrap">
-          <input type="password" id="passwordConfirm" class="auth-input" placeholder="Passwort wiederholen" autocomplete="new-password">
-          <button type="button" class="pw-toggle" onclick="togglePasswordVisibility('passwordConfirm',this)" tabindex="-1" aria-label="Passwort anzeigen"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        </div>
-        <div id="authError" class="auth-error"></div>
-        <div id="authSuccess" class="auth-success"></div>
-        <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:14px;" id="authBtn" onclick="handleAuth()"><span class="btn-text">Konto erstellen &amp; starten</span></button>
-        <div style="text-align:center;">
-          <button class="auth-toggle" onclick="toggleAuthMode()"><span id="authToggleText">Bereits registriert? Hier einloggen</span></button><br>
-          <button class="auth-link" id="forgotPasswordLink" style="display:none;" onclick="handleForgotPassword()">Passwort vergessen?</button>
+    <div class="auth-fullscreen">
+      <div class="auth-bg" id="authBg"></div>
+      <div class="auth-overlay"></div>
+      <div class="auth-card">
+        <div class="auth-card-logo">Studio Klarzeit <span class="logo-sub">— Reflexionen</span></div>
+        <div class="auth-card-line"></div>
+        <div class="state-title" id="authTitle">Willkommen</div>
+        <div class="state-text" id="authSubtitle">Erstelle dein persönliches Konto für die Übungsplattform.</div>
+        <div class="auth-box" style="margin-top:28px;">
+          <input type="email" id="emailInput" class="auth-input" placeholder="deine@email.ch" autocomplete="email">
+          <div class="password-wrap">
+            <input type="password" id="passwordInput" class="auth-input" placeholder="Passwort wählen" autocomplete="new-password">
+            <button type="button" class="pw-toggle" onclick="togglePasswordVisibility('passwordInput',this)" tabindex="-1" aria-label="Passwort anzeigen"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+          <div class="password-wrap">
+            <input type="password" id="passwordConfirm" class="auth-input" placeholder="Passwort wiederholen" autocomplete="new-password">
+            <button type="button" class="pw-toggle" onclick="togglePasswordVisibility('passwordConfirm',this)" tabindex="-1" aria-label="Passwort anzeigen"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+          <div id="authError" class="auth-error"></div>
+          <div id="authSuccess" class="auth-success"></div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:14px;" id="authBtn" onclick="handleAuth()"><span class="btn-text">Konto erstellen &amp; starten</span></button>
+          <div style="text-align:center;">
+            <button class="auth-toggle" onclick="toggleAuthMode()"><span id="authToggleText">Bereits registriert? Hier einloggen</span></button><br>
+            <button class="auth-link" id="forgotPasswordLink" style="display:none;" onclick="handleForgotPassword()">Passwort vergessen?</button>
+          </div>
         </div>
       </div>
     </div>
@@ -91,7 +137,7 @@
   <div class="view" id="viewOnboarding">
     <div class="onboarding-container">
       <div class="onboarding-hero">
-        <span class="onboarding-hero-icon">✦</span>
+        <span class="onboarding-hero-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
         <h1 id="onboardingTitle">Willkommen bei Studio Klarzeit</h1>
         <p id="onboardingSubtitle">Schön, dass du hier bist. Bevor du loslegst, ein paar Hinweise.</p>
       </div>
@@ -103,48 +149,178 @@
     </div>
   </div>
 
+  <div class="view" id="viewImpulse"></div>
+
   <div class="view" id="viewCourses">
-    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit — Übungsplattform</span><h1 class="page-title">Deine Kurse</h1><p class="page-intro">— Wähle einen Kurs, um mit den Übungen zu beginnen.</p></div>
-    <div class="grid-list" id="coursesList"></div>
+    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit — Übungsplattform</span><h1 class="page-title">Deine Übungen</h1><p class="page-intro">— Wähle einen Kurs, um mit den Übungen zu beginnen.</p></div>
+    <div id="weeklyImpulseCard"></div>
+    <div class="grid-list image-grid" id="coursesList"></div>
+  </div>
+
+  <div class="view" id="viewTools">
+    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Deine Tools</h1><p class="page-intro">— Kleine Rituale für den Alltag, die dich begleiten.</p></div>
+    <div class="tools-grid" id="toolsList">
+      <div class="tool-card" onclick="navigateTo('journal')">
+        <div class="tool-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><line x1="8" y1="7" x2="15" y2="7"/><line x1="8" y1="11" x2="13" y2="11"/></svg></div>
+        <div class="tool-card-content">
+          <div class="tool-card-title">Muster-Tagebuch</div>
+          <div class="tool-card-desc">Halte fest, was dir heute aufgefallen ist. Ein Satz reicht.</div>
+        </div>
+        <div class="tool-card-arrow">→</div>
+      </div>
+      <div class="tool-card" onclick="navigateTo('friendView')">
+        <div class="tool-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div class="tool-card-content">
+          <div class="tool-card-title">Freundinnen-Blick</div>
+          <div class="tool-card-desc">Was würdest du einer Freundin über deinen Tag sagen?</div>
+        </div>
+        <div class="tool-card-arrow">→</div>
+      </div>
+      <div class="tool-card" onclick="navigateTo('checkin')">
+        <div class="tool-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <div class="tool-card-content">
+          <div class="tool-card-title">Stimmungs-Check-In</div>
+          <div class="tool-card-desc">3 kurze Fragen. Unter 30 Sekunden. Muster erkennen.</div>
+        </div>
+        <div class="tool-card-arrow">→</div>
+      </div>
+      <div class="tool-card" onclick="navigateTo('bodycheck')">
+        <div class="tool-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><path d="M12 8v4"/><path d="M8 12l4 4 4-4"/><path d="M9 22v-5l3-3 3 3v5"/></svg></div>
+        <div class="tool-card-content">
+          <div class="tool-card-title">Körper-Check-In</div>
+          <div class="tool-card-desc">Wo spürst du gerade Spannung? Tippe auf deinen Körper.</div>
+        </div>
+        <div class="tool-card-arrow">→</div>
+      </div>
+      <div class="tool-card" onclick="navigateTo('energy')">
+        <div class="tool-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 7l-5-5-5 5"/><path d="M7 17l5 5 5-5"/></svg></div>
+        <div class="tool-card-content">
+          <div class="tool-card-title">Energie-Bilanz</div>
+          <div class="tool-card-desc">Was hat heute Energie gegeben? Was hat Energie gekostet?</div>
+        </div>
+        <div class="tool-card-arrow">→</div>
+      </div>
+      <div class="tool-card" onclick="navigateTo('meditation')">
+        <div class="tool-card-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+        <div class="tool-card-content">
+          <div class="tool-card-title">Meditation</div>
+          <div class="tool-card-desc">Geführte Meditationen zum Ankommen und Loslassen.</div>
+        </div>
+        <div class="tool-card-arrow">→</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="viewJournal">
+    <div class="breadcrumb"><button class="breadcrumb-link" onclick="navigateTo('tools')">Tools</button> <span class="breadcrumb-sep">›</span> <span>Muster-Tagebuch</span></div>
+    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Muster-Tagebuch</h1><p class="page-intro">— Halte fest, was dir heute aufgefallen ist.</p></div>
+    <div id="journalContent"></div>
+  </div>
+
+  <div class="view" id="viewFriendView">
+    <div class="breadcrumb"><button class="breadcrumb-link" onclick="navigateTo('tools')">Tools</button> <span class="breadcrumb-sep">›</span> <span>Freundinnen-Blick</span></div>
+    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Freundinnen-Blick</h1><p class="page-intro">— Was würdest du einer Freundin über deinen Tag sagen?</p></div>
+    <div id="friendViewContent"></div>
+  </div>
+
+  <div class="view" id="viewCheckin">
+    <div class="breadcrumb"><button class="breadcrumb-link" onclick="navigateTo('tools')">Tools</button> <span class="breadcrumb-sep">›</span> <span>Stimmungs-Check-In</span></div>
+    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Stimmungs-Check-In</h1><p class="page-intro">— Kursspezifisch. Nicht «wie geht es dir von 1–10».</p></div>
+    <div id="checkinContent"></div>
+  </div>
+
+  <div class="view" id="viewBodycheck">
+    <div class="breadcrumb"><button class="breadcrumb-link" onclick="navigateTo('tools')">Tools</button> <span class="breadcrumb-sep">›</span> <span>Körper-Check-In</span></div>
+    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Körper-Check-In</h1><p class="page-intro">— Wo spürst du gerade Spannung, Schwere oder Unbehagen?</p></div>
+    <div id="bodyCheckContent"></div>
+  </div>
+
+  <div class="view" id="viewEnergy">
+    <div class="breadcrumb"><button class="breadcrumb-link" onclick="navigateTo('tools')">Tools</button> <span class="breadcrumb-sep">›</span> <span>Energie-Bilanz</span></div>
+    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Energie-Bilanz</h1><p class="page-intro">— Was hat heute Energie gegeben? Was hat Energie gekostet?</p></div>
+    <div id="energyContent"></div>
+  </div>
+
+  <div class="view" id="viewMeditation">
+    <div class="breadcrumb"><button class="breadcrumb-link" onclick="navigateTo('tools')">Tools</button> <span class="breadcrumb-sep">›</span> <span>Meditation</span></div>
+    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Meditation</h1><p class="page-intro">— Atme ein. Lass los. Komm an.</p></div>
+    <div id="meditationContent"></div>
   </div>
 
   <div class="view" id="viewChapters">
     <div class="breadcrumb" id="chaptersBreadcrumb"></div>
-    <div class="page-title-section"><span class="eyebrow" id="chaptersEyebrow"></span><h1 class="page-title" id="chaptersTitle"></h1><p class="page-intro" id="chaptersDesc"></p></div>
-    <div class="grid-list" id="chaptersList"></div>
+    <div class="chapter-hero" id="chaptersHero" style="display:none;"></div>
+    <div class="page-title-section" id="chaptersTitleSection"><span class="eyebrow" id="chaptersEyebrow"></span><h1 class="page-title" id="chaptersTitle"></h1><p class="page-intro" id="chaptersDesc"></p></div>
+    <div class="section-header" id="chaptersSectionHeader" style="display:none;"></div>
+    <div class="grid-list image-grid" id="chaptersList"></div>
+    <div class="actions" style="margin-top:24px;">
+      <button class="btn btn-secondary" onclick="exportCoursePDF()"><span class="btn-text">↓ Ganzen Kurs als PDF</span></button>
+      <button class="btn btn-ghost" onclick="exportCoursePDF(true)" style="font-size:13px;">↓ Nur beantwortete</button>
+    </div>
   </div>
 
   <div class="view" id="viewExercises">
     <div class="breadcrumb" id="exercisesBreadcrumb"></div>
-    <div class="page-title-section"><span class="eyebrow" id="exercisesEyebrow"></span><h1 class="page-title" id="exercisesTitle"></h1><p class="page-intro" id="exercisesDesc"></p></div>
-    <div class="section-header"><span class="section-title" id="exercisesSectionTitle">Übungen</span><span class="section-meta" id="exercisesMeta"></span></div>
-    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="exercisesProgressFill"></div></div>
-    <div class="cards-grid" id="exercisesGrid"></div>
-    <div class="completion-banner" id="exercisesCompletion"><span class="completion-label">Studio Klarzeit — vollständig</span><div class="completion-title">Du hast alle Übungen abgeschlossen.</div><p class="completion-text">— Lies deine Antworten nochmals in Ruhe durch. Was fällt dir auf?</p></div>
-    <div class="summary-section" id="exercisesSummary"><div class="section-header" style="margin-bottom:20px;"><span class="section-title">Deine Reflexion</span></div><div class="summary-entries" id="summaryEntries"></div></div>
-    <div class="actions">
-      <button class="btn btn-primary" id="saveNextBtn" onclick="saveAndNextExercise()" style="display:none;"><span class="btn-text">Speichern & zur nächsten Übung →</span></button>
-      <button class="btn btn-primary" id="saveExercisesBtn" onclick="saveExercises()"><span class="btn-text">Antworten speichern</span></button>
-      <button class="btn btn-secondary" onclick="showExerciseSummary()"><span class="btn-text">Zusammenfassung</span></button>
-      <button class="btn btn-ghost" onclick="exportPDF()">↓ Als PDF exportieren</button>
+    <div class="chapter-hero" id="exercisesHero" style="display:none;"></div>
+    <div class="page-title-section" id="exercisesTitleSection"><span class="eyebrow" id="exercisesEyebrow"></span><h1 class="page-title" id="exercisesTitle"></h1><p class="page-intro" id="exercisesDesc"></p></div>
+    <div class="grid-list" id="exercisesList"></div>
+    <div class="actions" style="margin-top:24px;">
+      <button class="btn btn-secondary" onclick="exportChapterPDF()"><span class="btn-text">↓ Kapitel als PDF</span></button>
+      <button class="btn btn-ghost" onclick="exportChapterPDF(true)" style="font-size:13px;">↓ Nur beantwortete</button>
     </div>
-    <div class="next-chapter-bar" id="nextChapterBar">
+  </div>
+
+  <div class="view" id="viewQuestions">
+    <div class="breadcrumb" id="questionsBreadcrumb"></div>
+    <div class="exercise-hero" id="questionsHero" style="display:none;"></div>
+    <div class="page-title-section" id="questionsTitleSection"><span class="eyebrow" id="questionsEyebrow"></span><h1 class="page-title" id="questionsTitle"></h1><p class="page-intro" id="questionsDesc"></p></div>
+    <div class="section-header" id="questionsSectionHeader" style="display:none;"><span class="section-title" id="questionsSectionTitle">Fragen</span><span class="section-meta" id="questionsMeta"></span></div>
+    <div class="progress-bar-wrap" id="questionsProgressWrap" style="display:none;"><div class="progress-bar-fill" id="questionsProgressFill"></div></div>
+    <div class="cards-grid cards-editorial" id="questionsGrid"></div>
+    <div class="completion-banner" id="questionsCompletion"><span class="completion-label">Studio Klarzeit — vollständig</span><div class="completion-title">Du hast alle Fragen beantwortet.</div><p class="completion-text">Lies deine Antworten nochmals in Ruhe durch. Was fällt dir auf?</p></div>
+    <div class="summary-section" id="questionsSummary"><div class="section-header" style="margin-bottom:20px;"><span class="section-title">Deine Reflexion</span></div><div class="summary-entries" id="summaryEntries"></div></div>
+    <div class="actions">
+      <button class="btn btn-primary" id="saveNextBtn" onclick="saveAndNextQuestion()" style="display:none;"><span class="btn-text">Speichern & zur nächsten Übung →</span></button>
+      <button class="btn btn-primary" id="saveQuestionsBtn" onclick="saveQuestions()"><span class="btn-text">Antworten speichern</span></button>
+      <button class="btn btn-secondary" onclick="showQuestionSummary()"><span class="btn-text">Zusammenfassung</span></button>
+      <button class="btn btn-secondary" onclick="exportPDF()"><span class="btn-text">↓ Als PDF</span></button>
+      <button class="btn btn-ghost" onclick="exportPDF(true)" style="font-size:13px;">↓ Nur beantwortete</button>
+    </div>
+    <div class="next-chapter-bar" id="nextExerciseBar">
       <div>
-        <div class="next-chapter-info">Nächstes Kapitel</div>
-        <div class="next-chapter-name" id="nextChapterName"></div>
+        <div class="next-chapter-info">Nächste Übung</div>
+        <div class="next-chapter-name" id="nextExerciseName"></div>
       </div>
-      <button class="btn btn-primary btn-sm" id="goNextChapterBtn" onclick="goToNextChapter()"><span class="btn-text">Weiter →</span></button>
+      <button class="btn btn-primary btn-sm" id="goNextExerciseBtn" onclick="goToNextExercise()"><span class="btn-text">Weiter →</span></button>
     </div>
   </div>
 
   <div class="view" id="viewAdmin">
     <div class="page-title-section"><span class="eyebrow">Verwaltung</span><h1 class="page-title">Admin-Bereich</h1><p class="page-intro">— Erstelle und verwalte Kurse, Kapitel, Übungen und User.</p></div>
-    <div class="nav-pills" id="adminPills">
-      <button class="nav-pill active" onclick="switchAdminTab('courses')">Kurse</button>
-      <button class="nav-pill" onclick="switchAdminTab('chapters')">Kapitel</button>
-      <button class="nav-pill" onclick="switchAdminTab('exercises')">Übungen</button>
-      <button class="nav-pill" onclick="switchAdminTab('users')">User</button>
-      <button class="nav-pill" onclick="switchAdminTab('onboarding')">Willkommen</button>
+    <div class="admin-nav" id="adminPills">
+      <div class="admin-nav-headers">
+        <button class="admin-nav-label active" onclick="toggleAdminGroup('Kurse')">Kurse</button>
+        <button class="admin-nav-label" onclick="toggleAdminGroup('Einstellungen')">Einstellungen</button>
+        <button class="admin-nav-label" onclick="toggleAdminGroup('Tools')">Tools</button>
+      </div>
+      <div class="admin-nav-pills-area open" id="adminPillsKurse">
+        <button class="nav-pill active" onclick="switchAdminTab('courses')">Kurse</button>
+        <button class="nav-pill" onclick="switchAdminTab('chapters')">Kapitel</button>
+        <button class="nav-pill" onclick="switchAdminTab('exercises')">Übungen</button>
+      </div>
+      <div class="admin-nav-pills-area" id="adminPillsEinstellungen">
+        <button class="nav-pill" onclick="switchAdminTab('users')">User</button>
+        <button class="nav-pill" onclick="switchAdminTab('onboarding')">Willkommen</button>
+        <button class="nav-pill" onclick="switchAdminTab('typography')">Typografie</button>
+        <button class="nav-pill" onclick="switchAdminTab('colors')">Farben</button>
+      </div>
+      <div class="admin-nav-pills-area" id="adminPillsTools">
+        <button class="nav-pill" onclick="switchAdminTab('journal')">Impulse</button>
+        <button class="nav-pill" onclick="switchAdminTab('checkin')">Check-In</button>
+        <button class="nav-pill" onclick="switchAdminTab('weeklyImpulse')">Wochenimpulse</button>
+        <button class="nav-pill" onclick="switchAdminTab('meditation')">Meditation</button>
+        <button class="nav-pill" onclick="switchAdminTab('messages')">Nachrichten</button>
+      </div>
     </div>
 
     <div class="admin-tab active" id="adminTabCourses">
@@ -152,6 +328,14 @@
         <h3 id="courseFormTitle">Neuen Kurs erstellen</h3><input type="hidden" id="editCourseId">
         <div class="form-group"><label class="form-label">Kursname</label><input class="form-input" id="courseNameInput" placeholder="z.B. Selbstreflexion"></div>
         <div class="form-group"><label class="form-label">Beschreibung</label><textarea class="form-textarea" id="courseDescInput" placeholder="Kurze Beschreibung …"></textarea></div>
+        <div class="form-group">
+          <label class="form-label">Kursbild</label>
+          <input type="hidden" id="courseImageUrl">
+          <div class="image-upload-zone" id="courseImagePreview" onclick="document.getElementById('courseImageInput').click()">
+            <span class="image-upload-label">Bild hierher ziehen oder klicken</span>
+          </div>
+          <input type="file" id="courseImageInput" accept="image/*" style="display:none;" onchange="handleImageFileSelect('courseImageInput','courseImagePreview')">
+        </div>
         <div class="form-group"><label class="form-check"><input type="checkbox" id="courseRestrictedInput"><span>Zugang einschränken (nur per Einladungslink)</span></label></div>
         <div class="actions"><button class="btn btn-primary btn-sm" id="saveCourseBtn" onclick="saveCourse()"><span class="btn-text">Speichern</span></button><button class="btn btn-ghost btn-sm" onclick="resetCourseForm()">Abbrechen</button></div>
       </div>
@@ -163,7 +347,18 @@
         <h3 id="chapterFormTitle">Neues Kapitel erstellen</h3><input type="hidden" id="editChapterId">
         <div class="form-group"><label class="form-label">Kurs auswählen</label><select class="form-select" id="chapterCourseSelect"></select></div>
         <div class="form-group"><label class="form-label">Kapitelname</label><input class="form-input" id="chapterNameInput" placeholder="z.B. Innere Wahrnehmung"></div>
-        <div class="form-group"><label class="form-label">Beschreibung</label><textarea class="form-textarea" id="chapterDescInput" placeholder="Kurze Beschreibung …"></textarea></div>
+        <div class="form-row">
+          <div class="form-group" style="flex:3;"><label class="form-label">Beschreibung</label><textarea class="form-textarea" id="chapterDescInput" placeholder="Kurze Beschreibung …"></textarea></div>
+          <div class="form-group" style="flex:1;"><label class="form-label">Geschätzte Zeit (Min.)</label><input class="form-input" id="chapterTimeInput" type="number" min="1" placeholder="z.B. 15"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kapitelbild</label>
+          <input type="hidden" id="chapterImageUrl">
+          <div class="image-upload-zone" id="chapterImagePreview" onclick="document.getElementById('chapterImageInput').click()">
+            <span class="image-upload-label">Bild hierher ziehen oder klicken</span>
+          </div>
+          <input type="file" id="chapterImageInput" accept="image/*" style="display:none;" onchange="handleImageFileSelect('chapterImageInput','chapterImagePreview')">
+        </div>
         <div class="actions"><button class="btn btn-primary btn-sm" id="saveChapterBtn" onclick="saveChapter()"><span class="btn-text">Speichern</span></button><button class="btn btn-ghost btn-sm" onclick="resetChapterForm()">Abbrechen</button></div>
       </div>
       <div id="adminChaptersList"></div>
@@ -176,33 +371,71 @@
           <div class="form-group"><label class="form-label">Kurs</label><select class="form-select" id="exerciseCourseFilter" onchange="updateExerciseChapterSelect()"></select></div>
           <div class="form-group"><label class="form-label">Kapitel</label><select class="form-select" id="exerciseChapterSelect"></select></div>
         </div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Label</label><input class="form-input" id="exerciseLabelInput" placeholder="z.B. Gefühle · 01"></div>
-          <div class="form-group"><label class="form-label">Typ</label><select class="form-select" id="exerciseTypeSelect" onchange="onExerciseTypeChange()"><option value="text">Textfeld</option><option value="choice">Single Choice</option><option value="multichoice">Multiple Choice</option><option value="scale">Skala</option></select></div>
-        </div>
-        <div class="form-group"><label class="form-label">Frage</label><textarea class="form-textarea" id="exerciseQuestionInput" placeholder="Die Reflexionsfrage …"></textarea></div>
-        <div class="form-group"><label class="form-label">Hinweis (optional)</label><textarea class="form-textarea" id="exerciseHintInput" placeholder="Ein unterstützender Hinweis …" style="min-height:60px;"></textarea></div>
-        <div class="form-group" id="exercisePlaceholderGroup"><label class="form-label">Platzhaltertext (optional)</label><input class="form-input" id="exercisePlaceholderInput" placeholder="z.B. Beschreibe dein Gefühl …"></div>
-        <div class="form-group" id="exerciseOptionsGroup" style="display:none;">
-          <label class="form-label">Antwortmöglichkeiten</label>
-          <div class="options-editor" id="optionsEditor"></div>
-          <button class="add-option-btn" onclick="addOptionRow()">+ Option hinzufügen</button>
-        </div>
-        <div class="form-group" id="exerciseScaleGroup" style="display:none;">
-          <label class="form-label">Skala-Einstellungen</label>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Min</label><input class="form-input" id="scaleMin" type="number" value="1"></div>
-            <div class="form-group"><label class="form-label">Max</label><input class="form-input" id="scaleMax" type="number" value="10"></div>
-            <div class="form-group"><label class="form-label">Schritt</label><input class="form-input" id="scaleStep" type="number" value="1"></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Label links</label><input class="form-input" id="scaleLabelMin" placeholder="z.B. Gar nicht"></div>
-            <div class="form-group"><label class="form-label">Label rechts</label><input class="form-input" id="scaleLabelMax" placeholder="z.B. Sehr stark"></div>
-          </div>
-        </div>
-        <div class="form-group"><label class="form-label">Breite</label><select class="form-select" id="exerciseWidthSelect"><option value="normal">Normal (halbe Breite)</option><option value="wide">Breit (volle Breite)</option></select></div>
+        <div class="form-group"><label class="form-label">Übungsname</label><input class="form-input" id="exerciseNameInput" placeholder="z.B. Innere Wahrnehmung"></div>
+        <div class="form-group"><label class="form-label">Beschreibung (optional)</label><textarea class="form-textarea" id="exerciseDescInput" placeholder="Kurze Beschreibung …"></textarea></div>
         <div class="actions"><button class="btn btn-primary btn-sm" id="saveExerciseBtn" onclick="saveExercise()"><span class="btn-text">Speichern</span></button><button class="btn btn-ghost btn-sm" onclick="resetExerciseForm()">Abbrechen</button></div>
       </div>
+
+      <!-- Content blocks + Questions for selected exercise -->
+      <div id="exerciseContentSection" style="display:none;">
+        <div class="admin-form">
+          <h3>Element hinzufügen</h3>
+          <div class="form-group">
+            <label class="form-label">Was möchtest du hinzufügen?</label>
+            <select class="form-select" id="exerciseAddType" onchange="onExerciseAddTypeChange()">
+              <option value="question">Frage</option>
+              <option value="heading">Titel</option>
+              <option value="text">Text</option>
+              <option value="quote">Zitat / Slogan</option>
+              <option value="divider">Trennlinie</option>
+            </select>
+          </div>
+
+          <!-- Content block fields -->
+          <input type="hidden" id="editContentId">
+          <div id="contentFieldsWrap" style="display:none;">
+            <div class="form-group" id="contentTextGroup" style="display:none;"><label class="form-label">Inhalt</label><textarea class="form-textarea" id="contentTextInput" placeholder="Text eingeben …"></textarea></div>
+          </div>
+
+          <!-- Question fields -->
+          <input type="hidden" id="editQuestionId">
+          <div id="questionFieldsWrap">
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Label (optional)</label><input class="form-input" id="questionLabelInput" placeholder="z.B. Reflexion · 01"></div>
+              <div class="form-group"><label class="form-label">Fragetyp</label><select class="form-select" id="questionTypeSelect" onchange="onQuestionTypeChange()"><option value="text">Textfeld</option><option value="choice">Single Choice</option><option value="multichoice">Multiple Choice</option><option value="scale">Skala</option></select></div>
+            </div>
+            <div class="form-group"><label class="form-label">Frage</label><textarea class="form-textarea" id="questionQuestionInput" placeholder="Die Reflexionsfrage …"></textarea></div>
+            <div class="form-group"><label class="form-label">Hinweis (optional)</label><textarea class="form-textarea" id="questionHintInput" placeholder="Ein unterstützender Hinweis …" style="min-height:60px;"></textarea></div>
+            <div class="form-group" id="questionPlaceholderGroup"><label class="form-label">Platzhaltertext</label><input class="form-input" id="questionPlaceholderInput" placeholder="z.B. Beschreibe dein Gefühl …"></div>
+            <div class="form-group" id="questionOptionsGroup" style="display:none;">
+              <label class="form-label">Antwortmöglichkeiten</label>
+              <div class="options-editor" id="questionOptionsEditor"></div>
+              <button class="add-option-btn" onclick="addOptionRow()">+ Option hinzufügen</button>
+            </div>
+            <div class="form-group" id="questionScaleGroup" style="display:none;">
+              <label class="form-label">Skala-Einstellungen</label>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Min</label><input class="form-input" id="questionScaleMin" type="number" value="1"></div>
+                <div class="form-group"><label class="form-label">Max</label><input class="form-input" id="questionScaleMax" type="number" value="10"></div>
+                <div class="form-group"><label class="form-label">Schritt</label><input class="form-input" id="questionScaleStep" type="number" value="1"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Label links</label><input class="form-input" id="questionScaleLabelMin" placeholder="z.B. Gar nicht"></div>
+                <div class="form-group"><label class="form-label">Label rechts</label><input class="form-input" id="questionScaleLabelMax" placeholder="z.B. Sehr stark"></div>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">Breite</label><select class="form-select" id="questionWidthSelect"><option value="normal">Normal (halbe Breite)</option><option value="wide">Breit (volle Breite)</option></select></div>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary btn-sm" id="saveElementBtn" onclick="saveElement()"><span class="btn-text">Hinzufügen</span></button>
+            <button class="btn btn-ghost btn-sm" onclick="resetElementForm()">Abbrechen</button>
+          </div>
+        </div>
+        <div id="adminContentList"></div>
+      </div>
+
+      <div id="bulkUploadSection"></div>
       <div id="adminExercisesList"></div>
     </div>
 
@@ -211,6 +444,19 @@
     </div>
 
     <div class="admin-tab" id="adminTabOnboarding" style="display:none;">
+      <div class="admin-form" style="margin-bottom:24px;">
+        <h3>Login-Hintergrundbild</h3>
+        <p style="font-size:13px;font-style:italic;color:var(--text-muted);margin-bottom:20px;">Dieses Bild wird als Fullscreen-Hintergrund auf der Login-Seite angezeigt.</p>
+        <input type="hidden" id="loginBgUrl">
+        <div class="image-upload-zone" id="loginBgPreview" onclick="document.getElementById('loginBgInput').click()">
+          <span class="image-upload-label">Bild hierher ziehen oder klicken</span>
+        </div>
+        <input type="file" id="loginBgInput" accept="image/*" style="display:none;" onchange="handleImageFileSelect('loginBgInput','loginBgPreview')">
+        <div class="actions" style="margin-top:12px;">
+          <button class="btn btn-primary btn-sm" id="saveLoginBgBtn" onclick="saveLoginBg()"><span class="btn-text">Speichern</span></button>
+          <button class="btn btn-ghost btn-sm" onclick="removeLoginBgImage()">Entfernen</button>
+        </div>
+      </div>
       <div class="admin-form">
         <h3>Willkommensseite bearbeiten</h3>
         <p style="font-size:13px;font-style:italic;color:var(--text-muted);margin-bottom:20px;">Diese Seite wird neuen Usern beim ersten Login angezeigt. Du kannst beliebig viele Elemente hinzufügen.</p>
@@ -224,14 +470,399 @@
         <div class="actions"><button class="btn btn-primary btn-sm" id="saveOnboardBtn" onclick="saveOnboarding()"><span class="btn-text">Speichern</span></button><button class="btn btn-ghost btn-sm" onclick="previewOnboarding()">Vorschau</button></div>
       </div>
     </div>
+
+    <!-- Typography Tab -->
+    <div class="admin-tab" id="adminTabTypography" style="display:none;">
+      <div class="admin-form">
+        <h3>Typografie</h3>
+        <p style="font-size:var(--font-size-p2);font-style:italic;color:var(--text-muted);margin-bottom:24px;">Schriftarten, -grössen, Farben und Stile für die gesamte Plattform anpassen.</p>
+
+        <div class="form-row" style="gap:20px;">
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">Überschriften-Font</label>
+            <select class="form-input" id="typoHeadingFont">
+              <option value="Marcellus">Marcellus</option>
+              <option value="Playfair Display">Playfair Display</option>
+              <option value="Cormorant Garamond">Cormorant Garamond</option>
+              <option value="Libre Baskerville">Libre Baskerville</option>
+              <option value="Lora">Lora</option>
+              <option value="EB Garamond">EB Garamond</option>
+              <option value="Crimson Text">Crimson Text</option>
+              <option value="Merriweather">Merriweather</option>
+              <option value="DM Serif Display">DM Serif Display</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">Fliesstext-Font</label>
+            <select class="form-input" id="typoBodyFont">
+              <option value="PT Serif">PT Serif</option>
+              <option value="Source Serif Pro">Source Serif Pro</option>
+              <option value="Noto Serif">Noto Serif</option>
+              <option value="Spectral">Spectral</option>
+              <option value="Literata">Literata</option>
+              <option value="Lora">Lora</option>
+              <option value="Inter">Inter</option>
+              <option value="Work Sans">Work Sans</option>
+              <option value="Nunito">Nunito</option>
+              <option value="Open Sans">Open Sans</option>
+              <option value="Lato">Lato</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;margin-bottom:8px;font-style:italic;color:var(--text-light);font-size:var(--font-size-p3);">Überschriften</div>
+        <div class="typo-grid">
+          <div class="typo-grid-header"><span>Stufe</span><span>Grösse (rem)</span><span>Farbe</span><span>Stil</span></div>
+          <div class="typo-grid-row" data-level="h1">
+            <span class="typo-grid-label">H1</span>
+            <input class="form-input" id="typoH1" type="number" step="0.1" min="0.5" value="4">
+            <input class="form-input-color" id="typoH1Color" type="color" value="#1a1a1a">
+            <select class="form-input" id="typoH1Style"><option value="normal">Regular</option><option value="italic">Italic</option><option value="bold">Bold</option><option value="bold-italic">Bold Italic</option></select>
+          </div>
+          <div class="typo-grid-row" data-level="h2">
+            <span class="typo-grid-label">H2</span>
+            <input class="form-input" id="typoH2" type="number" step="0.1" min="0.5" value="2.8">
+            <input class="form-input-color" id="typoH2Color" type="color" value="#1a1a1a">
+            <select class="form-input" id="typoH2Style"><option value="normal">Regular</option><option value="italic">Italic</option><option value="bold">Bold</option><option value="bold-italic">Bold Italic</option></select>
+          </div>
+          <div class="typo-grid-row" data-level="h3">
+            <span class="typo-grid-label">H3</span>
+            <input class="form-input" id="typoH3" type="number" step="0.1" min="0.5" value="2.2">
+            <input class="form-input-color" id="typoH3Color" type="color" value="#1a1a1a">
+            <select class="form-input" id="typoH3Style"><option value="normal">Regular</option><option value="italic">Italic</option><option value="bold">Bold</option><option value="bold-italic">Bold Italic</option></select>
+          </div>
+          <div class="typo-grid-row" data-level="h4">
+            <span class="typo-grid-label">H4</span>
+            <input class="form-input" id="typoH4" type="number" step="0.1" min="0.5" value="1.4">
+            <input class="form-input-color" id="typoH4Color" type="color" value="#1a1a1a">
+            <select class="form-input" id="typoH4Style"><option value="normal">Regular</option><option value="italic">Italic</option><option value="bold">Bold</option><option value="bold-italic">Bold Italic</option></select>
+          </div>
+          <div class="typo-grid-row" data-level="h5">
+            <span class="typo-grid-label">H5</span>
+            <input class="form-input" id="typoH5" type="number" step="0.1" min="0.5" value="1.1">
+            <input class="form-input-color" id="typoH5Color" type="color" value="#1a1a1a">
+            <select class="form-input" id="typoH5Style"><option value="normal">Regular</option><option value="italic">Italic</option><option value="bold">Bold</option><option value="bold-italic">Bold Italic</option></select>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;margin-bottom:8px;font-style:italic;color:var(--text-light);font-size:var(--font-size-p3);">Fliesstext</div>
+        <div class="typo-grid">
+          <div class="typo-grid-header"><span>Stufe</span><span>Grösse (rem)</span><span>Farbe</span><span>Stil</span></div>
+          <div class="typo-grid-row" data-level="p1">
+            <span class="typo-grid-label">P1 (gross)</span>
+            <input class="form-input" id="typoP1" type="number" step="0.1" min="0.5" value="1.4">
+            <input class="form-input-color" id="typoP1Color" type="color" value="#1a1a1a">
+            <select class="form-input" id="typoP1Style"><option value="normal">Regular</option><option value="italic">Italic</option><option value="bold">Bold</option><option value="bold-italic">Bold Italic</option></select>
+          </div>
+          <div class="typo-grid-row" data-level="p2">
+            <span class="typo-grid-label">P2 (normal)</span>
+            <input class="form-input" id="typoP2" type="number" step="0.1" min="0.5" value="1.1">
+            <input class="form-input-color" id="typoP2Color" type="color" value="#6b6b6b">
+            <select class="form-input" id="typoP2Style"><option value="normal">Regular</option><option value="italic" selected>Italic</option><option value="bold">Bold</option><option value="bold-italic">Bold Italic</option></select>
+          </div>
+          <div class="typo-grid-row" data-level="p3">
+            <span class="typo-grid-label">P3 (klein)</span>
+            <input class="form-input" id="typoP3" type="number" step="0.1" min="0.5" value="0.8">
+            <input class="form-input-color" id="typoP3Color" type="color" value="#999999">
+            <select class="form-input" id="typoP3Style"><option value="normal">Regular</option><option value="italic" selected>Italic</option><option value="bold">Bold</option><option value="bold-italic">Bold Italic</option></select>
+          </div>
+        </div>
+
+        <div id="typoPreview" style="margin-top:24px;padding:24px;background:var(--card);border-radius:12px;border:1px solid var(--border-light);">
+          <div class="typo-preview-h1" style="font-family:var(--font-heading);font-size:var(--font-size-h1);line-height:var(--heading-line-height);letter-spacing:var(--heading-letter-spacing);margin-bottom:8px;">H1 Überschrift</div>
+          <div class="typo-preview-h2" style="font-family:var(--font-heading);font-size:var(--font-size-h2);line-height:var(--heading-line-height);letter-spacing:var(--heading-letter-spacing);margin-bottom:8px;">H2 Überschrift</div>
+          <div class="typo-preview-h3" style="font-family:var(--font-heading);font-size:var(--font-size-h3);line-height:var(--heading-line-height);letter-spacing:var(--heading-letter-spacing);margin-bottom:8px;">H3 Überschrift</div>
+          <div class="typo-preview-h4" style="font-family:var(--font-heading);font-size:var(--font-size-h4);line-height:var(--heading-line-height);letter-spacing:var(--heading-letter-spacing);margin-bottom:8px;">H4 Überschrift</div>
+          <div class="typo-preview-h5" style="font-family:var(--font-heading);font-size:var(--font-size-h5);line-height:var(--heading-line-height);letter-spacing:var(--heading-letter-spacing);margin-bottom:16px;">H5 Navigation</div>
+          <div class="typo-preview-p1" style="font-family:var(--font-body);font-size:var(--font-size-p1);line-height:var(--body-line-height);margin-bottom:6px;">P1 Grosser Fliesstext</div>
+          <div class="typo-preview-p2" style="font-family:var(--font-body);font-size:var(--font-size-p2);line-height:var(--body-line-height);margin-bottom:6px;">P2 Normaler Fliesstext</div>
+          <div class="typo-preview-p3" style="font-family:var(--font-body);font-size:var(--font-size-p3);line-height:var(--body-line-height);">P3 Kleiner Text / Eyebrow</div>
+        </div>
+
+        <div class="actions" style="margin-top:20px;">
+          <button class="btn btn-primary btn-sm" id="saveTypoBtn" onclick="saveTypography()"><span class="btn-text">Speichern</span></button>
+          <button class="btn btn-ghost btn-sm" onclick="previewTypography()">Vorschau</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Journal Impulses Tab -->
+    <div class="admin-tab" id="adminTabJournal" style="display:none;">
+      <div class="admin-form">
+        <h3>Tagebuch-Impulse</h3>
+        <p style="font-size:var(--font-size-p2);font-style:italic;color:var(--text-muted);margin-bottom:24px;">Definiere die Reflexions-Impulse pro Kursphase. Die Phase wird anhand der Kapitelposition im zuletzt geöffneten Kurs bestimmt.</p>
+
+        <div id="journalImpulsesList"></div>
+
+        <div class="actions" style="margin-top:16px;">
+          <button class="btn btn-ghost btn-sm" onclick="addJournalImpulseRow()">+ Phase hinzufügen</button>
+        </div>
+
+        <div class="actions" style="margin-top:20px;">
+          <button class="btn btn-primary btn-sm" id="saveImpulsesBtn" onclick="saveJournalImpulses()"><span class="btn-text">Speichern</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colors Tab -->
+    <div class="admin-tab" id="adminTabColors" style="display:none;">
+      <div class="admin-form">
+        <h3>Farbpalette</h3>
+        <p style="font-size:var(--font-size-p2);font-style:italic;color:var(--text-muted);margin-bottom:24px;">Farben für Light- und Dark-Mode anpassen.</p>
+
+        <div style="margin-bottom:8px;font-style:italic;color:var(--text-light);font-size:var(--font-size-p3);">Light Mode</div>
+        <div class="form-row" style="gap:12px;flex-wrap:wrap;">
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Hintergrund</label><input class="form-input color-input" id="colorLightBg" type="color" value="#C4A99B"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Beige</label><input class="form-input color-input" id="colorLightBeige" type="color" value="#d1b9ad"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Karten</label><input class="form-input color-input" id="colorLightCard" type="color" value="#EDE6E2"></div>
+        </div>
+        <div class="form-row" style="gap:12px;flex-wrap:wrap;margin-top:8px;">
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Text</label><input class="form-input color-input" id="colorLightText" type="color" value="#3B3937"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Text gedämpft</label><input class="form-input color-input" id="colorLightTextMuted" type="color" value="#6b6664"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Text hell</label><input class="form-input color-input" id="colorLightTextLight" type="color" value="#8a8280"></div>
+        </div>
+        <div class="form-row" style="gap:12px;flex-wrap:wrap;margin-top:8px;">
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Rahmen</label><input class="form-input color-input" id="colorLightBorder" type="color" value="#d8cfc9"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Rahmen hell</label><input class="form-input color-input" id="colorLightBorderLight" type="color" value="#e0d9d4"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Linien</label><input class="form-input color-input" id="colorLightLine" type="color" value="#d8cfc9"></div>
+        </div>
+        <div class="form-row" style="gap:12px;flex-wrap:wrap;margin-top:8px;">
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Akzent dunkel</label><input class="form-input color-input" id="colorLightAccentDark" type="color" value="#C4A99B"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Akzent warm</label><input class="form-input color-input" id="colorLightAccentWarm" type="color" value="#C4A99B"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Akzent Olive</label><input class="form-input color-input" id="colorLightAccentOlive" type="color" value="#6b7c5e"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Akzent Rosé</label><input class="form-input color-input" id="colorLightAccentRose" type="color" value="#b07a7a"></div>
+        </div>
+        <div class="form-row" style="gap:12px;flex-wrap:wrap;margin-top:8px;">
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Navigation</label><input class="form-input color-input" id="colorLightNavBg" type="color" value="#EDE6E2"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Nav Text</label><input class="form-input color-input" id="colorLightNavText" type="color" value="#6b6664"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Nav Aktiv</label><input class="form-input color-input" id="colorLightNavActive" type="color" value="#C4A99B"></div>
+        </div>
+
+        <div style="margin-top:24px;margin-bottom:8px;font-style:italic;color:var(--text-light);font-size:var(--font-size-p3);">Dark Mode</div>
+        <div class="form-row" style="gap:12px;flex-wrap:wrap;">
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Hintergrund</label><input class="form-input color-input" id="colorDarkBg" type="color" value="#1a1816"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Beige</label><input class="form-input color-input" id="colorDarkBeige" type="color" value="#242220"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Karten</label><input class="form-input color-input" id="colorDarkCard" type="color" value="#2a2826"></div>
+        </div>
+        <div class="form-row" style="gap:12px;flex-wrap:wrap;margin-top:8px;">
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Text</label><input class="form-input color-input" id="colorDarkText" type="color" value="#e8e2da"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Text gedämpft</label><input class="form-input color-input" id="colorDarkTextMuted" type="color" value="#a09888"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Text hell</label><input class="form-input color-input" id="colorDarkTextLight" type="color" value="#706860"></div>
+        </div>
+        <div class="form-row" style="gap:12px;flex-wrap:wrap;margin-top:8px;">
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Rahmen</label><input class="form-input color-input" id="colorDarkBorder" type="color" value="#3a3632"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Rahmen hell</label><input class="form-input color-input" id="colorDarkBorderLight" type="color" value="#322e2a"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Linien</label><input class="form-input color-input" id="colorDarkLine" type="color" value="#3a3632"></div>
+        </div>
+        <div class="form-row" style="gap:12px;flex-wrap:wrap;margin-top:8px;">
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Akzent dunkel</label><input class="form-input color-input" id="colorDarkAccentDark" type="color" value="#c8b8a0"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Akzent warm</label><input class="form-input color-input" id="colorDarkAccentWarm" type="color" value="#c8a070"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Akzent Olive</label><input class="form-input color-input" id="colorDarkAccentOlive" type="color" value="#8ca078"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Akzent Rosé</label><input class="form-input color-input" id="colorDarkAccentRose" type="color" value="#c08888"></div>
+        </div>
+        <div class="form-row" style="gap:12px;flex-wrap:wrap;margin-top:8px;">
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Navigation</label><input class="form-input color-input" id="colorDarkNavBg" type="color" value="#2a2826"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Nav Text</label><input class="form-input color-input" id="colorDarkNavText" type="color" value="#a09888"></div>
+          <div class="form-group" style="flex:1;min-width:120px;"><label class="form-label">Nav Aktiv</label><input class="form-input color-input" id="colorDarkNavActive" type="color" value="#c8b8a0"></div>
+        </div>
+
+        <div id="colorPreview" style="margin-top:24px;padding:24px;background:var(--card);border-radius:12px;border:1px solid var(--border-light);">
+          <div style="font-family:var(--font-heading);font-size:var(--font-size-h3);color:var(--text);margin-bottom:12px;">Farbvorschau</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+            <div style="width:48px;height:48px;border-radius:8px;background:var(--bg);border:1px solid var(--border);" title="Hintergrund"></div>
+            <div style="width:48px;height:48px;border-radius:8px;background:var(--beige);border:1px solid var(--border);" title="Beige"></div>
+            <div style="width:48px;height:48px;border-radius:8px;background:var(--card);border:1px solid var(--border);" title="Karten"></div>
+            <div style="width:48px;height:48px;border-radius:8px;background:var(--accent-dark);border:1px solid var(--border);" title="Akzent dunkel"></div>
+            <div style="width:48px;height:48px;border-radius:8px;background:var(--accent-warm);border:1px solid var(--border);" title="Akzent warm"></div>
+            <div style="width:48px;height:48px;border-radius:8px;background:var(--accent-olive);border:1px solid var(--border);" title="Akzent Olive"></div>
+            <div style="width:48px;height:48px;border-radius:8px;background:var(--accent-rose);border:1px solid var(--border);" title="Akzent Rosé"></div>
+            <div style="width:48px;height:48px;border-radius:8px;background:var(--nav-bg);border:1px solid var(--border);" title="Navigation"></div>
+            <div style="width:48px;height:48px;border-radius:8px;background:var(--nav-active);border:1px solid var(--border);" title="Nav Aktiv"></div>
+          </div>
+          <div style="font-family:var(--font-body);font-size:var(--font-size-p2);color:var(--text);margin-bottom:4px;">Normaler Text</div>
+          <div style="font-family:var(--font-body);font-size:var(--font-size-p2);color:var(--text-muted);font-style:italic;margin-bottom:4px;">Gedämpfter Text</div>
+          <div style="font-family:var(--font-body);font-size:var(--font-size-p3);color:var(--text-light);font-style:italic;">Heller Text</div>
+        </div>
+
+        <div class="actions" style="margin-top:20px;">
+          <button class="btn btn-primary btn-sm" id="saveColorsBtn" onclick="saveColors()"><span class="btn-text">Speichern</span></button>
+          <button class="btn btn-ghost btn-sm" onclick="previewColors()">Vorschau</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Check-In Questions Tab -->
+    <div class="admin-tab" id="adminTabCheckin" style="display:none;">
+      <div class="admin-form">
+        <h3>Check-In Fragen</h3>
+        <p style="font-size:var(--font-size-p2);font-style:italic;color:var(--text-muted);margin-bottom:24px;">Definiere die Fragen und Antwortmöglichkeiten für den täglichen Stimmungs-Check-In.</p>
+
+        <div id="checkinQuestionsList"></div>
+
+        <div class="actions" style="margin-top:16px;">
+          <button class="btn btn-ghost btn-sm" onclick="addCheckinQuestion()">+ Frage hinzufügen</button>
+        </div>
+
+        <div class="actions" style="margin-top:20px;">
+          <button class="btn btn-primary btn-sm" id="saveCheckinQBtn" onclick="saveCheckinQuestions()"><span class="btn-text">Speichern</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Impulses Tab -->
+    <div class="admin-tab" id="adminTabWeeklyImpulse" style="display:none;">
+      <div class="admin-form">
+        <h3>Wöchentliche Impulse</h3>
+        <p style="font-size:var(--font-size-p2);font-style:italic;color:var(--text-muted);margin-bottom:24px;">52 Sätze — ein Impuls pro Woche, passend zur Kursphase der Nutzerin.</p>
+
+        <div style="margin-bottom:16px;">
+          <div style="font-style:italic;color:var(--text-light);font-size:var(--font-size-p3);margin-bottom:8px;">Phase 1: Verstehen (Kapitel 1–7)</div>
+          <textarea class="form-textarea" id="weeklyImpulsesPhase1" rows="10" placeholder="Ein Impuls pro Zeile …" style="font-size:13px;line-height:1.6;"></textarea>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <div style="font-style:italic;color:var(--text-light);font-size:var(--font-size-p3);margin-bottom:8px;">Phase 2: Vertiefen & Muster (Kapitel 8–9)</div>
+          <textarea class="form-textarea" id="weeklyImpulsesPhase2" rows="8" placeholder="Ein Impuls pro Zeile …" style="font-size:13px;line-height:1.6;"></textarea>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <div style="font-style:italic;color:var(--text-light);font-size:var(--font-size-p3);margin-bottom:8px;">Phase 3: Integration & Selbstfürsorge (Kapitel 10–13)</div>
+          <textarea class="form-textarea" id="weeklyImpulsesPhase3" rows="8" placeholder="Ein Impuls pro Zeile …" style="font-size:13px;line-height:1.6;"></textarea>
+        </div>
+
+        <div class="actions" style="margin-top:20px;">
+          <button class="btn btn-primary btn-sm" id="saveWeeklyImpulsesBtn" onclick="saveWeeklyImpulses()"><span class="btn-text">Speichern</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meditation Tab -->
+    <div class="admin-tab" id="adminTabMeditation" style="display:none;">
+      <div class="admin-form">
+        <h3>Meditationen</h3>
+        <p style="font-size:var(--font-size-p2);font-style:italic;color:var(--text-muted);margin-bottom:24px;">Verwalte die geführten Meditationen. Lade MP3-Dateien hoch und ordne sie per Drag & Drop.</p>
+
+        <input type="hidden" id="editMeditationId" value="">
+        <input type="hidden" id="meditationAudioUrl" value="">
+        <input type="hidden" id="meditationImageUrl" value="">
+        <input type="hidden" id="meditationDuration" value="0">
+
+        <div class="form-group">
+          <label class="form-label">Titel</label>
+          <input class="form-input" id="meditationTitleInput" placeholder="z.B. Atem-Meditation">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Beschreibung</label>
+          <textarea class="form-textarea" id="meditationDescInput" rows="2" placeholder="Kurze Beschreibung der Meditation …"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bild</label>
+          <div class="image-upload-zone" id="meditationImagePreview" onclick="document.getElementById('meditationImageInput').click()">
+            <span class="image-upload-label">Bild hierher ziehen oder klicken</span>
+          </div>
+          <input type="file" id="meditationImageInput" accept="image/*" style="display:none;" onchange="handleMeditationImageSelect()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">MP3-Datei</label>
+          <div class="audio-upload-zone" id="meditationAudioPreview">
+            <span class="audio-upload-label">MP3 hierher ziehen oder klicken</span>
+          </div>
+          <input type="file" id="meditationAudioInput" accept="audio/*" style="display:none;" onchange="handleMeditationAudioSelect()">
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:12px;">
+          <label class="form-label" style="margin-bottom:0;">Aktiv</label>
+          <input type="checkbox" id="meditationActiveInput" checked>
+        </div>
+
+        <div class="actions" style="margin-top:20px;gap:8px;">
+          <button class="btn btn-primary btn-sm" id="saveMeditationBtn" onclick="saveMeditation()"><span class="btn-text">Speichern</span></button>
+          <button class="btn btn-ghost btn-sm" onclick="resetMeditationForm()">Abbrechen</button>
+        </div>
+
+        <div id="adminMeditationsList" style="margin-top:24px;"></div>
+      </div>
+    </div>
+
+    <!-- Messages Tab -->
+    <div class="admin-tab" id="adminTabMessages" style="display:none;">
+      <div class="admin-form">
+        <h3>Eingegangene Nachrichten</h3>
+        <p style="font-size:var(--font-size-p2);font-style:italic;color:var(--text-muted);margin-bottom:24px;">Fragen, Themenvorschläge und Kontaktanfragen von Nutzerinnen.</p>
+
+        <div class="admin-messages-filter" id="messagesFilter">
+          <button class="checkin-range-btn active" onclick="filterMessages('all')">Alle</button>
+          <button class="checkin-range-btn" onclick="filterMessages('question')">Fragen</button>
+          <button class="checkin-range-btn" onclick="filterMessages('topic')">Themen</button>
+          <button class="checkin-range-btn" onclick="filterMessages('contact')">Kontakt</button>
+        </div>
+
+        <div id="adminMessagesList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PROFIL ═══ -->
+  <div class="view" id="viewProfile">
+    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Mein Profil</h1><p class="page-intro">— Deine Kontoinformationen und Einstellungen.</p></div>
+    <div id="profileContent"></div>
+  </div>
+
+  <!-- ═══ KONTAKT ═══ -->
+  <div class="view" id="viewContact">
+    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Kontakt</h1><p class="page-intro">— Fragen, Ideen oder einfach Hallo sagen.</p></div>
+    <div id="contactContent"></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Antworten löschen ═══ -->
+<div class="modal-overlay" id="deleteAnswersModal" style="display:none;">
+  <div class="modal">
+    <button class="modal-close" onclick="closeDeleteAnswersModal()" aria-label="Schließen">&times;</button>
+    <div class="modal-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+    <h2>Alle Antworten löschen?</h2>
+    <p>Diese Aktion kann <strong>nicht rückgängig</strong> gemacht werden. Alle deine Übungsantworten werden unwiderruflich gelöscht.</p>
+    <p class="modal-confirm-label">Tippe <strong>LÖSCHEN</strong> ein, um zu bestätigen:</p>
+    <input
+      type="text"
+      id="deleteConfirmInput"
+      class="modal-confirm-input"
+      placeholder="LÖSCHEN"
+      autocomplete="off"
+      oninput="onDeleteConfirmInput()"
+    />
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeDeleteAnswersModal()">Abbrechen</button>
+      <button class="btn btn-danger" id="deleteConfirmBtn" disabled onclick="confirmDeleteAllAnswers()">Endgültig löschen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Account löschen ═══ -->
+<div class="modal-overlay" id="deleteAccountModal" style="display:none;">
+  <div class="modal">
+    <button class="modal-close" onclick="closeDeleteAccountModal()" aria-label="Schließen">&times;</button>
+    <div class="modal-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></div>
+    <h2>Account löschen?</h2>
+    <p>Dein gesamtes Konto wird <strong>unwiderruflich gelöscht</strong> — inklusive aller Antworten und Kurszugänge.</p>
+    <p class="modal-confirm-label">Tippe deine <strong>E-Mail-Adresse</strong> ein, um zu bestätigen:</p>
+    <input
+      type="text"
+      id="deleteAccountConfirmInput"
+      class="modal-confirm-input"
+      placeholder="deine@email.ch"
+      autocomplete="off"
+      oninput="onDeleteAccountConfirmInput()"
+    />
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeDeleteAccountModal()">Abbrechen</button>
+      <button class="btn btn-danger" id="deleteAccountConfirmBtn" disabled onclick="confirmDeleteAccount()">Account endgültig löschen</button>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- html2pdf.js loaded from CDN (used for PDF export) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
 <!-- Vite entry point -->
+<script type="module" src="/src/main.js"></script>
 </body>
 </html>
