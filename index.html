@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studio Klarzeit — Übungsplattform</title>
-  <script type="module" crossorigin src="/index-eciRtgo7.js"></script>
-  <link rel="stylesheet" crossorigin href="/index-ZuokXr_u.css">
+  <script type="module" crossorigin src="/index-B-yco6M3.js"></script>
+  <link rel="stylesheet" crossorigin href="/index-DYw_XYY5.css">
 </head>
 <body>
 
@@ -249,6 +249,43 @@
     <div id="meditationContent"></div>
   </div>
 
+  <!-- ═══ SALES OVERVIEW (Public, no auth) ═══ -->
+  <div class="view" id="viewSalesOverview">
+    <div class="sales-header">
+      <div class="sales-logo" onclick="navigateTo('salesOverview')">Studio Klarzeit</div>
+      <div class="sales-nav">
+        <a href="https://www.studioklarzeit.ch" class="sales-nav-link" target="_top">Website</a>
+      </div>
+    </div>
+    <div class="sales-overview">
+      <div class="page-title-section">
+        <span class="eyebrow">Studio Klarzeit</span>
+        <h1 class="page-title">Online-Kurse</h1>
+        <p class="page-intro">— Entdecke unsere Kurse für mehr Klarheit und Energie.</p>
+      </div>
+      <div class="grid-list image-grid" id="salesCoursesList"></div>
+    </div>
+  </div>
+
+  <!-- ═══ SALES DETAIL (Single course, public) ═══ -->
+  <div class="view" id="viewSalesDetail">
+    <div id="salesDetailContent"></div>
+  </div>
+
+  <!-- ═══ COURSE PLAYER (Online-Kurs) ═══ -->
+  <div class="view" id="viewCoursePlayer">
+    <div class="breadcrumb" id="coursePlayerBreadcrumb"></div>
+    <div class="chapter-hero" id="coursePlayerHero" style="display:none;"></div>
+    <div class="page-title-section" id="coursePlayerTitleSection"></div>
+    <div id="coursePlayerChaptersList"></div>
+  </div>
+
+  <!-- ═══ CHAPTER PLAYER (Audio + Text) ═══ -->
+  <div class="view" id="viewChapterPlayer">
+    <div class="breadcrumb" id="chapterPlayerBreadcrumb"></div>
+    <div id="chapterPlayerContent"></div>
+  </div>
+
   <div class="view" id="viewChapters">
     <div class="breadcrumb" id="chaptersBreadcrumb"></div>
     <div class="chapter-hero" id="chaptersHero" style="display:none;"></div>
@@ -339,6 +376,36 @@
           <input type="file" id="courseImageInput" accept="image/*" style="display:none;" onchange="handleImageFileSelect('courseImageInput','courseImagePreview')">
         </div>
         <div class="form-group"><label class="form-check"><input type="checkbox" id="courseRestrictedInput"><span>Zugang einschränken (nur per Einladungslink)</span></label></div>
+
+        <div class="form-group">
+          <label class="form-label">Kurstyp</label>
+          <select class="form-select" id="courseTypeSelect" onchange="toggleCourseSalesFields()">
+            <option value="exercise">Übungskurs (nur Übungen)</option>
+            <option value="online">Online-Kurs (Audio + Text + Übungen)</option>
+            <option value="both">Beides</option>
+          </select>
+        </div>
+
+        <div id="courseSalesFields" style="display:none;">
+          <h4 style="margin:24px 0 16px; font-family:var(--font-heading); font-size:var(--font-size-h4); color:var(--text);">Verkaufsseite</h4>
+          <div class="form-group"><label class="form-check"><input type="checkbox" id="courseSalesPublished"><span>Verkaufsseite veröffentlichen</span></label></div>
+          <div class="form-group"><label class="form-label">URL-Slug</label><input class="form-input" id="courseSalesSlug" placeholder="z.B. muede-obwohl-du"></div>
+          <div class="form-group"><label class="form-label">Überschrift (Verkaufsseite)</label><input class="form-input" id="courseSalesHeadline" placeholder="z.B. Endlich verstehen, warum du müde bist"></div>
+          <div class="form-group"><label class="form-label">Beschreibung (Verkaufsseite)</label><textarea class="form-textarea" id="courseSalesDesc" rows="4" placeholder="Ausführliche Beschreibung für Käufer..."></textarea></div>
+          <div class="form-group"><label class="form-label">Features (je Zeile ein Punkt)</label><textarea class="form-textarea" id="courseSalesFeatures" rows="4" placeholder="13 Kapitel mit Audio und Text&#10;Praktische Übungen zu jedem Kapitel&#10;Lebenslanger Zugang"></textarea></div>
+          <div class="form-group"><label class="form-label">CTA-Button Text</label><input class="form-input" id="courseSalesCta" value="Jetzt starten"></div>
+
+          <h4 style="margin:24px 0 16px; font-family:var(--font-heading); font-size:var(--font-size-h4); color:var(--text);">Preise</h4>
+          <div class="form-row">
+            <div class="form-group" style="flex:1;"><label class="form-label">Einmalpreis (CHF)</label><input class="form-input" id="coursePriceOnetime" type="number" step="0.01" placeholder="z.B. 99"></div>
+            <div class="form-group" style="flex:1;"><label class="form-label">Stripe Price ID (Einmal)</label><input class="form-input" id="courseStripePriceOnetime" placeholder="price_xxx"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="flex:1;"><label class="form-label">Abo-Preis / Monat (CHF)</label><input class="form-input" id="coursePriceSubscription" type="number" step="0.01" placeholder="z.B. 19"></div>
+            <div class="form-group" style="flex:1;"><label class="form-label">Stripe Price ID (Abo)</label><input class="form-input" id="courseStripePriceSubscription" placeholder="price_xxx"></div>
+          </div>
+        </div>
+
         <div class="actions"><button class="btn btn-primary btn-sm" id="saveCourseBtn" onclick="saveCourse()"><span class="btn-text">Speichern</span></button><button class="btn btn-ghost btn-sm" onclick="resetCourseForm()">Abbrechen</button></div>
       </div>
       <div id="adminCoursesList"></div>
@@ -347,7 +414,7 @@
     <div class="admin-tab" id="adminTabChapters" style="display:none;">
       <div class="admin-form">
         <h3 id="chapterFormTitle">Neues Kapitel erstellen</h3><input type="hidden" id="editChapterId">
-        <div class="form-group"><label class="form-label">Kurs auswählen</label><select class="form-select" id="chapterCourseSelect"></select></div>
+        <div class="form-group"><label class="form-label">Kurs auswählen</label><select class="form-select" id="chapterCourseSelect" onchange="toggleChapterOnlineFields()"></select></div>
         <div class="form-group"><label class="form-label">Kapitelname</label><input class="form-input" id="chapterNameInput" placeholder="z.B. Innere Wahrnehmung"></div>
         <div class="form-row">
           <div class="form-group" style="flex:3;"><label class="form-label">Beschreibung</label><textarea class="form-textarea" id="chapterDescInput" placeholder="Kurze Beschreibung …"></textarea></div>
@@ -361,6 +428,33 @@
           </div>
           <input type="file" id="chapterImageInput" accept="image/*" style="display:none;" onchange="handleImageFileSelect('chapterImageInput','chapterImagePreview')">
         </div>
+
+        <div id="chapterOnlineFields" style="display:none;">
+          <h4 style="margin:24px 0 16px; font-family:var(--font-heading); font-size:var(--font-size-h4); color:var(--text);">Online-Kurs Inhalt</h4>
+          <div class="form-group">
+            <label class="form-label">Kapiteltyp</label>
+            <select class="form-select" id="chapterTypeSelect">
+              <option value="standard">Standard (mit Übung)</option>
+              <option value="vorwort">Vorwort</option>
+              <option value="abschluss">Abschlusswort</option>
+              <option value="content">Nur Inhalt (keine Übung)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Audio-Datei (MP3)</label>
+            <div class="audio-upload-zone" id="chapterAudioPreview" onclick="document.getElementById('chapterAudioInput').click()">
+              <span class="audio-upload-label">MP3 hierher ziehen oder klicken</span>
+            </div>
+            <input type="file" id="chapterAudioInput" accept="audio/*" style="display:none;" onchange="handleChapterAudioSelect()">
+            <input type="hidden" id="chapterAudioUrl" value="">
+            <input type="hidden" id="chapterAudioDuration" value="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kapiteltext</label>
+            <textarea class="form-textarea" id="chapterTextInput" rows="10" placeholder="Der Text zum Kapitel..."></textarea>
+          </div>
+        </div>
+
         <div class="actions"><button class="btn btn-primary btn-sm" id="saveChapterBtn" onclick="saveChapter()"><span class="btn-text">Speichern</span></button><button class="btn btn-ghost btn-sm" onclick="resetChapterForm()">Abbrechen</button></div>
       </div>
       <div id="adminChaptersList"></div>
