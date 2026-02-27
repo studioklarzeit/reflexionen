@@ -49,32 +49,6 @@
   </div>
 </div>
 
-<!-- ═══ PUBLIC WEBSITE HEADER ═══ -->
-<header class="pub-header" id="publicHeader" style="display:none;">
-  <div class="pub-header-inner">
-    <a class="pub-logo" data-action="navigateTo" data-args='["publicHome"]'>Studio Klarzeit</a>
-    <div class="pub-header-right">
-      <nav class="pub-nav" id="publicNav">
-        <a class="pub-nav-link" data-action="navigateTo" data-args='["publicHome"]'>Home</a>
-        <a class="pub-nav-link" data-action="navigateTo" data-args='["publicAbout"]'>Über uns</a>
-        <a class="pub-nav-link" data-action="navigateTo" data-args='["publicBlog"]'>Blog</a>
-        <a class="pub-nav-link" data-action="navigateTo" data-args='["publicContact"]'>Kontakt</a>
-        <a class="pub-nav-link" data-action="navigateTo" data-args='["auth"]'>Konto</a>
-      </nav>
-      <button class="pub-mobile-nav-btn" data-action="togglePublicMobileNav" aria-label="Menü">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-    </div>
-  </div>
-  <div class="pub-mobile-nav" id="publicMobileNav">
-    <a class="pub-mobile-nav-link" data-action="pubMobileNav" data-args='["publicHome"]'>Home</a>
-    <a class="pub-mobile-nav-link" data-action="pubMobileNav" data-args='["publicAbout"]'>Über uns</a>
-    <a class="pub-mobile-nav-link" data-action="pubMobileNav" data-args='["publicBlog"]'>Blog</a>
-    <a class="pub-mobile-nav-link" data-action="pubMobileNav" data-args='["publicContact"]'>Kontakt</a>
-    <a class="pub-mobile-nav-link" data-action="pubMobileNav" data-args='["auth"]'>Login →</a>
-  </div>
-</header>
-
 <!-- Offline indicator -->
 <div class="offline-bar" id="offlineBar">Du bist offline — Änderungen werden gespeichert, sobald du wieder verbunden bist.</div>
 
@@ -1151,22 +1125,7 @@
     <div id="contactContent"></div>
   </div>
 
-  <!-- ═══ PUBLIC WEBSITE PAGES ═══ -->
-  <div class="view" id="viewPublicPage">
-    <div id="publicPageContent"></div>
-  </div>
-
-  <div class="view" id="viewPublicContact">
-    <div id="publicContactContent"></div>
-  </div>
-
-  <div class="view" id="viewPublicBlog">
-    <div id="blogListContent"></div>
-  </div>
-
-  <div class="view" id="viewPublicBlogPost">
-    <div id="blogPostContent"></div>
-  </div>
+  <!-- Public website runs on www.studioklarzeit.ch (Squarespace) -->
 </div>
 
 <!-- ═══ MODAL: Antworten löschen ═══ -->
@@ -1214,39 +1173,6 @@
     </div>
   </div>
 </div>
-
-<!-- ═══ PUBLIC FOOTER ═══ -->
-<footer class="pub-footer" id="publicFooter" style="display:none;">
-  <div class="pub-footer-inner">
-    <div class="pub-footer-brand">
-      <div class="pub-footer-logo">Studio Klarzeit</div>
-      <p class="pub-footer-tagline">Selbstreflexion. Achtsamkeit. Klarheit.</p>
-    </div>
-    <div class="pub-footer-links">
-      <div class="pub-footer-col">
-        <div class="pub-footer-col-title">Plattform</div>
-        <a class="pub-footer-link" data-action="navigateTo" data-args='["publicHome"]'>Home</a>
-        <a class="pub-footer-link" data-action="navigateTo" data-args='["publicAbout"]'>Über uns</a>
-        <a class="pub-footer-link" data-action="navigateTo" data-args='["publicBlog"]'>Blog</a>
-        <a class="pub-footer-link" data-action="navigateTo" data-args='["publicContact"]'>Kontakt</a>
-      </div>
-      <div class="pub-footer-col">
-        <div class="pub-footer-col-title">Rechtliches</div>
-        <a class="pub-footer-link" data-action="navigateTo" data-args='["publicDatenschutz"]'>Datenschutz</a>
-        <a class="pub-footer-link" data-action="navigateTo" data-args='["publicAgb"]'>AGB</a>
-        <a class="pub-footer-link" data-action="navigateTo" data-args='["publicPrivacy"]'>Privacy Policy</a>
-      </div>
-      <div class="pub-footer-col">
-        <div class="pub-footer-col-title">Konto</div>
-        <a class="pub-footer-link" data-action="navigateTo" data-args='["auth"]'>Login</a>
-        <a class="pub-footer-link" data-action="navigateTo" data-args='["auth"]'>Registrieren</a>
-      </div>
-    </div>
-    <div class="pub-footer-bottom">
-      <span>© 2026 Studio Klarzeit. Alle Rechte vorbehalten.</span>
-    </div>
-  </div>
-</footer>
 
 <div class="toast" id="toast"></div>
 

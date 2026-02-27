@@ -119,52 +119,8 @@ import {
   resetChapterContentForm, renderAdminChapterContent,
 } from './admin.js';
 
-// ── Public mobile nav toggle ──
-function togglePublicMobileNav() {
-  const nav = document.getElementById('publicMobileNav');
-  if (nav) nav.classList.toggle('open');
-}
-window.togglePublicMobileNav = togglePublicMobileNav;
-
-// Public nav link helper (used by public.js CTA sections)
-// Supports both clean paths (/about) and legacy query params (?seite=about)
-window.__pubNav = function(link) {
-  if (!link) return;
-  if (link.startsWith('http') || link.startsWith('//')) {
-    window.open(link, '_blank');
-    return;
-  }
-  // Clean path mapping
-  const CLEAN_NAV = {
-    '/': 'publicHome',
-    '/about': 'publicAbout',
-    '/kontakt': 'publicContact',
-    '/blog': 'publicBlog',
-    '/datenschutz': 'publicDatenschutz',
-    '/agb': 'publicAgb',
-    '/privacy': 'publicPrivacy',
-  };
-  const route = CLEAN_NAV[link];
-  if (route) { navigateTo(route); return; }
-  // Blog post: /blog/{slug}
-  if (link.startsWith('/blog/')) {
-    navigateTo('publicBlogPost', { slug: link.split('/blog/')[1] });
-    return;
-  }
-  // Custom page: /seite/{slug}
-  if (link.startsWith('/seite/')) {
-    navigateTo('publicPage', { slug: link.split('/seite/')[1] });
-    return;
-  }
-  // Legacy query params
-  if (link.startsWith('?seite=')) {
-    const slug = link.replace('?seite=', '');
-    navigateTo('publicPage', { slug });
-    return;
-  }
-  // Internal SPA view name (e.g. 'auth')
-  navigateTo(link);
-};
+// Note: Public website (publicHome, publicAbout, etc.) runs on www.studioklarzeit.ch (Squarespace)
+// This app on app.studioklarzeit.ch only serves the authenticated app experience.
 
 // ── Dark mode dock icon helper (legacy, kept for mobile drawer) ──
 function updateDockDarkIcon() {}
@@ -319,84 +275,6 @@ async function init() {
   const urlParams = new URLSearchParams(location.search);
   const inviteToken = urlParams.get('invite');
   if (inviteToken) state.pendingInvite = inviteToken;
-
-  // ── 404.html fallback: recover original path from __path param ──
-  const fallbackPath = urlParams.get('__path');
-  if (fallbackPath) {
-    // Replace current URL with the clean path (remove __path param)
-    history.replaceState(null, '', fallbackPath);
-  }
-
-  // ── Clean URL routing (pathname-based) ──
-  const pathname = (fallbackPath || location.pathname).replace(/\/+$/, '') || '/';
-  const CLEAN_ROUTES = {
-    '/': 'publicHome',
-    '/about': 'publicAbout',
-    '/kontakt': 'publicContact',
-    '/blog': 'publicBlog',
-    '/datenschutz': 'publicDatenschutz',
-    '/agb': 'publicAgb',
-    '/privacy': 'publicPrivacy',
-  };
-
-  // Only route via clean paths if pathname is not root OR there are no query params
-  // (Root "/" with query params like ?login=1 or ?kurs=slug should fall through to legacy routing)
-  if (pathname !== '/' || (!urlParams.has('seite') && !urlParams.has('blog') && !urlParams.has('kurs') && !urlParams.has('kurse') && !urlParams.has('purchase_success') && !urlParams.has('login') && !urlParams.has('invite') && !location.hash)) {
-    const cleanRoute = CLEAN_ROUTES[pathname];
-    if (cleanRoute && pathname !== '/') {
-      navigateTo(cleanRoute);
-      return;
-    }
-    // Blog post: /blog/{slug}
-    if (pathname.startsWith('/blog/')) {
-      navigateTo('publicBlogPost', { slug: pathname.split('/blog/')[1] });
-      return;
-    }
-    // Custom page: /seite/{slug}
-    if (pathname.startsWith('/seite/')) {
-      navigateTo('publicPage', { slug: pathname.split('/seite/')[1] });
-      return;
-    }
-  }
-
-  // ── Public sales routes (no auth required) ──
-  const salesSlug = urlParams.get('kurs');
-  const salesOverview = urlParams.get('kurse');
-  if (salesSlug) {
-    navigateTo('salesDetail', { slug: salesSlug });
-    return;
-  }
-  if (salesOverview === '1') {
-    navigateTo('salesOverview');
-    return;
-  }
-
-  // ── Public website routes (legacy query params, backward compat) ──
-  const publicPage = urlParams.get('seite');
-  if (publicPage) {
-    const publicRoutes = {
-      home: 'publicHome',
-      about: 'publicAbout',
-      kontakt: 'publicContact',
-      blog: 'publicBlog',
-      datenschutz: 'publicDatenschutz',
-      agb: 'publicAgb',
-      privacy: 'publicPrivacy',
-    };
-    const route = publicRoutes[publicPage];
-    if (route) {
-      navigateTo(route);
-      return;
-    }
-    // Generic page by slug
-    navigateTo('publicPage', { slug: publicPage });
-    return;
-  }
-  const blogSlug = urlParams.get('blog');
-  if (blogSlug) {
-    navigateTo('publicBlogPost', { slug: blogSlug });
-    return;
-  }
 
   // ── Stripe success/cancel redirect ──
   const stripeSuccess = urlParams.get('purchase_success');
