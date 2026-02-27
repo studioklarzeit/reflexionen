@@ -225,7 +225,7 @@ export async function renderImpulseView() {
 // ── IMPULSE SPLASH PAGE ──
 
 export async function renderImpulseSplash() {
-  const container = document.getElementById('viewImpulse');
+  const container = document.getElementById('viewImpulseSplash');
   if (!container) return;
 
   const impulses = await loadImpulses();

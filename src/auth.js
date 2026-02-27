@@ -201,7 +201,7 @@ export async function postLogin() {
     navigateTo('onboarding');
   } else {
     const { isImpulseMuted } = await import('./weeklyimpulse.js');
-    navigateTo(isImpulseMuted() ? 'courses' : 'impulse');
+    navigateTo(isImpulseMuted() ? 'courses' : 'impulseSplash');
   }
 }
 

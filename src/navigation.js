@@ -33,7 +33,7 @@ export function navigateTo(view, params) {
 
   state.currentView = view;
   const isPublic = view.startsWith('public');
-  const hide = (view === 'auth' || view === 'loading' || view === 'resetPassword' || view === 'onboarding' || view === 'salesOverview' || view === 'salesDetail' || isPublic);
+  const hide = (view === 'auth' || view === 'loading' || view === 'resetPassword' || view === 'onboarding' || view === 'impulseSplash' || view === 'salesOverview' || view === 'salesDetail' || isPublic);
   document.getElementById('mainHeader').style.display = hide ? 'none' : 'flex';
 
   // Public header/footer visibility + scroll listener
@@ -82,6 +82,10 @@ export function navigateTo(view, params) {
       case 'onboarding':
         document.getElementById('viewOnboarding').classList.add('active');
         renderOnboarding();
+        break;
+      case 'impulseSplash':
+        document.getElementById('viewImpulseSplash').classList.add('active');
+        import('./weeklyimpulse.js').then(m => m.renderImpulseSplash());
         break;
       case 'impulse':
         document.getElementById('viewImpulse').classList.add('active');
