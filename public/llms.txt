@@ -1,0 +1,38 @@
+# Studio Klarzeit
+
+> Studio Klarzeit ist eine digitale Plattform fuer Selbstreflexion, Achtsamkeit und persoenliches Wachstum. Die App bietet strukturierte Kurse, taegliche Tools und gefuehrte Meditationen — alles an einem Ort.
+
+## Ueber uns
+
+Studio Klarzeit wurde mit der Ueberzeugung entwickelt, dass Selbstreflexion und Achtsamkeit fuer jeden Menschen zugaenglich sein sollten. Wir schaffen einen geschuetzten digitalen Raum, in dem du dich ehrlich, liebevoll und in deinem eigenen Tempo mit dir selbst verbinden kannst.
+
+## Angebote
+
+### Kurse
+Strukturierte Selbstreflexionskurse mit Audio-Begleitung und praktischen Uebungen. Jeder Kurs besteht aus mehreren Kapiteln mit individuellen Uebungen und Reflexionsfragen.
+
+### Tools
+Taegliche Rituale fuer innere Arbeit:
+- **Tagebuch**: Taegliche Schreibimpulse fuer Selbstreflexion
+- **Stimmungs-Check-In**: Emotionale Selbstwahrnehmung mit Koerperscanning
+- **Energiebalance**: Ueberblick ueber deine Energiequellen und -raeuber
+- **Impuls der Woche**: Woechentliche Denkanstoss-Karten
+
+### Meditation
+Gefuehrte Meditationen zum Ankommen und Loslassen. Audio-Player mit verschiedenen Themen und Laengen.
+
+### Monatsreflektionen
+Monatliche Impulse und persoenliche Begleitung fuer vertiefende Reflexion.
+
+## Blog
+Regelmaessige Beitraege zu Achtsamkeit, Selbstreflexion und persoenlichem Wachstum.
+
+## Kontakt
+Website: https://app.studioklarzeit.de
+Kontaktformular: https://app.studioklarzeit.de/kontakt
+
+## Sprache
+Die Plattform ist primaer auf Deutsch verfuegbar.
+
+## Technologie
+Web-App (Progressive Web App), erreichbar ueber den Browser auf Desktop und Mobilgeraeten.

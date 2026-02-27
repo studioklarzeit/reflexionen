@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #EDE6E2; margin: 0; gap: 60px; }
+.label { text-align: center; font-family: sans-serif; color: #666; font-size: 13px; margin-top: 8px; }
+svg { max-height: 420px; }
+</style>
+</head>
+<body>
+<div>
+<svg viewBox="0 0 200 460" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="40" r="30" fill="#d8cfc9" stroke="#c4b8ae" stroke-width="1"/>
+  <path d="
+    M60,80 Q56,80 50,86 L38,100 Q30,108 28,120 L24,160 Q22,174 26,180
+    L30,184 Q36,188 40,182 L50,152 Q54,142 56,132 L56,118 L56,230
+    Q56,244 64,254 L66,300 Q68,320 68,340 L66,380 Q64,400 66,420
+    Q68,438 74,440 L82,440 Q90,440 92,432 Q94,420 92,400 L90,340
+    Q90,320 92,300 L100,260 L108,300 Q110,320 110,340 L108,400
+    Q106,420 108,432 Q110,440 118,440 L126,440 Q132,438 134,420
+    Q136,400 134,380 L132,340 Q132,320 134,300 L136,254 Q144,244 144,230
+    L144,118 L144,132 Q146,142 150,152 L160,182 Q164,188 170,184
+    L174,180 Q178,174 176,160 L172,120 Q170,108 162,100 L150,86
+    Q144,80 140,80 Z"
+    fill="#d8cfc9" stroke="#c4b8ae" stroke-width="1" stroke-linejoin="round"/>
+</svg>
+<div class="label">Neutral</div>
+</div>
+
+<div>
+<svg viewBox="0 0 200 460" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="40" r="30" fill="#d8cfc9" stroke="#c4b8ae" stroke-width="1"/>
+  <path d="
+    M60,80 Q56,80 50,86 L38,100 Q30,108 28,120 L24,160 Q22,174 26,180
+    L30,184 Q36,188 40,182 L50,152 Q54,142 56,132 L56,118 L56,230
+    Q56,244 64,254 L66,300 Q68,320 68,340 L66,380 Q64,400 66,420
+    Q68,438 74,440 L82,440 Q90,440 92,432 Q94,420 92,400 L90,340
+    Q90,320 92,300 L100,260 L108,300 Q110,320 110,340 L108,400
+    Q106,420 108,432 Q110,440 118,440 L126,440 Q132,438 134,420
+    Q136,400 134,380 L132,340 Q132,320 134,300 L136,254 Q144,244 144,230
+    L144,118 L144,132 Q146,142 150,152 L160,182 Q164,188 170,184
+    L174,180 Q178,174 176,160 L172,120 Q170,108 162,100 L150,86
+    Q144,80 140,80 Z"
+    fill="#d8cfc9" stroke="#c4b8ae" stroke-width="1" stroke-linejoin="round"/>
+  <!-- Auswahl: Kopf, Schultern, Bauch -->
+  <ellipse cx="100" cy="42" rx="28" ry="28" fill="#C4A99B" fill-opacity="0.5"/>
+  <ellipse cx="100" cy="118" rx="52" ry="16" fill="#C4A99B" fill-opacity="0.5"/>
+  <ellipse cx="100" cy="200" rx="30" ry="28" fill="#C4A99B" fill-opacity="0.5"/>
+</svg>
+<div class="label">Auswahl (Kopf, Schultern, Bauch)</div>
+</div>
+
+<div>
+<svg viewBox="0 0 200 460" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="40" r="30" fill="#d8cfc9" stroke="#c4b8ae" stroke-width="1"/>
+  <path d="
+    M60,80 Q56,80 50,86 L38,100 Q30,108 28,120 L24,160 Q22,174 26,180
+    L30,184 Q36,188 40,182 L50,152 Q54,142 56,132 L56,118 L56,230
+    Q56,244 64,254 L66,300 Q68,320 68,340 L66,380 Q64,400 66,420
+    Q68,438 74,440 L82,440 Q90,440 92,432 Q94,420 92,400 L90,340
+    Q90,320 92,300 L100,260 L108,300 Q110,320 110,340 L108,400
+    Q106,420 108,432 Q110,440 118,440 L126,440 Q132,438 134,420
+    Q136,400 134,380 L132,340 Q132,320 134,300 L136,254 Q144,244 144,230
+    L144,118 L144,132 Q146,142 150,152 L160,182 Q164,188 170,184
+    L174,180 Q178,174 176,160 L172,120 Q170,108 162,100 L150,86
+    Q144,80 140,80 Z"
+    fill="#d8cfc9" stroke="#c4b8ae" stroke-width="1" stroke-linejoin="round"/>
+  <!-- Heatmap: Schultern am häufigsten -->
+  <ellipse cx="100" cy="118" rx="52" ry="16" fill="#e05555" fill-opacity="0.8"/>
+  <ellipse cx="100" cy="72" rx="18" ry="10" fill="#e05555" fill-opacity="0.65"/>
+  <ellipse cx="100" cy="42" rx="28" ry="28" fill="#e05555" fill-opacity="0.45"/>
+  <ellipse cx="100" cy="200" rx="30" ry="28" fill="#e05555" fill-opacity="0.3"/>
+</svg>
+<div class="label">Heatmap (Schultern häufigst)</div>
+</div>
+</body>
+</html>

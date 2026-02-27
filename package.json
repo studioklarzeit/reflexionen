@@ -1,0 +1,20 @@
+{
+  "name": "studio-klarzeit",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/generate-sitemap.mjs && vite build && node scripts/prerender.mjs",
+    "sitemap": "node scripts/generate-sitemap.mjs",
+    "preview": "vite preview",
+    "deploy": "vite build"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "vite": "^6.3.0"
+  }
+}
