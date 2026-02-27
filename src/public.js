@@ -213,7 +213,7 @@ function renderBlogContent(sections) {
   }).join('');
 }
 
-export function renderSections(sections) {
+export function renderSections(sections, courseContext = null) {
   if (!Array.isArray(sections)) return '';
 
   const sorted = [...sections].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
@@ -237,6 +237,7 @@ export function renderSections(sections) {
       case 'accordion':    inner = renderAccordion(c); break;
       case 'divider':      return renderDivider();
       case 'spacer':       return renderSpacer(c);
+      case 'purchase_cta': inner = renderPurchaseCta(c, courseContext); break;
       default:             return '';
     }
     const bgClass = bgIndex % 2 === 0 ? 'pub-bg-light' : 'pub-bg-tan';
@@ -387,6 +388,116 @@ function buildBlogPostHtml(post) {
         ${(post.sections || post.content) ? renderBlogContent(post.sections || post.content) : ''}
       </div>
     </article>`;
+}
+
+// ── Course Sales Page ──
+
+let courseSalesCache = {};
+
+export async function renderCourseSalesPage(slug) {
+  const container = document.getElementById('viewPublicCourseSales');
+  if (!container) return;
+
+  // Check cache
+  if (courseSalesCache[slug]) {
+    container.innerHTML = buildCourseSalesHtml(courseSalesCache[slug]);
+    updateCourseSalesSeo(courseSalesCache[slug], slug);
+    return;
+  }
+
+  container.innerHTML = '<div class="pub-loading">Laden ...</div>';
+
+  const { data: courses, error } = await sb
+    .from('courses')
+    .select('*')
+    .eq('sales_slug', slug)
+    .eq('sales_published', true)
+    .limit(1);
+
+  if (error || !courses?.length) {
+    container.innerHTML = `<div class="pub-not-found"><h2>Kurs nicht gefunden</h2><p>Die angeforderte Kursseite ist nicht verfügbar.</p></div>`;
+    return;
+  }
+
+  const course = courses[0];
+  courseSalesCache[slug] = course;
+  container.innerHTML = buildCourseSalesHtml(course);
+  updateCourseSalesSeo(course, slug);
+}
+
+function buildCourseSalesHtml(course) {
+  const sections = course.sales_sections || [];
+  if (!sections.length) {
+    // Fallback: show placeholder if no sections built yet
+    return `<div class="pub-not-found"><h2>${esc(course.sales_headline || course.name)}</h2><p>Verkaufsseite wird gerade erstellt.</p></div>`;
+  }
+
+  const courseCtx = {
+    id: course.id,
+    sales_slug: course.sales_slug,
+    name: course.name,
+    sales_headline: course.sales_headline,
+    sales_description: course.sales_description,
+    sales_features: Array.isArray(course.sales_features) ? course.sales_features : (course.sales_features || '').split('\n').filter(Boolean),
+    sales_cta_text: course.sales_cta_text,
+    price_onetime_amount: course.price_onetime_amount,
+    price_subscription_amount: course.price_subscription_amount,
+    image_url: course.image_url,
+  };
+
+  return renderSections(sections, courseCtx);
+}
+
+function renderPurchaseCta(c, courseCtx) {
+  if (!courseCtx) return '<!-- purchase_cta: no course context -->';
+
+  const priceOnetime = courseCtx.price_onetime_amount ? (courseCtx.price_onetime_amount / 100).toFixed(0) : null;
+  const priceSub = courseCtx.price_subscription_amount ? (courseCtx.price_subscription_amount / 100).toFixed(0) : null;
+  const features = courseCtx.sales_features || [];
+  const ctaText = courseCtx.sales_cta_text || 'Jetzt starten';
+  const slug = courseCtx.sales_slug || '';
+
+  return `
+    <section class="pub-purchase-cta">
+      ${c.heading ? `<h2 class="pub-purchase-cta-heading">${esc(c.heading)}</h2>` : ''}
+      ${c.description ? `<p class="pub-purchase-cta-desc">${esc(c.description).replace(/\n/g, '<br>')}</p>` : ''}
+      ${(c.show_features && features.length) ? `
+        <ul class="pub-purchase-cta-features">
+          ${features.map(f => `<li><span class="pub-check">✓</span> ${esc(f)}</li>`).join('')}
+        </ul>
+      ` : ''}
+      <div class="pub-purchase-cta-cards">
+        ${priceOnetime ? `
+          <div class="pub-price-card">
+            <div class="pub-price-label">Einmalzahlung</div>
+            <div class="pub-price-amount">CHF ${priceOnetime}</div>
+            <div class="pub-price-detail">Lebenslanger Zugang</div>
+            <button class="btn btn-primary" data-action="handlePurchase" data-args='["${courseCtx.id}","onetime"]'>${esc(ctaText)}</button>
+          </div>
+        ` : ''}
+        ${priceSub ? `
+          <div class="pub-price-card">
+            <div class="pub-price-label">Monatsabo</div>
+            <div class="pub-price-amount">CHF ${priceSub}<span class="pub-price-period">/Monat</span></div>
+            <div class="pub-price-detail">Jederzeit kündbar</div>
+            <button class="btn btn-secondary" data-action="handlePurchase" data-args='["${courseCtx.id}","subscription"]'>${esc(ctaText)}</button>
+          </div>
+        ` : ''}
+      </div>
+      ${(c.show_preview_link !== false) && slug ? `
+        <p class="pub-purchase-cta-preview">
+          <a href="/kurs/${esc(slug)}/reinhoeren" data-action="__pubNav" data-args='["/kurs/${esc(slug)}/reinhoeren"]' data-prevent>${esc(c.preview_link_text || 'Erst reinhören')}</a>
+        </p>
+      ` : ''}
+    </section>`;
+}
+
+function updateCourseSalesSeo(course, slug) {
+  import('./seo.js').then(m => m.updatePageMeta({
+    title: course.sales_headline || course.name,
+    meta_description: course.sales_description || course.description || '',
+    cover_image: course.image_url || '',
+  }, `/kurs/${slug}`));
 }
 
 // ── Course Preview (Reinhören) ──

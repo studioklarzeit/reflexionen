@@ -168,7 +168,8 @@ const PATH_MAP = {
 export function onNavigate(view, params) {
   let path = PATH_MAP[view] || '';
   if (view === 'publicBlogPost' && params?.slug) path = `/blog/${params.slug}`;
-  if (view === 'publicCoursePreview' && params?.slug) path = `/kurs/${params.slug}`;
+  if (view === 'publicCourseSales' && params?.slug) path = `/kurs/${params.slug}`;
+  if (view === 'publicCoursePreview' && params?.slug) path = `/kurs/${params.slug}/reinhoeren`;
   if (view === 'publicPage' && params?.slug) path = `/seite/${params.slug}`;
   if (view === 'auth') path = '/';
 

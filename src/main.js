@@ -64,7 +64,7 @@ import {
 } from './bulkupload.js';
 import {
   loadPageEditor, savePage, editPage, deletePage, resetPageForm,
-  loadPageSections, addSection, saveSectionFields, editSection, deleteSection,
+  loadPageSections, loadCourseSalesSections, addSection, saveSectionFields, editSection, deleteSection,
   onSectionTypeChange, initPageDragDrop,
   loadBlogEditor, saveBlogPost, editBlogPost, deleteBlogPost, resetBlogForm,
   loadBlogSections, saveBlogSectionFields, editBlogSection, deleteBlogSection,
@@ -142,7 +142,8 @@ window.__pubNav = function(link) {
   const route = CLEAN_NAV[link];
   if (route) { navigateTo(route); return; }
   if (link.startsWith('/blog/')) { navigateTo('publicBlogPost', { slug: link.split('/blog/')[1] }); return; }
-  if (link.startsWith('/kurs/')) { navigateTo('publicCoursePreview', { slug: link.split('/kurs/')[1] }); return; }
+  if (link.match(/^\/kurs\/[^/]+\/reinhoeren$/)) { navigateTo('publicCoursePreview', { slug: link.split('/kurs/')[1].replace('/reinhoeren', '') }); return; }
+  if (link.startsWith('/kurs/')) { navigateTo('publicCourseSales', { slug: link.split('/kurs/')[1] }); return; }
   if (link.startsWith('/seite/')) { navigateTo('publicPage', { slug: link.split('/seite/')[1] }); return; }
   navigateTo(link);
 };
@@ -242,7 +243,7 @@ Object.assign(window, {
   loadSeoEditor: (...a) => import('./seo.js').then(m => m.loadSeoEditor(...a)),
   // Page Builder (CMS)
   loadPageEditor, savePage, editPage, deletePage, resetPageForm,
-  loadPageSections, addSection, saveSectionFields, editSection, deleteSection,
+  loadPageSections, loadCourseSalesSections, addSection, saveSectionFields, editSection, deleteSection,
   onSectionTypeChange, initPageDragDrop,
   loadBlogEditor, saveBlogPost, editBlogPost, deleteBlogPost, resetBlogForm,
   loadBlogSections, saveBlogSectionFields, editBlogSection, deleteBlogSection,
@@ -366,7 +367,8 @@ async function init() {
       const cleanRoute = CLEAN_ROUTES[pathname];
       if (cleanRoute) { navigateTo(cleanRoute); return; }
       if (pathname.startsWith('/blog/')) { navigateTo('publicBlogPost', { slug: pathname.split('/blog/')[1] }); return; }
-      if (pathname.startsWith('/kurs/')) { navigateTo('publicCoursePreview', { slug: pathname.split('/kurs/')[1] }); return; }
+      if (pathname.match(/^\/kurs\/[^/]+\/reinhoeren$/)) { navigateTo('publicCoursePreview', { slug: pathname.split('/kurs/')[1].replace('/reinhoeren', '') }); return; }
+      if (pathname.startsWith('/kurs/')) { navigateTo('publicCourseSales', { slug: pathname.split('/kurs/')[1] }); return; }
       if (pathname.startsWith('/seite/')) { navigateTo('publicPage', { slug: pathname.split('/seite/')[1] }); return; }
 
       // Legacy query params
@@ -434,9 +436,28 @@ new ResizeObserver(() => sendHeight()).observe(document.body);
 
 // ── POPSTATE (browser back/forward for public pages) ──
 
+function routeByPath() {
+  const pathname = location.pathname.replace(/\/+$/, '') || '/';
+  const CLEAN_ROUTES = {
+    '/': 'publicHome', '/about': 'publicAbout', '/kontakt': 'publicContact',
+    '/blog': 'publicBlog', '/datenschutz': 'publicDatenschutz',
+    '/agb': 'publicAgb', '/privacy': 'publicPrivacy',
+  };
+  const cleanRoute = CLEAN_ROUTES[pathname];
+  if (cleanRoute) { navigateTo(cleanRoute); return; }
+  if (pathname.startsWith('/blog/')) { navigateTo('publicBlogPost', { slug: pathname.split('/blog/')[1] }); return; }
+  if (pathname.match(/^\/kurs\/[^/]+\/reinhoeren$/)) { navigateTo('publicCoursePreview', { slug: pathname.split('/kurs/')[1].replace('/reinhoeren', '') }); return; }
+  if (pathname.startsWith('/kurs/')) { navigateTo('publicCourseSales', { slug: pathname.split('/kurs/')[1] }); return; }
+  if (pathname.startsWith('/seite/')) { navigateTo('publicPage', { slug: pathname.split('/seite/')[1] }); return; }
+  navigateTo('publicHome');
+}
+
 window.addEventListener('popstate', (e) => {
   if (e.state?.view) {
     navigateTo(e.state.view, e.state.params);
+  } else {
+    // No state (initial page load URL) — re-route by current path
+    routeByPath();
   }
 });
 

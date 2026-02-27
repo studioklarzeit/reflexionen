@@ -8,6 +8,7 @@ let currentPageId = null;
 let currentBlogId = null;
 let currentSections = [];
 let editingSectionIndex = -1;
+let sectionTarget = null; // { table, dataColumn, id } — target-agnostic section persistence
 
 const SECTION_TYPES = [
   { value: 'hero', label: 'Hero', icon: 'star' },
@@ -43,6 +44,7 @@ function sectionIcon(type) {
     faq: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
     divider: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>',
     spacer: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>',
+    purchase_cta: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>',
   };
   return icons[type] || '';
 }
@@ -50,6 +52,7 @@ function sectionIcon(type) {
 function sectionLabel(type) {
   const blogLabels = { blog_title: 'Titel', blog_subtitle: 'Untertitel', blog_cta: 'Call to Action' };
   if (blogLabels[type]) return blogLabels[type];
+  if (type === 'purchase_cta') return 'Kauf-CTA';
   const t = SECTION_TYPES.find(s => s.value === type);
   return t ? t.label : type;
 }
@@ -191,21 +194,49 @@ export function resetPageForm() {
 // ══════════════════════════════════════
 
 export async function loadPageSections(pageId) {
-  const wrap = document.getElementById('pageSectionsEditor');
-  if (!wrap) return;
-  wrap.style.display = 'block';
-
+  sectionTarget = { table: 'pages', dataColumn: 'sections', id: pageId };
   currentPageId = pageId;
+  await loadSectionsGeneric();
+}
+
+export async function loadCourseSalesSections(courseId) {
+  if (!courseId) {
+    const editId = document.getElementById('editCourseId')?.value;
+    if (!editId) { showToast('Bitte zuerst einen Kurs auswählen.', 'error'); return; }
+    courseId = editId;
+  }
+  // Add purchase_cta option to type select if missing
+  const typeSelect = document.getElementById('sectionTypeSelect');
+  if (typeSelect && !typeSelect.querySelector('option[value="purchase_cta"]')) {
+    const opt = document.createElement('option');
+    opt.value = 'purchase_cta';
+    opt.textContent = 'Kauf-CTA (Preise + Kaufen-Button)';
+    typeSelect.appendChild(opt);
+  }
+  sectionTarget = { table: 'courses', dataColumn: 'sales_sections', id: courseId };
+  currentPageId = courseId; // reuse for section editing state
+  await loadSectionsGeneric();
+}
+
+async function loadSectionsGeneric() {
+  const wrap = document.getElementById('pageSectionsEditor');
+  if (!wrap || !sectionTarget) return;
+  wrap.style.display = 'block';
   editingSectionIndex = -1;
 
-  const { data: page, error } = await sb.from('pages').select('sections').eq('id', pageId).single();
+  const { data, error } = await sb
+    .from(sectionTarget.table)
+    .select(sectionTarget.dataColumn)
+    .eq('id', sectionTarget.id)
+    .single();
+
   if (error) {
-    console.error('loadPageSections:', error);
+    console.error('loadSections:', error);
     showToast('Fehler beim Laden der Sektionen.', 'error');
     return;
   }
 
-  currentSections = Array.isArray(page?.sections) ? page.sections : [];
+  currentSections = Array.isArray(data?.[sectionTarget.dataColumn]) ? data[sectionTarget.dataColumn] : [];
   renderSectionsList();
   resetSectionForm();
 }
@@ -254,6 +285,7 @@ function getSectionPreview(sec) {
     case 'faq': return c.heading || `${(c.items || []).length} Fragen`;
     case 'divider': return 'Trennlinie';
     case 'spacer': return `${c.height || 40}px Abstand`;
+    case 'purchase_cta': return c.heading || 'Kauf-CTA';
     default: return sec.type;
   }
 }
@@ -302,6 +334,7 @@ function renderSectionFields(type, content) {
     faq: renderFaqFields,
     divider: renderDividerFields,
     spacer: renderSpacerFields,
+    purchase_cta: renderPurchaseCtaFields,
   };
 
   const renderer = renderers[type];
@@ -356,7 +389,10 @@ export async function saveSectionFields() {
   // Re-index sort_order
   currentSections.forEach((s, i) => { s.sort_order = i; });
 
-  const { error } = await sb.from('pages').update({ sections: currentSections }).eq('id', currentPageId);
+  const tbl = sectionTarget?.table || 'pages';
+  const col = sectionTarget?.dataColumn || 'sections';
+  const tid = sectionTarget?.id || currentPageId;
+  const { error } = await sb.from(tbl).update({ [col]: currentSections }).eq('id', tid);
   if (error) {
     console.error('saveSectionFields:', error);
     showToast('Fehler beim Speichern.', 'error');
@@ -386,7 +422,10 @@ export async function deleteSection(index) {
   currentSections.splice(index, 1);
   currentSections.forEach((s, i) => { s.sort_order = i; });
 
-  const { error } = await sb.from('pages').update({ sections: currentSections }).eq('id', currentPageId);
+  const tbl = sectionTarget?.table || 'pages';
+  const col = sectionTarget?.dataColumn || 'sections';
+  const tid = sectionTarget?.id || currentPageId;
+  const { error } = await sb.from(tbl).update({ [col]: currentSections }).eq('id', tid);
   if (error) {
     console.error('deleteSection:', error);
     showToast('Fehler beim Loeschen.', 'error');
@@ -486,6 +525,14 @@ function readSectionContent(type) {
       return {};
     case 'spacer':
       return { height: parseInt(val('pbSpacerHeight'), 10) || 40 };
+    case 'purchase_cta':
+      return {
+        heading: val('pbPurchaseCtaHeading'),
+        description: val('pbPurchaseCtaDesc'),
+        show_features: document.getElementById('pbPurchaseCtaShowFeatures')?.checked || false,
+        show_preview_link: document.getElementById('pbPurchaseCtaShowPreview')?.checked || false,
+        preview_link_text: val('pbPurchaseCtaPreviewText'),
+      };
     default:
       return {};
   }
@@ -732,6 +779,30 @@ function renderSpacerFields(content) {
       <label class="form-label">Hoehe (px)</label>
       <input type="number" class="form-input" id="pbSpacerHeight" value="${content.height || 40}" min="0" max="500" placeholder="40">
     </div>
+  `;
+}
+
+function renderPurchaseCtaFields(content) {
+  return `
+    <div class="form-group">
+      <label class="form-label">Überschrift</label>
+      <input type="text" class="form-input" id="pbPurchaseCtaHeading" value="${esc(content.heading || '')}" placeholder="z.B. Jetzt starten">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Beschreibung (optional)</label>
+      <textarea class="form-textarea" id="pbPurchaseCtaDesc" rows="3" placeholder="Optionaler Text über den Preiskarten">${esc(content.description || '')}</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-check"><input type="checkbox" id="pbPurchaseCtaShowFeatures" ${content.show_features ? 'checked' : ''}><span>Kurs-Features anzeigen</span></label>
+    </div>
+    <div class="form-group">
+      <label class="form-check"><input type="checkbox" id="pbPurchaseCtaShowPreview" ${content.show_preview_link !== false ? 'checked' : ''}><span>Reinhören-Link anzeigen</span></label>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Link-Text (Reinhören)</label>
+      <input type="text" class="form-input" id="pbPurchaseCtaPreviewText" value="${esc(content.preview_link_text || 'Erst reinhören')}" placeholder="z.B. Erst reinhören">
+    </div>
+    <p style="font-size:var(--font-size-p3);color:var(--text-muted);font-style:italic;margin-top:8px;">Preise und Kurs-Details werden automatisch aus den Kurs-Einstellungen übernommen.</p>
   `;
 }
 
@@ -1248,7 +1319,10 @@ function initSectionDragDrop() {
     const reordered = orderedIds.map(idx => currentSections[parseInt(idx, 10)]);
     reordered.forEach((s, i) => { s.sort_order = i; });
     currentSections = reordered;
-    const { error } = await sb.from('pages').update({ sections: currentSections }).eq('id', currentPageId);
+    const tbl = sectionTarget?.table || 'pages';
+    const col = sectionTarget?.dataColumn || 'sections';
+    const tid = sectionTarget?.id || currentPageId;
+    const { error } = await sb.from(tbl).update({ [col]: currentSections }).eq('id', tid);
     if (error) {
       console.error('section reorder:', error);
       showToast('Fehler beim Sortieren.', 'error');

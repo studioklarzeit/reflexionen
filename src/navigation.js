@@ -65,8 +65,8 @@ export function navigateTo(view, params) {
   const delay = oldView && !hide ? 150 : 0;
 
   setTimeout(async () => {
-    // Stop preview audio if leaving course preview
-    if (state.currentView === 'publicCoursePreview' && view !== 'publicCoursePreview') {
+    // Stop preview audio if leaving course views
+    if ((state.currentView === 'publicCoursePreview' || state.currentView === 'publicCourseSales') && view !== 'publicCoursePreview' && view !== 'publicCourseSales') {
       import('./public.js').then(m => m.stopPreviewAudio?.());
     }
 
@@ -240,6 +240,12 @@ export function navigateTo(view, params) {
         renderBlogPost(params.slug);
         break;
       }
+      case 'publicCourseSales': {
+        const { renderCourseSalesPage } = await import('./public.js');
+        document.getElementById('viewPublicCourseSales').classList.add('active');
+        renderCourseSalesPage(params.slug);
+        break;
+      }
       case 'publicCoursePreview': {
         const { renderCoursePreview } = await import('./public.js');
         document.getElementById('viewPublicCoursePreview').classList.add('active');
@@ -288,7 +294,8 @@ export function navigateTo(view, params) {
   };
   let pushPath = PUSH_MAP[view] || '';
   if (view === 'publicBlogPost' && params?.slug) pushPath = `/blog/${params.slug}`;
-  if (view === 'publicCoursePreview' && params?.slug) pushPath = `/kurs/${params.slug}`;
+  if (view === 'publicCourseSales' && params?.slug) pushPath = `/kurs/${params.slug}`;
+  if (view === 'publicCoursePreview' && params?.slug) pushPath = `/kurs/${params.slug}/reinhoeren`;
   if (view === 'publicPage' && params?.slug) pushPath = `/seite/${params.slug}`;
 
   if (pushPath && location.pathname !== pushPath) {

@@ -186,6 +186,9 @@ export function editCourse(id) {
   document.getElementById('coursePriceSubscription').value = c.price_subscription_amount ? (c.price_subscription_amount / 100).toFixed(2) : '';
   document.getElementById('courseStripePriceSubscription').value = c.stripe_price_id_subscription || '';
   toggleCourseSalesFields();
+  // Hide sections editor when switching to a different course
+  const sectionsEditor = document.getElementById('pageSectionsEditor');
+  if (sectionsEditor) sectionsEditor.style.display = 'none';
   document.getElementById('courseNameInput').focus();
 }
 
@@ -222,6 +225,9 @@ export function resetCourseForm() {
   document.getElementById('coursePriceSubscription').value = '';
   document.getElementById('courseStripePriceSubscription').value = '';
   toggleCourseSalesFields();
+  // Hide sections editor
+  const sectionsEditor = document.getElementById('pageSectionsEditor');
+  if (sectionsEditor) sectionsEditor.style.display = 'none';
 }
 
 export function toggleCourseSalesFields() {

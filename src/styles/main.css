@@ -2081,6 +2081,37 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
   .preview-price-card { max-width: 100%; min-width: 0; width: 100%; }
 }
 
+/* ═══ PURCHASE CTA (Sales Page) ═══ */
+.pub-purchase-cta { max-width: 800px; margin: 0 auto; text-align: center; padding: 40px 24px; }
+.pub-purchase-cta-heading { font-family: var(--font-heading); font-size: var(--font-size-h2); color: var(--text); margin-bottom: 16px; }
+.pub-purchase-cta-desc { font-size: var(--font-size-p1); color: var(--text-muted); max-width: 600px; margin: 0 auto 28px; line-height: 1.6; }
+.pub-purchase-cta-features { list-style: none; padding: 0; margin: 0 auto 32px; max-width: 420px; text-align: left; }
+.pub-purchase-cta-features li { padding: 6px 0; font-size: var(--font-size-p2); color: var(--text); display: flex; gap: 8px; align-items: baseline; }
+.pub-check { color: var(--accent-warm); font-weight: bold; flex-shrink: 0; }
+.pub-purchase-cta-cards { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+.pub-price-card {
+  background: var(--card); border: 1px solid var(--border-light); border-radius: 16px;
+  padding: 32px 28px; min-width: 240px; max-width: 300px; flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.pub-price-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+.pub-price-amount { font-family: var(--font-heading); font-size: 36px; color: var(--text); }
+.pub-price-period { font-size: 16px; color: var(--text-muted); }
+.pub-price-detail { font-size: var(--font-size-p3); color: var(--text-muted); margin-bottom: 12px; }
+.pub-price-card .btn { width: 100%; }
+.pub-purchase-cta-preview { margin-top: 12px; }
+.pub-purchase-cta-preview a {
+  color: var(--accent-warm); text-decoration: underline; font-size: var(--font-size-p2);
+  transition: opacity 0.2s;
+}
+.pub-purchase-cta-preview a:hover { opacity: 0.7; }
+
+@media (max-width: 700px) {
+  .pub-purchase-cta { padding: 28px 16px; }
+  .pub-purchase-cta-cards { flex-direction: column; align-items: center; }
+  .pub-price-card { max-width: 100%; min-width: 0; width: 100%; }
+}
+
 /* ═══ WÖCHENTLICHER IMPULS ═══ */
 .weekly-impulse {
   background: linear-gradient(145deg, var(--card) 0%, var(--beige) 100%);
