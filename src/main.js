@@ -435,13 +435,7 @@ async function init() {
       }
     } else {
       if (state.pendingInvite) showToast('Bitte melde dich an, um den Einladungslink einzulösen.');
-      // If on root "/" with no special params, show public home
-      const hasLoginParam = urlParams.get('login');
-      if (!state.pendingInvite && !hasLoginParam && pathname === '/') {
-        navigateTo('publicHome');
-      } else {
-        navigateTo('auth');
-      }
+      navigateTo('auth');
     }
   } catch (e) {
     console.error(e);
