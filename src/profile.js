@@ -35,13 +35,17 @@ export async function renderProfile() {
   // ── 3. Meine Angaben ──
   const detailsHtml = renderMyDetails(user, profile);
 
-  // ── 4. Gefahrenbereich ──
+  // ── 4. Einstellungen ──
+  const settingsHtml = renderSettings();
+
+  // ── 5. Gefahrenbereich ──
   const dangerHtml = renderDangerZone();
 
   container.innerHTML = `
     ${coursesHtml}
     ${billingHtml}
     ${detailsHtml}
+    ${settingsHtml}
 
     <div class="profile-danger-zone">
       ${dangerHtml}
@@ -202,7 +206,47 @@ function renderMyDetails(user, profile) {
 }
 
 // ══════════════════════════════════════
-// 4. GEFAHRENBEREICH
+// 4. EINSTELLUNGEN
+// ══════════════════════════════════════
+
+function renderSettings() {
+  const key = 'klarzeit_impulse_muted_' + (state.currentUser?.id || '');
+  const until = parseInt(localStorage.getItem(key));
+  const isMuted = until && Date.now() < until;
+
+  return `
+    <div class="profile-section">
+      <h3>Einstellungen</h3>
+      <div class="profile-setting-row">
+        <div class="profile-setting-info">
+          <strong>Impuls der Woche</strong>
+          <span>Zeigt nach dem Login den wöchentlichen Impuls an.</span>
+        </div>
+        <label class="profile-toggle">
+          <input type="checkbox" id="impulseToggle" ${isMuted ? '' : 'checked'} data-change="toggleImpulseSetting">
+          <span class="profile-toggle-slider"></span>
+        </label>
+      </div>
+    </div>`;
+}
+
+export function toggleImpulseSetting() {
+  const checkbox = document.getElementById('impulseToggle');
+  if (!checkbox) return;
+  const key = 'klarzeit_impulse_muted_' + (state.currentUser?.id || '');
+  if (checkbox.checked) {
+    // Impuls aktivieren → Mute entfernen
+    localStorage.removeItem(key);
+    showToast('Impuls der Woche aktiviert.');
+  } else {
+    // Impuls deaktivieren → Mute setzen (10 Jahre = praktisch permanent)
+    localStorage.setItem(key, String(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000));
+    showToast('Impuls der Woche deaktiviert.');
+  }
+}
+
+// ══════════════════════════════════════
+// 5. GEFAHRENBEREICH
 // ══════════════════════════════════════
 
 function renderDangerZone() {

@@ -88,6 +88,7 @@ import {
   handleChangePassword,
   openStripePortal,
   saveProfileDetails,
+  toggleImpulseSetting,
 } from './profile.js';
 import {
   switchAdminTab, toggleAdminGroup, saveCourse, editCourse, deleteCourse, resetCourseForm, toggleCourseSalesFields, populateParentCourseSelect,
@@ -171,7 +172,7 @@ Object.assign(window, {
   // Profile
   openDeleteAnswersModal, closeDeleteAnswersModal, onDeleteConfirmInput, confirmDeleteAllAnswers,
   openDeleteAccountModal, closeDeleteAccountModal, onDeleteAccountConfirmInput, confirmDeleteAccount,
-  handleChangePassword, openStripePortal, saveProfileDetails,
+  handleChangePassword, openStripePortal, saveProfileDetails, toggleImpulseSetting,
   // Admin
   switchAdminTab, toggleAdminGroup, saveCourse, editCourse, deleteCourse, resetCourseForm, toggleCourseSalesFields, populateParentCourseSelect,
   saveChapter, editChapter, deleteChapter, resetChapterForm, handleChapterAudioSelect, toggleChapterOnlineFields,
