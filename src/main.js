@@ -142,6 +142,7 @@ window.__pubNav = function(link) {
   const route = CLEAN_NAV[link];
   if (route) { navigateTo(route); return; }
   if (link.startsWith('/blog/')) { navigateTo('publicBlogPost', { slug: link.split('/blog/')[1] }); return; }
+  if (link.startsWith('/kurs/')) { navigateTo('publicCoursePreview', { slug: link.split('/kurs/')[1] }); return; }
   if (link.startsWith('/seite/')) { navigateTo('publicPage', { slug: link.split('/seite/')[1] }); return; }
   navigateTo(link);
 };
@@ -233,6 +234,9 @@ Object.assign(window, {
   markChapterCompleteAndNext: (...a) => import('./courseplayer.js').then(m => m.markChapterCompleteAndNext(...a)),
   // Sales (lazy loaded)
   handlePurchase: (...a) => import('./sales.js').then(m => m.handlePurchase(...a)),
+  // Course Preview audio (lazy loaded)
+  togglePreviewAudio: (...a) => import('./public.js').then(m => m.togglePreviewAudio(...a)),
+  seekPreviewAudio: (...a) => import('./public.js').then(m => m.seekPreviewAudio(...a)),
   // SEO & Tracking (lazy loaded)
   saveSeoSettings: (...a) => import('./seo.js').then(m => m.saveSeoSettings(...a)),
   loadSeoEditor: (...a) => import('./seo.js').then(m => m.loadSeoEditor(...a)),
@@ -362,6 +366,7 @@ async function init() {
       const cleanRoute = CLEAN_ROUTES[pathname];
       if (cleanRoute) { navigateTo(cleanRoute); return; }
       if (pathname.startsWith('/blog/')) { navigateTo('publicBlogPost', { slug: pathname.split('/blog/')[1] }); return; }
+      if (pathname.startsWith('/kurs/')) { navigateTo('publicCoursePreview', { slug: pathname.split('/kurs/')[1] }); return; }
       if (pathname.startsWith('/seite/')) { navigateTo('publicPage', { slug: pathname.split('/seite/')[1] }); return; }
 
       // Legacy query params

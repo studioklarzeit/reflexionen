@@ -65,6 +65,11 @@ export function navigateTo(view, params) {
   const delay = oldView && !hide ? 150 : 0;
 
   setTimeout(async () => {
+    // Stop preview audio if leaving course preview
+    if (state.currentView === 'publicCoursePreview' && view !== 'publicCoursePreview') {
+      import('./public.js').then(m => m.stopPreviewAudio?.());
+    }
+
     document.querySelectorAll('.view').forEach((v) => {
       if (!v.classList.contains('view-exit')) v.classList.remove('active');
     });
@@ -235,6 +240,12 @@ export function navigateTo(view, params) {
         renderBlogPost(params.slug);
         break;
       }
+      case 'publicCoursePreview': {
+        const { renderCoursePreview } = await import('./public.js');
+        document.getElementById('viewPublicCoursePreview').classList.add('active');
+        renderCoursePreview(params.slug);
+        break;
+      }
       case 'publicDatenschutz': {
         const { renderPublicPage } = await import('./public.js');
         document.getElementById('viewPublicPage').classList.add('active');
@@ -277,6 +288,7 @@ export function navigateTo(view, params) {
   };
   let pushPath = PUSH_MAP[view] || '';
   if (view === 'publicBlogPost' && params?.slug) pushPath = `/blog/${params.slug}`;
+  if (view === 'publicCoursePreview' && params?.slug) pushPath = `/kurs/${params.slug}`;
   if (view === 'publicPage' && params?.slug) pushPath = `/seite/${params.slug}`;
 
   if (pushPath && location.pathname !== pushPath) {

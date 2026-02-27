@@ -1,4 +1,4 @@
-var CACHE_NAME = 'klarzeit-cache-v4';
+var CACHE_NAME = 'klarzeit-cache-v5';
 var STATIC_URLS = [
   'https://fonts.googleapis.com/css2?family=Marcellus&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap'
 ];

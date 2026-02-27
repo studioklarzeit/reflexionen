@@ -389,6 +389,251 @@ function buildBlogPostHtml(post) {
     </article>`;
 }
 
+// ── Course Preview (Reinhören) ──
+
+let coursePreviewCache = {};
+let previewAudio = null;
+let previewProgressInterval = null;
+
+function formatTime(sec) {
+  if (!sec || !isFinite(sec)) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
+export async function renderCoursePreview(slug) {
+  const container = document.getElementById('viewPublicCoursePreview');
+  if (!container) return;
+
+  // Stop any existing preview audio
+  stopPreviewAudio();
+
+  // Check cache
+  if (coursePreviewCache[slug]) {
+    container.innerHTML = buildCoursePreviewHtml(coursePreviewCache[slug]);
+    initPreviewAudio(coursePreviewCache[slug].chapter);
+    updatePreviewSeo(coursePreviewCache[slug], slug);
+    return;
+  }
+
+  container.innerHTML = '<div class="pub-loading">Laden ...</div>';
+
+  // Use RPC function to bypass RLS (chapters of purchasable courses are hidden for anon)
+  const { data: preview, error: rpcErr } = await sb.rpc('get_course_preview', { slug_param: slug });
+
+  if (rpcErr || !preview?.course) {
+    container.innerHTML = `<div class="pub-not-found"><h2>Kurs nicht gefunden</h2><p>Der angeforderte Kurs ist nicht verf&uuml;gbar.</p></div>`;
+    return;
+  }
+
+  if (!preview.chapter) {
+    container.innerHTML = `<div class="pub-not-found"><h2>Vorschau nicht verf&uuml;gbar</h2><p>F&uuml;r diesen Kurs ist noch keine Vorschau vorhanden.</p></div>`;
+    return;
+  }
+
+  const previewData = {
+    course: preview.course,
+    chapter: preview.chapter,
+    blocks: preview.blocks || [],
+    totalChapters: preview.total_chapters || 0,
+  };
+  coursePreviewCache[slug] = previewData;
+
+  container.innerHTML = buildCoursePreviewHtml(previewData);
+  initPreviewAudio(previewData.chapter);
+  updatePreviewSeo(previewData, slug);
+}
+
+function buildCoursePreviewHtml({ course, chapter, blocks, totalChapters }) {
+  const c = course;
+  const heroImg = chapter.image_url || c.image_url || '';
+  const dur = chapter.audio_duration_seconds ? formatTime(chapter.audio_duration_seconds) : '';
+
+  // Chapter content blocks
+  const contentHtml = blocks.length ? blocks.map(block => {
+    const txt = block.content || '';
+    switch (block.type) {
+      case 'heading':    return `<div class="content-block content-heading">${esc(txt)}</div>`;
+      case 'subheading': return `<div class="content-block content-subheading">${esc(txt)}</div>`;
+      case 'text':       return `<div class="content-block content-text">${esc(txt).replace(/\n/g, '<br>')}</div>`;
+      case 'text_italic': return `<div class="content-block content-text"><em>${esc(txt).replace(/\n/g, '<br>')}</em></div>`;
+      case 'text_bold':  return `<div class="content-block content-text"><strong>${esc(txt).replace(/\n/g, '<br>')}</strong></div>`;
+      case 'quote':      return `<div class="content-block content-quote">\u00AB${esc(txt)}\u00BB</div>`;
+      case 'divider':    return `<div class="content-block content-divider"><span>\u00b7 \u00b7 \u00b7</span></div>`;
+      case 'image':      return `<div class="content-block content-image"><img src="${esc(txt)}" alt="" loading="lazy"></div>`;
+      default:           return '';
+    }
+  }).join('') : (chapter.chapter_text ? chapter.chapter_text.split('\n\n').map(p => p.trim()).filter(Boolean).map(p => {
+    if (p.startsWith('### ')) return `<h4>${esc(p.slice(4))}</h4>`;
+    if (p.startsWith('## '))  return `<h3>${esc(p.slice(3))}</h3>`;
+    if (p.startsWith('# '))   return `<h2>${esc(p.slice(2))}</h2>`;
+    if (p.startsWith('> '))   return `<blockquote>${esc(p.slice(2))}</blockquote>`;
+    if (p.startsWith('---'))  return '<hr>';
+    return `<p>${esc(p).replace(/\n/g, '<br>')}</p>`;
+  }).join('') : '');
+
+  // Pricing
+  const priceOnetime = c.price_onetime_amount ? (c.price_onetime_amount / 100).toFixed(0) : null;
+  const priceSub = c.price_subscription_amount ? (c.price_subscription_amount / 100).toFixed(0) : null;
+  const features = c.sales_features || [];
+
+  return `
+    <div class="preview-page">
+      <div class="preview-back">
+        <a href="/" data-action="__pubNav" data-args='["/"]' data-prevent>&larr; Zur&uuml;ck</a>
+      </div>
+
+      ${heroImg ? `
+        <div class="preview-hero">
+          <img src="${esc(heroImg)}" alt="${esc(chapter.name)}" loading="lazy">
+          <div class="preview-hero-overlay">
+            <span class="preview-hero-eyebrow">Reinh&ouml;ren &middot; Kapitel 1 von ${totalChapters}</span>
+            <h1 class="preview-hero-title">${esc(chapter.name)}</h1>
+          </div>
+        </div>
+      ` : `
+        <div class="preview-header">
+          <span class="preview-hero-eyebrow">Reinh&ouml;ren &middot; Kapitel 1 von ${totalChapters}</span>
+          <h1 class="preview-hero-title">${esc(chapter.name)}</h1>
+        </div>
+      `}
+
+      ${chapter.audio_url ? `
+        <div class="preview-audio">
+          <div class="preview-audio-player">
+            <button class="preview-audio-play" id="previewPlayBtn" data-action="togglePreviewAudio">
+              <svg id="previewPlayIcon" viewBox="0 0 24 24" fill="currentColor" stroke="none" width="24" height="24"><polygon points="5,3 19,12 5,21"/></svg>
+            </button>
+            <div class="preview-audio-track" data-action="seekPreviewAudio" data-ev>
+              <div class="preview-audio-progress" id="previewProgress"></div>
+            </div>
+            <div class="preview-audio-time">
+              <span id="previewCurrentTime">0:00</span> / <span id="previewTotalTime">${dur || '--:--'}</span>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      ${contentHtml ? `
+        <div class="preview-content">
+          <div class="chapter-text-content">${contentHtml}</div>
+        </div>
+      ` : ''}
+
+      <div class="preview-cta">
+        <div class="preview-cta-inner">
+          <h2 class="preview-cta-heading">Dir gef&auml;llt, was du h&ouml;rst?</h2>
+          <p class="preview-cta-sub">${esc(c.sales_headline || c.name)}</p>
+          ${c.sales_description ? `<p class="preview-cta-desc">${nl2br(esc(c.sales_description))}</p>` : ''}
+
+          ${features.length ? `
+            <ul class="preview-cta-features">
+              ${features.map(f => `<li><span class="preview-check">&check;</span> ${esc(f)}</li>`).join('')}
+            </ul>
+          ` : ''}
+
+          <div class="preview-cta-cards">
+            ${priceOnetime ? `
+              <div class="preview-price-card">
+                <div class="preview-price-label">Einmalzahlung</div>
+                <div class="preview-price-amount">CHF ${priceOnetime}</div>
+                <div class="preview-price-detail">Lebenslanger Zugang</div>
+                <button class="btn btn-primary" data-action="handlePurchase" data-args='["${c.id}","onetime"]'>${esc(c.sales_cta_text || 'Jetzt starten')}</button>
+              </div>
+            ` : ''}
+            ${priceSub ? `
+              <div class="preview-price-card">
+                <div class="preview-price-label">Monatsabo</div>
+                <div class="preview-price-amount">CHF ${priceSub}<span class="preview-price-period">/Monat</span></div>
+                <div class="preview-price-detail">Jederzeit k&uuml;ndbar</div>
+                <button class="btn btn-secondary" data-action="handlePurchase" data-args='["${c.id}","subscription"]'>${esc(c.sales_cta_text || 'Jetzt starten')}</button>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ── Preview Audio ──
+
+function initPreviewAudio(chapter) {
+  stopPreviewAudio();
+  if (!chapter.audio_url) return;
+
+  previewAudio = new Audio(chapter.audio_url);
+  previewAudio.preload = 'auto';
+
+  previewAudio.addEventListener('loadedmetadata', () => {
+    const tt = document.getElementById('previewTotalTime');
+    if (tt) tt.textContent = formatTime(previewAudio.duration);
+  });
+
+  previewAudio.addEventListener('ended', () => {
+    updatePreviewPlayIcon(false);
+    clearInterval(previewProgressInterval);
+  });
+}
+
+export function togglePreviewAudio() {
+  if (!previewAudio) return;
+  if (previewAudio.paused) {
+    previewAudio.play();
+    updatePreviewPlayIcon(true);
+    previewProgressInterval = setInterval(updatePreviewProgress, 250);
+  } else {
+    previewAudio.pause();
+    updatePreviewPlayIcon(false);
+    clearInterval(previewProgressInterval);
+  }
+}
+
+export function seekPreviewAudio(event) {
+  if (!previewAudio || !isFinite(previewAudio.duration)) return;
+  const wrap = event.currentTarget;
+  const rect = wrap.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  previewAudio.currentTime = pct * previewAudio.duration;
+  updatePreviewProgress();
+}
+
+export function stopPreviewAudio() {
+  if (previewAudio) {
+    previewAudio.pause();
+    previewAudio = null;
+  }
+  clearInterval(previewProgressInterval);
+  previewProgressInterval = null;
+}
+
+function updatePreviewPlayIcon(isPlaying) {
+  const icon = document.getElementById('previewPlayIcon');
+  if (!icon) return;
+  icon.innerHTML = isPlaying
+    ? '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'
+    : '<polygon points="5,3 19,12 5,21"/>';
+}
+
+function updatePreviewProgress() {
+  if (!previewAudio || !isFinite(previewAudio.duration)) return;
+  const pct = (previewAudio.currentTime / previewAudio.duration) * 100;
+  const bar = document.getElementById('previewProgress');
+  if (bar) bar.style.width = pct + '%';
+  const ct = document.getElementById('previewCurrentTime');
+  if (ct) ct.textContent = formatTime(previewAudio.currentTime);
+}
+
+function updatePreviewSeo(data, slug) {
+  const { course, chapter } = data;
+  import('./seo.js').then(m => m.updatePageMeta({
+    title: `Reinhören: ${course.sales_headline || course.name}`,
+    meta_description: course.sales_description || course.description || '',
+    cover_image: chapter.image_url || course.image_url || '',
+  }, `/kurs/${slug}`));
+}
+
 // ── Contact ──
 
 export function renderPublicContact() {

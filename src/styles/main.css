@@ -1941,6 +1941,146 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
 }
 .impulse-splash-mute:hover { opacity: 1; }
 
+/* ═══ COURSE PREVIEW (Reinhören) ═══ */
+.preview-page { max-width: 760px; margin: 0 auto; padding: 32px 24px 80px; }
+.preview-back { margin-bottom: 20px; }
+.preview-back a {
+  font-family: var(--font-body); font-size: 14px;
+  color: var(--text-muted); text-decoration: none; transition: color 0.2s;
+}
+.preview-back a:hover { color: var(--text); }
+
+/* Hero */
+.preview-hero {
+  position: relative; border-radius: 16px; overflow: hidden; margin-bottom: 32px;
+  aspect-ratio: 16 / 7;
+}
+.preview-hero img { width: 100%; height: 100%; object-fit: cover; }
+.preview-hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 28px 32px;
+}
+.preview-hero-eyebrow {
+  font-family: var(--font-body); font-size: 12px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(255,255,255,0.8); margin-bottom: 6px;
+}
+.preview-hero-title {
+  font-family: var(--font-heading); font-size: clamp(1.4rem, 4vw, 2rem);
+  color: #fff; font-weight: 400; letter-spacing: -0.01em; line-height: 1.3;
+}
+.preview-header { margin-bottom: 28px; }
+.preview-header .preview-hero-eyebrow {
+  color: var(--text-muted); display: block; margin-bottom: 8px;
+}
+.preview-header .preview-hero-title {
+  color: var(--text); font-family: var(--font-heading);
+  font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 400;
+}
+
+/* Audio Player */
+.preview-audio { margin-bottom: 36px; }
+.preview-audio-player {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border: 1px solid var(--border-light);
+  border-radius: 12px; padding: 14px 18px;
+}
+.preview-audio-play {
+  flex-shrink: 0; width: 44px; height: 44px;
+  border-radius: 50%; border: none; cursor: pointer;
+  background: var(--accent-dark); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s;
+}
+.preview-audio-play:hover { transform: scale(1.08); }
+.preview-audio-track {
+  flex: 1; height: 6px; background: var(--border-light);
+  border-radius: 3px; cursor: pointer; position: relative; overflow: hidden;
+}
+.preview-audio-progress {
+  position: absolute; inset: 0; right: auto; width: 0%;
+  background: var(--accent-dark); border-radius: 3px; transition: width 0.15s linear;
+}
+.preview-audio-time {
+  flex-shrink: 0; font-family: var(--font-body); font-size: 13px;
+  color: var(--text-muted); white-space: nowrap;
+}
+
+/* Content */
+.preview-content { margin-bottom: 48px; }
+
+/* CTA Section */
+.preview-cta {
+  margin-top: 48px; padding-top: 48px;
+  border-top: 1px solid var(--border-light);
+}
+.preview-cta-inner { text-align: center; }
+.preview-cta-heading {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--text); margin-bottom: 12px;
+  letter-spacing: -0.02em; font-weight: 400;
+}
+.preview-cta-sub {
+  font-family: var(--font-heading); font-size: 1.1rem;
+  color: var(--text-muted); margin-bottom: 8px;
+}
+.preview-cta-desc {
+  font-family: var(--font-body); font-size: 0.95rem;
+  color: var(--text-light); max-width: 560px;
+  margin: 0 auto 28px; line-height: 1.7;
+}
+.preview-cta-features {
+  list-style: none; padding: 0; text-align: left;
+  max-width: 440px; margin: 0 auto 36px;
+}
+.preview-cta-features li {
+  padding: 8px 0; font-family: var(--font-body);
+  color: var(--text); font-size: 0.95rem;
+}
+.preview-check {
+  color: var(--accent-olive); font-weight: bold; margin-right: 8px;
+}
+
+/* Price Cards */
+.preview-cta-cards {
+  display: flex; gap: 20px; justify-content: center;
+  flex-wrap: wrap; margin-top: 8px;
+}
+.preview-price-card {
+  flex: 1; min-width: 220px; max-width: 280px;
+  background: var(--card); border: 1px solid var(--border-light);
+  border-radius: 16px; padding: 28px 24px;
+  text-align: center;
+}
+.preview-price-label {
+  font-family: var(--font-body); font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-muted); margin-bottom: 10px;
+}
+.preview-price-amount {
+  font-family: var(--font-heading); font-size: 2rem;
+  color: var(--text); margin-bottom: 4px; font-weight: 400;
+}
+.preview-price-period {
+  font-size: 0.9rem; color: var(--text-muted);
+}
+.preview-price-detail {
+  font-family: var(--font-body); font-size: 13px;
+  color: var(--text-light); margin-bottom: 20px;
+}
+.preview-price-card .btn { width: 100%; }
+
+@media (max-width: 700px) {
+  .preview-page { padding: 20px 16px 60px; }
+  .preview-hero { aspect-ratio: 16 / 9; border-radius: 12px; }
+  .preview-hero-overlay { padding: 20px; }
+  .preview-cta { margin-top: 36px; padding-top: 36px; }
+  .preview-cta-cards { flex-direction: column; align-items: center; }
+  .preview-price-card { max-width: 100%; min-width: 0; width: 100%; }
+}
+
 /* ═══ WÖCHENTLICHER IMPULS ═══ */
 .weekly-impulse {
   background: linear-gradient(145deg, var(--card) 0%, var(--beige) 100%);
