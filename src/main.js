@@ -119,8 +119,31 @@ import {
   resetChapterContentForm, renderAdminChapterContent,
 } from './admin.js';
 
-// Note: Public website (publicHome, publicAbout, etc.) runs on www.studioklarzeit.ch (Squarespace)
-// This app on app.studioklarzeit.ch only serves the authenticated app experience.
+// ── Public mobile nav toggle ──
+function togglePublicMobileNav() {
+  const nav = document.getElementById('publicMobileNav');
+  if (nav) nav.classList.toggle('open');
+}
+window.togglePublicMobileNav = togglePublicMobileNav;
+
+// Public nav link helper (used by public.js CTA sections)
+window.__pubNav = function(link) {
+  if (!link) return;
+  if (link.startsWith('http') || link.startsWith('//')) {
+    window.open(link, '_blank');
+    return;
+  }
+  const CLEAN_NAV = {
+    '/': 'publicHome', '/about': 'publicAbout', '/kontakt': 'publicContact',
+    '/blog': 'publicBlog', '/datenschutz': 'publicDatenschutz',
+    '/agb': 'publicAgb', '/privacy': 'publicPrivacy',
+  };
+  const route = CLEAN_NAV[link];
+  if (route) { navigateTo(route); return; }
+  if (link.startsWith('/blog/')) { navigateTo('publicBlogPost', { slug: link.split('/blog/')[1] }); return; }
+  if (link.startsWith('/seite/')) { navigateTo('publicPage', { slug: link.split('/seite/')[1] }); return; }
+  navigateTo(link);
+};
 
 // ── Dark mode dock icon helper (legacy, kept for mobile drawer) ──
 function updateDockDarkIcon() {}
@@ -283,6 +306,7 @@ async function init() {
     state.pendingStripeSuccess = stripeCourseId;
   }
 
+  // ── Password recovery ──
   const hash = location.hash;
   if (hash && hash.includes('type=recovery')) {
     const { data } = await sb.auth.getSession();
@@ -293,10 +317,13 @@ async function init() {
     }
   }
 
+  // ── Auth check ──
   try {
     const { data: { session }, error } = await sb.auth.getSession();
     if (error) { navigateTo('auth'); return; }
+
     if (session && session.user) {
+      // ── LOGGED IN → App ──
       state.currentUser = session.user;
       document.getElementById('loadingText').textContent = 'Daten werden geladen …';
       try {
@@ -312,8 +339,47 @@ async function init() {
         navigateTo('courses');
       }
     } else {
-      if (state.pendingInvite) showToast('Bitte melde dich an, um den Einladungslink einzulösen.');
-      navigateTo('auth');
+      // ── NOT LOGGED IN → Public website or Auth ──
+      if (state.pendingInvite || urlParams.get('login')) {
+        if (state.pendingInvite) showToast('Bitte melde dich an, um den Einladungslink einzulösen.');
+        navigateTo('auth');
+        return;
+      }
+
+      // 404.html fallback: recover original path
+      const fallbackPath = urlParams.get('__path');
+      if (fallbackPath) history.replaceState(null, '', fallbackPath);
+
+      const pathname = (fallbackPath || location.pathname).replace(/\/+$/, '') || '/';
+
+      // Clean URL routing for public pages
+      const CLEAN_ROUTES = {
+        '/': 'publicHome', '/about': 'publicAbout', '/kontakt': 'publicContact',
+        '/blog': 'publicBlog', '/datenschutz': 'publicDatenschutz',
+        '/agb': 'publicAgb', '/privacy': 'publicPrivacy',
+      };
+      const cleanRoute = CLEAN_ROUTES[pathname];
+      if (cleanRoute) { navigateTo(cleanRoute); return; }
+      if (pathname.startsWith('/blog/')) { navigateTo('publicBlogPost', { slug: pathname.split('/blog/')[1] }); return; }
+      if (pathname.startsWith('/seite/')) { navigateTo('publicPage', { slug: pathname.split('/seite/')[1] }); return; }
+
+      // Legacy query params
+      const publicPage = urlParams.get('seite');
+      if (publicPage) {
+        const pubRoutes = { home:'publicHome', about:'publicAbout', kontakt:'publicContact', blog:'publicBlog', datenschutz:'publicDatenschutz', agb:'publicAgb', privacy:'publicPrivacy' };
+        navigateTo(pubRoutes[publicPage] || 'publicPage', pubRoutes[publicPage] ? undefined : { slug: publicPage });
+        return;
+      }
+      const blogSlug = urlParams.get('blog');
+      if (blogSlug) { navigateTo('publicBlogPost', { slug: blogSlug }); return; }
+
+      // Sales pages (accessible without login)
+      const salesSlug = urlParams.get('kurs');
+      if (salesSlug) { navigateTo('salesDetail', { slug: salesSlug }); return; }
+      if (urlParams.get('kurse') === '1') { navigateTo('salesOverview'); return; }
+
+      // Default: public home
+      navigateTo('publicHome');
     }
   } catch (e) {
     console.error(e);

@@ -5,6 +5,17 @@ import { renderExercisesList, renderQuestionsView } from './exercises.js';
 import { switchAdminTab } from './admin.js';
 import { renderOnboarding } from './onboarding.js';
 
+// ── Public header scroll listener ──
+let _scrollListenerAttached = false;
+function ensureScrollListener() {
+  if (_scrollListenerAttached) return;
+  _scrollListenerAttached = true;
+  window.addEventListener('scroll', () => {
+    const hdr = document.getElementById('publicHeader');
+    if (hdr) hdr.classList.toggle('scrolled', window.scrollY > 10);
+  }, { passive: true });
+}
+
 export function navigateTo(view, params) {
   params = params || {};
   const oldView = document.querySelector('.view.active');
@@ -21,8 +32,16 @@ export function navigateTo(view, params) {
   }
 
   state.currentView = view;
-  const hide = (view === 'auth' || view === 'loading' || view === 'resetPassword' || view === 'onboarding' || view === 'salesOverview' || view === 'salesDetail');
+  const isPublic = view.startsWith('public');
+  const hide = (view === 'auth' || view === 'loading' || view === 'resetPassword' || view === 'onboarding' || view === 'salesOverview' || view === 'salesDetail' || isPublic);
   document.getElementById('mainHeader').style.display = hide ? 'none' : 'flex';
+
+  // Public header/footer visibility + scroll listener
+  const pubHeader = document.getElementById('publicHeader');
+  const pubFooter = document.getElementById('publicFooter');
+  if (pubHeader) pubHeader.style.display = isPublic ? 'block' : 'none';
+  if (pubFooter) pubFooter.style.display = isPublic ? 'block' : 'none';
+  if (isPublic) ensureScrollListener();
 
   // Tab bar visibility & active state
   const tabBar = document.getElementById('tabBar');
@@ -181,11 +200,84 @@ export function navigateTo(view, params) {
         renderMeditation();
         break;
       }
+      // ── Public Website Pages ──
+      case 'publicHome': {
+        const { renderPublicPage } = await import('./public.js');
+        document.getElementById('viewPublicPage').classList.add('active');
+        renderPublicPage('home');
+        break;
+      }
+      case 'publicAbout': {
+        const { renderPublicPage } = await import('./public.js');
+        document.getElementById('viewPublicPage').classList.add('active');
+        renderPublicPage('about');
+        break;
+      }
+      case 'publicContact': {
+        const { renderPublicContact } = await import('./public.js');
+        document.getElementById('viewPublicContact').classList.add('active');
+        renderPublicContact();
+        break;
+      }
+      case 'publicBlog': {
+        const { renderBlogList } = await import('./public.js');
+        document.getElementById('viewPublicBlog').classList.add('active');
+        renderBlogList();
+        break;
+      }
+      case 'publicBlogPost': {
+        const { renderBlogPost } = await import('./public.js');
+        document.getElementById('viewPublicBlogPost').classList.add('active');
+        renderBlogPost(params.slug);
+        break;
+      }
+      case 'publicDatenschutz': {
+        const { renderPublicPage } = await import('./public.js');
+        document.getElementById('viewPublicPage').classList.add('active');
+        renderPublicPage('datenschutz');
+        break;
+      }
+      case 'publicAgb': {
+        const { renderPublicPage } = await import('./public.js');
+        document.getElementById('viewPublicPage').classList.add('active');
+        renderPublicPage('agb');
+        break;
+      }
+      case 'publicPrivacy': {
+        const { renderPublicPage } = await import('./public.js');
+        document.getElementById('viewPublicPage').classList.add('active');
+        renderPublicPage('privacy');
+        break;
+      }
+      case 'publicPage': {
+        const { renderPublicPage } = await import('./public.js');
+        document.getElementById('viewPublicPage').classList.add('active');
+        renderPublicPage(params.slug);
+        break;
+      }
     }
   }, delay);
 
   // SEO meta update + tracking (lazy loaded)
   import('./seo.js').then(m => m.onNavigate(view, params));
+
+  // Update URL bar for public pages (clean paths via pushState)
+  const PUSH_MAP = {
+    publicHome: '/',
+    publicAbout: '/about',
+    publicContact: '/kontakt',
+    publicBlog: '/blog',
+    publicDatenschutz: '/datenschutz',
+    publicAgb: '/agb',
+    publicPrivacy: '/privacy',
+  };
+  let pushPath = PUSH_MAP[view] || '';
+  if (view === 'publicBlogPost' && params?.slug) pushPath = `/blog/${params.slug}`;
+  if (view === 'publicPage' && params?.slug) pushPath = `/seite/${params.slug}`;
+
+  if (pushPath && location.pathname !== pushPath) {
+    history.pushState({ view, params }, '', pushPath);
+  }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
