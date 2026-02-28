@@ -127,10 +127,7 @@ function renderProChapters(course) {
   }).join('');
 
   return `
-    <div class="section-header" style="margin-top:40px;">
-      <span class="section-title">Reflektionen</span>
-    </div>
-    <div class="grid-list image-grid">
+    <div class="grid-list image-grid" style="margin-top:40px;">
       ${cards}
     </div>`;
 }
