@@ -71,6 +71,7 @@ export async function renderContact() {
   } catch (e) { /* ignore */ }
 
   container.innerHTML = `
+    <div class="meditation-quote">Fragen, Ideen oder Feedback — wir freuen uns auf deine Nachricht.</div>
     <div class="contact-grid">
       ${FORMS.map(f => renderFormCard(f)).join('')}
     </div>

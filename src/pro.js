@@ -66,6 +66,7 @@ export async function renderPro() {
   const chaptersHtml = proCourse ? renderProChapters(proCourse) : '';
 
   container.innerHTML = `
+    <div class="meditation-quote">Monatliche Impulse und persönliche Antworten auf deine Fragen.</div>
     <div class="contact-card" id="contactCard-proQuestion">
       <div class="contact-card-header">
         <span class="contact-card-icon">
