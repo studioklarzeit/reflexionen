@@ -1,6 +1,12 @@
-var CACHE_NAME = 'klarzeit-cache-v6';
+var CACHE_NAME = 'klarzeit-cache-v7';
+var MAX_CACHE_ITEMS = 100;
 var STATIC_URLS = [
-  'https://fonts.googleapis.com/css2?family=Marcellus&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap'
+  '/',
+  '/offline.html',
+  '/manifest.webmanifest',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
+  'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Marcellus&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap'
 ];
 
 self.addEventListener('install', function(e) {
@@ -19,16 +25,30 @@ self.addEventListener('activate', function(e) {
         ks.filter(function(k) { return k !== CACHE_NAME; })
           .map(function(k) { return caches.delete(k); })
       );
+    }).then(function() {
+      trimCache(CACHE_NAME, MAX_CACHE_ITEMS);
     })
   );
   self.clients.claim();
 });
 
+function trimCache(cacheName, maxItems) {
+  caches.open(cacheName).then(function(cache) {
+    cache.keys().then(function(keys) {
+      if (keys.length > maxItems) {
+        cache.delete(keys[0]).then(function() {
+          trimCache(cacheName, maxItems);
+        });
+      }
+    });
+  });
+}
+
 self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
   if (e.request.url.includes('supabase.co')) return;
 
-  // HTML navigation requests: network-first (always get latest)
+  // HTML navigation requests: network-first with offline fallback
   if (e.request.mode === 'navigate') {
     e.respondWith(
       fetch(e.request).then(function(res) {
@@ -36,7 +56,9 @@ self.addEventListener('fetch', function(e) {
         caches.open(CACHE_NAME).then(function(cache) { cache.put(e.request, c); });
         return res;
       }).catch(function() {
-        return caches.match(e.request);
+        return caches.match(e.request).then(function(cached) {
+          return cached || caches.match('/offline.html');
+        });
       })
     );
     return;
@@ -62,7 +84,7 @@ self.addEventListener('fetch', function(e) {
   e.respondWith(
     caches.match(e.request).then(function(r) {
       return r || fetch(e.request).then(function(res) {
-        if (res && res.status === 200 && res.type === 'basic') {
+        if (res && res.status === 200 && (res.type === 'basic' || res.type === 'cors')) {
           var c = res.clone();
           caches.open(CACHE_NAME).then(function(cache) {
             cache.put(e.request, c);

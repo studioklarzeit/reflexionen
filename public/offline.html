@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline — Studio Klarzeit</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #EDE6E2;
+      color: #3B3937;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 32px;
+    }
+    .wrap { max-width: 400px; }
+    .icon {
+      width: 64px; height: 64px;
+      margin: 0 auto 28px;
+      border-radius: 14px;
+      background: #C4A99B;
+      display: flex; align-items: center; justify-content: center;
+      color: #EDE6E2; font-size: 24px; font-weight: 400;
+      letter-spacing: -1px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+    p {
+      font-size: 1rem;
+      color: #6b6664;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 14px 36px;
+      background: #3B3937;
+      color: #EDE6E2;
+      border: none;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="icon">SK</div>
+    <h1>Du bist offline</h1>
+    <p>Stelle eine Internetverbindung her, um Studio Klarzeit zu nutzen.</p>
+    <button class="btn" onclick="location.reload()">Erneut versuchen</button>
+  </div>
+</body>
+</html>
