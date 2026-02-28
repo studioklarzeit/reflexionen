@@ -340,12 +340,12 @@ function finishLoading(showImpulse) {
   const barWrap = document.getElementById('loadingBarWrap');
   const doneBtn = document.getElementById('loadingDoneBtn');
   const muteBtn = document.getElementById('loadingMuteBtn');
+  // Fade out bar, then show button (both absolute — no layout shift)
   if (barWrap) barWrap.classList.add('done');
   setTimeout(() => {
-    if (barWrap) barWrap.style.display = 'none';
     if (doneBtn) doneBtn.style.display = '';
     if (muteBtn) muteBtn.style.display = '';
-  }, 500);
+  }, 400);
 }
 window.finishLoading = finishLoading;
 

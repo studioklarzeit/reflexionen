@@ -1995,14 +1995,17 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
   padding: 28px 32px 48px; width: 100%;
   display: flex; flex-direction: column; align-items: center;
   animation: loadSlideUp 0.7s ease 0.6s both;
+  position: relative;
+  min-height: 100px;
 }
 
 /* Ladebar */
 .loading-bar-wrap {
-  width: 220px; height: 38px; position: relative;
+  width: 220px; height: 38px; position: absolute;
+  top: 28px; left: 50%; transform: translateX(-50%);
   border: 1px solid #D5CEC7; border-radius: 32px;
-  overflow: hidden;
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  overflow: hidden; opacity: 0.5;
+  transition: opacity 0.5s ease;
 }
 .loading-bar {
   height: 100%; width: 0%;
@@ -2017,23 +2020,29 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
   font-size: 12px; color: #8C7B6B;
   letter-spacing: 0.08em;
   pointer-events: none;
-  mix-blend-mode: multiply;
 }
 .loading-bar-wrap.done {
-  opacity: 0; transform: scale(0.92);
+  opacity: 0;
   pointer-events: none;
 }
 
 /* Weiter-Button (erscheint nach Ladung) */
 .loading-done-btn {
+  position: absolute;
+  top: 28px; left: 50%; transform: translateX(-50%);
   display: inline-flex; align-items: center; gap: 10px;
   background: none; border: 1px solid #D5CEC7;
   border-radius: 32px; padding: 13px 32px;
   font-family: 'PT Serif', Georgia, serif;
   font-size: 14px; color: #8C7B6B;
-  cursor: pointer; transition: all 0.3s;
+  cursor: pointer; transition: border-color 0.3s, color 0.3s, background 0.3s;
   letter-spacing: 0.04em;
-  animation: loadSlideUp 0.5s ease both;
+  animation: loadFadeIn 0.5s ease both;
+  white-space: nowrap;
+}
+@keyframes loadFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .loading-done-btn:hover {
   border-color: #8C7B6B; color: #3B3937;
@@ -2044,8 +2053,10 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
 
 /* Mute-Button */
 .impulse-splash-mute {
-  margin-top: 20px;
+  position: absolute;
+  top: 80px; left: 50%; transform: translateX(-50%);
   background: none; border: none; cursor: pointer;
+  white-space: nowrap;
   font-family: 'PT Serif', Georgia, serif;
   font-size: 12px; color: #A89888;
   text-decoration: none; opacity: 0.6;
