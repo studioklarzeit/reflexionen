@@ -97,7 +97,7 @@ export function renderChaptersList() {
     const timeDisplay = formatTime(ch.estimated_minutes);
 
     const img = ch.image_url
-      ? `<div class="card-image"><img src="${esc(imgTransform(ch.image_url, 400, 75))}" alt="${esc(ch.name)}" loading="lazy"></div>`
+      ? `<div class="card-image"><img src="${esc(imgTransform(ch.image_url, 800, 75))}" alt="${esc(ch.name)}" loading="lazy"></div>`
       : `<div class="card-image card-image-placeholder"><span>✦</span></div>`;
 
     return `<div class="image-card" data-action="navigateTo" data-args='["exercises",{"courseId":"${state.currentCourseId}","chapterId":"${ch.id}"}]'>

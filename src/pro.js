@@ -110,7 +110,7 @@ function renderProChapters(course) {
     const pillLabel = isComplete ? '✓' : `${i + 1}`;
 
     const img = ch.image_url
-      ? `<div class="card-image"><img src="${esc(imgTransform(ch.image_url, 400, 75))}" alt="${esc(ch.name)}" loading="lazy"></div>`
+      ? `<div class="card-image"><img src="${esc(imgTransform(ch.image_url, 800, 75))}" alt="${esc(ch.name)}" loading="lazy"></div>`
       : `<div class="card-image card-image-placeholder"><span>✦</span></div>`;
 
     return `<div class="image-card" data-action="navigateTo" data-args='["chapterPlayer",{"courseId":"${course.id}","chapterId":"${ch.id}"}]'>

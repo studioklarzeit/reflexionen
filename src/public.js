@@ -79,7 +79,7 @@ function renderProfile(c) {
     <section class="pub-profile">
       ${c.heading ? `<h2 class="pub-profile-heading">${esc(c.heading)}</h2>` : ''}
       <div class="pub-profile-row">
-        ${c.image ? `<div class="pub-profile-image"><img src="${esc(imgTransform(c.image, 400, 75))}" alt="${esc(c.name || '')}" loading="lazy"></div>` : ''}
+        ${c.image ? `<div class="pub-profile-image"><img src="${esc(imgTransform(c.image, 800, 75))}" alt="${esc(c.name || '')}" loading="lazy"></div>` : ''}
         <div class="pub-profile-text">
           ${c.name ? `<h3 class="pub-profile-name">${esc(c.name)}</h3>` : ''}
           ${c.subtitle ? `<p class="pub-profile-subtitle">${esc(c.subtitle)}</p>` : ''}
@@ -317,7 +317,7 @@ function buildBlogListHtml(posts) {
 
   const cards = posts.map(p => `
     <article class="pub-blog-card" data-action="__pubNav" data-args='["/blog/${esc(p.slug)}"]'>
-      ${p.cover_image ? `<img class="pub-blog-card-img" src="${esc(imgTransform(p.cover_image, 400, 75))}" alt="${esc(p.title)}" loading="lazy">` : '<div class="pub-blog-card-img pub-blog-card-placeholder"></div>'}
+      ${p.cover_image ? `<img class="pub-blog-card-img" src="${esc(imgTransform(p.cover_image, 800, 75))}" alt="${esc(p.title)}" loading="lazy">` : '<div class="pub-blog-card-img pub-blog-card-placeholder"></div>'}
       <div class="pub-blog-card-body">
         <time class="pub-blog-card-date">${formatDateDE(p.published_at)}</time>
         <h3 class="pub-blog-card-title">${esc(p.title)}</h3>

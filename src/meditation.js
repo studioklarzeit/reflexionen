@@ -101,7 +101,7 @@ export async function renderMeditation() {
       for (const m of cachedMeditations) {
         const dur = m.duration_seconds ? formatTime(m.duration_seconds) : '';
         const img = m.image_url
-          ? `<div class="card-image"><img src="${esc(imgTransform(m.image_url, 400, 75))}" alt="${esc(m.title)}" loading="lazy"></div>`
+          ? `<div class="card-image"><img src="${esc(imgTransform(m.image_url, 800, 75))}" alt="${esc(m.title)}" loading="lazy"></div>`
           : `<div class="card-image card-image-placeholder"><span>✦</span></div>`;
         html += `<div class="image-card" data-action="openMeditationDetail" data-args='["${m.id}"]'>
           ${img}

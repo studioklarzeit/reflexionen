@@ -101,7 +101,7 @@ export async function renderCoursePlayer() {
         const pillLabel = isComplete ? '✓' : `${i + 1}`;
 
         const img = ch.image_url
-          ? `<div class="card-image"><img src="${esc(imgTransform(ch.image_url, 400, 75))}" alt="${esc(ch.name)}" loading="lazy"></div>`
+          ? `<div class="card-image"><img src="${esc(imgTransform(ch.image_url, 800, 75))}" alt="${esc(ch.name)}" loading="lazy"></div>`
           : `<div class="card-image card-image-placeholder"><span>✦</span></div>`;
 
         return `<div class="image-card" data-action="openChapterPlayer" data-args='["${ch.id}"]'>
@@ -159,7 +159,7 @@ export async function renderCoursePlayer() {
       extensionsListEl.innerHTML = extensions.map(ext => {
         const hasAccess = canAccessCourse(ext);
         const img = ext.image_url
-          ? `<div class="card-image"><img src="${esc(imgTransform(ext.image_url, 400, 75))}" alt="${esc(ext.name)}" loading="lazy"></div>`
+          ? `<div class="card-image"><img src="${esc(imgTransform(ext.image_url, 800, 75))}" alt="${esc(ext.name)}" loading="lazy"></div>`
           : `<div class="card-image card-image-placeholder"><span>✦</span></div>`;
 
         const dataAttrs = hasAccess
