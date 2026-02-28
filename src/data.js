@@ -1,28 +1,49 @@
 import { sb } from './config.js';
 import { state } from './state.js';
 
-export async function loadAllData() {
-  const [cr, ch, ex, qu, ec, cc] = await Promise.all([
+// Core data: loaded at login (4 queries instead of 6)
+export async function loadCoreData() {
+  const [cr, ch, ex, qu] = await Promise.all([
     sb.from('courses').select('*').order('sort_order'),
     sb.from('chapters').select('*').order('sort_order'),
     sb.from('exercises').select('*').order('sort_order'),
     sb.from('questions').select('*').order('sort_order'),
-    sb.from('exercise_content').select('*').order('sort_order'),
-    sb.from('chapter_content').select('*').order('sort_order'),
   ]);
   if (cr.error) throw cr.error;
   if (ch.error) throw ch.error;
   if (ex.error) throw ex.error;
   if (qu.error) throw qu.error;
-  // exercise_content / chapter_content may not exist yet — graceful fallback
   state.cacheData = {
     courses: cr.data || [],
     chapters: ch.data || [],
     exercises: ex.data || [],
     questions: qu.data || [],
-    contentBlocks: (ec && !ec.error) ? (ec.data || []) : [],
-    chapterContentBlocks: (cc && !cc.error) ? (cc.data || []) : [],
+    contentBlocks: [],
+    chapterContentBlocks: [],
   };
+}
+
+// Content data: loaded on-demand when exercises/chapters are opened
+let _contentLoaded = false;
+
+export async function ensureContentData() {
+  if (_contentLoaded) return;
+  const [ec, cc] = await Promise.all([
+    sb.from('exercise_content').select('*').order('sort_order'),
+    sb.from('chapter_content').select('*').order('sort_order'),
+  ]);
+  state.cacheData.contentBlocks = (ec && !ec.error) ? (ec.data || []) : [];
+  state.cacheData.chapterContentBlocks = (cc && !cc.error) ? (cc.data || []) : [];
+  _contentLoaded = true;
+}
+
+export function resetLazyFlags() {
+  _contentLoaded = false;
+}
+
+// Legacy alias for backwards compatibility
+export async function loadAllData() {
+  await loadCoreData();
 }
 
 export async function loadUserAnswers() {

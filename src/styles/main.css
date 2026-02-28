@@ -204,6 +204,9 @@ body.dark .image-card-lock-overlay { background: rgba(0,0,0,0.4); }
 .ch-indicator.active::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-warm); }
 .ch-indicator.done { border-color: var(--accent-olive); background: var(--accent-olive); color: white; }
 
+/* ── LAZY BACKGROUND IMAGES ── */
+.lazy-bg { background-color: var(--border-light); transition: background-image 0.3s ease; }
+
 /* ── CHAPTER HERO BANNER ── */
 .chapter-hero { position: relative; border-radius: 10px; overflow: hidden; margin-bottom: 48px; animation: fadeUp 0.5s ease both; background: linear-gradient(135deg, var(--beige) 0%, var(--accent-dark) 100%); }
 .chapter-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.2; filter: saturate(0.7); }

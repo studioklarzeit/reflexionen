@@ -1,5 +1,5 @@
-var CACHE_NAME = 'klarzeit-cache-v8';
-var MAX_CACHE_ITEMS = 100;
+var CACHE_NAME = 'klarzeit-cache-v9';
+var MAX_CACHE_ITEMS = 200;
 var STATIC_URLS = [
   '/',
   '/offline.html',
@@ -46,7 +46,8 @@ function trimCache(cacheName, maxItems) {
 
 self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
-  if (e.request.url.includes('supabase.co')) return;
+  // Skip Supabase API calls, but cache Supabase Storage images
+  if (e.request.url.includes('supabase.co') && !e.request.url.includes('/storage/v1/')) return;
 
   // HTML navigation requests: network-first with offline fallback
   if (e.request.mode === 'navigate') {

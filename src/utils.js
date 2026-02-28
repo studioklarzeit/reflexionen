@@ -61,6 +61,14 @@ export function esc(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/`/g, '&#96;');
 }
 
+// ── IMAGE TRANSFORM ──
+
+export function imgTransform(url, width, quality = 80) {
+  if (!url || !url.includes('/storage/v1/object/public/images/')) return url;
+  return url.replace('/storage/v1/object/public/images/', '/storage/v1/render/image/public/images/')
+    + `?width=${width}&quality=${quality}`;
+}
+
 // ── SAVE STATUS INDICATORS ──
 
 export function showSaving() {

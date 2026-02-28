@@ -314,4 +314,7 @@ export function navigateTo(view, params) {
   }
 
   window.scrollTo({ top: 0, behavior: 'instant' });
+
+  // Observe lazy background images after view switch
+  setTimeout(() => window.observeLazyBgs?.(), 200);
 }

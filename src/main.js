@@ -311,6 +311,23 @@ window.__clearCheckinCache = clearCheckinCache;
 window.__clearWeeklyImpulseCache = clearWeeklyImpulseCache;
 window.__clearMeditationCache = clearMeditationCache;
 
+// ── LAZY BACKGROUND IMAGES ──
+
+const bgObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.backgroundImage = `url('${e.target.dataset.bg}')`;
+      e.target.classList.add('bg-loaded');
+      bgObserver.unobserve(e.target);
+    }
+  });
+}, { rootMargin: '200px' });
+
+function observeLazyBgs() {
+  document.querySelectorAll('[data-bg]:not(.bg-loaded)').forEach(el => bgObserver.observe(el));
+}
+window.observeLazyBgs = observeLazyBgs;
+
 // ── LOADING PROGRESS ──
 
 function setLoadProgress(pct) {

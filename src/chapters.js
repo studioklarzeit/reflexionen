@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { esc } from './utils.js';
+import { esc, imgTransform } from './utils.js';
 import { getChapterQuestions } from './data.js';
 
 function progressPillHtml(pct) {
@@ -64,7 +64,7 @@ export function renderChaptersList() {
   if (heroEl) {
     if (course.image_url) {
       heroEl.innerHTML =
-        `<div class="chapter-hero-bg" style="background-image:url('${esc(course.image_url)}')"></div>` +
+        `<div class="chapter-hero-bg lazy-bg" data-bg="${esc(imgTransform(course.image_url, 900))}"></div>` +
         `<div class="chapter-hero-content">` +
           `<h1 class="chapter-hero-title">${esc(course.name)}</h1>` +
           (course.description ? `<p class="chapter-hero-desc">${esc(course.description)}</p>` : '') +
@@ -74,6 +74,7 @@ export function renderChaptersList() {
           `</div>` +
         `</div>`;
       heroEl.style.display = '';
+      window.observeLazyBgs?.();
     } else {
       heroEl.innerHTML = '';
       heroEl.style.display = 'none';
@@ -96,7 +97,7 @@ export function renderChaptersList() {
     const timeDisplay = formatTime(ch.estimated_minutes);
 
     const img = ch.image_url
-      ? `<div class="card-image"><img src="${esc(ch.image_url)}" alt="${esc(ch.name)}" loading="lazy"></div>`
+      ? `<div class="card-image"><img src="${esc(imgTransform(ch.image_url, 400, 75))}" alt="${esc(ch.name)}" loading="lazy"></div>`
       : `<div class="card-image card-image-placeholder"><span>✦</span></div>`;
 
     return `<div class="image-card" data-action="navigateTo" data-args='["exercises",{"courseId":"${state.currentCourseId}","chapterId":"${ch.id}"}]'>

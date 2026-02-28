@@ -1,6 +1,6 @@
 import { sb } from './config.js';
 import { state } from './state.js';
-import { esc, showToast, trDataErr } from './utils.js';
+import { esc, showToast, trDataErr, imgTransform } from './utils.js';
 
 let cachedMeditations = null;
 let currentAudio = null;
@@ -101,7 +101,7 @@ export async function renderMeditation() {
       for (const m of cachedMeditations) {
         const dur = m.duration_seconds ? formatTime(m.duration_seconds) : '';
         const img = m.image_url
-          ? `<div class="card-image"><img src="${esc(m.image_url)}" alt="${esc(m.title)}" loading="lazy"></div>`
+          ? `<div class="card-image"><img src="${esc(imgTransform(m.image_url, 400, 75))}" alt="${esc(m.title)}" loading="lazy"></div>`
           : `<div class="card-image card-image-placeholder"><span>✦</span></div>`;
         html += `<div class="image-card" data-action="openMeditationDetail" data-args='["${m.id}"]'>
           ${img}
@@ -137,7 +137,7 @@ export async function openMeditationDetail(id) {
   if (existing) existing.remove();
 
   const dur = m.duration_seconds ? formatTime(m.duration_seconds) : '';
-  const bgStyle = m.image_url ? `background-image:url('${esc(m.image_url)}')` : '';
+  const bgStyle = m.image_url ? `background-image:url('${esc(imgTransform(m.image_url, 1200))}')` : '';
 
   // Hide header + tab bar for immersive fullscreen
   document.getElementById('mainHeader').style.display = 'none';

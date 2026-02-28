@@ -2,7 +2,7 @@
 
 import { sb } from './config.js';
 import { state } from './state.js';
-import { esc, showToast } from './utils.js';
+import { esc, showToast, imgTransform } from './utils.js';
 import { navigateTo } from './navigation.js';
 
 // ── Cache ──
@@ -50,7 +50,7 @@ function renderHero(c) {
         ${(ctaHtml || cta2Html) ? `<div class="pub-hero-buttons">${ctaHtml}${cta2Html}</div>` : ''}
         ${statsHtml}
       </div>
-      ${c.hero_image ? `<div class="pub-hero-image"><img src="${esc(c.hero_image)}" alt="${esc(c.heading || '')}" loading="lazy"></div>` : ''}
+      ${c.hero_image ? `<div class="pub-hero-image"><img src="${esc(imgTransform(c.hero_image, 900))}" alt="${esc(c.heading || '')}" loading="lazy"></div>` : ''}
     </section>`;
 }
 
@@ -79,7 +79,7 @@ function renderProfile(c) {
     <section class="pub-profile">
       ${c.heading ? `<h2 class="pub-profile-heading">${esc(c.heading)}</h2>` : ''}
       <div class="pub-profile-row">
-        ${c.image ? `<div class="pub-profile-image"><img src="${esc(c.image)}" alt="${esc(c.name || '')}" loading="lazy"></div>` : ''}
+        ${c.image ? `<div class="pub-profile-image"><img src="${esc(imgTransform(c.image, 400, 75))}" alt="${esc(c.name || '')}" loading="lazy"></div>` : ''}
         <div class="pub-profile-text">
           ${c.name ? `<h3 class="pub-profile-name">${esc(c.name)}</h3>` : ''}
           ${c.subtitle ? `<p class="pub-profile-subtitle">${esc(c.subtitle)}</p>` : ''}
@@ -133,7 +133,7 @@ function renderCta(c) {
 function renderImage(c) {
   return `
     <section class="pub-image-section">
-      <img class="pub-image" src="${esc(c.url)}" alt="${esc(c.alt || '')}" loading="lazy">
+      <img class="pub-image" src="${esc(imgTransform(c.url, 900))}" alt="${esc(c.alt || '')}" loading="lazy">
       ${c.caption ? `<p class="pub-image-caption">${esc(c.caption)}</p>` : ''}
     </section>`;
 }
@@ -317,7 +317,7 @@ function buildBlogListHtml(posts) {
 
   const cards = posts.map(p => `
     <article class="pub-blog-card" data-action="__pubNav" data-args='["/blog/${esc(p.slug)}"]'>
-      ${p.cover_image ? `<img class="pub-blog-card-img" src="${esc(p.cover_image)}" alt="${esc(p.title)}" loading="lazy">` : '<div class="pub-blog-card-img pub-blog-card-placeholder"></div>'}
+      ${p.cover_image ? `<img class="pub-blog-card-img" src="${esc(imgTransform(p.cover_image, 400, 75))}" alt="${esc(p.title)}" loading="lazy">` : '<div class="pub-blog-card-img pub-blog-card-placeholder"></div>'}
       <div class="pub-blog-card-body">
         <time class="pub-blog-card-date">${formatDateDE(p.published_at)}</time>
         <h3 class="pub-blog-card-title">${esc(p.title)}</h3>
@@ -572,7 +572,7 @@ function buildCoursePreviewHtml({ course, chapter, blocks, totalChapters }) {
       case 'text_bold':  return `<div class="content-block content-text"><strong>${esc(txt).replace(/\n/g, '<br>')}</strong></div>`;
       case 'quote':      return `<div class="content-block content-quote">\u00AB${esc(txt)}\u00BB</div>`;
       case 'divider':    return `<div class="content-block content-divider"><span>\u00b7 \u00b7 \u00b7</span></div>`;
-      case 'image':      return `<div class="content-block content-image"><img src="${esc(txt)}" alt="" loading="lazy"></div>`;
+      case 'image':      return `<div class="content-block content-image"><img src="${esc(imgTransform(txt, 900))}" alt="" loading="lazy"></div>`;
       default:           return '';
     }
   }).join('') : (chapter.chapter_text ? chapter.chapter_text.split('\n\n').map(p => p.trim()).filter(Boolean).map(p => {
@@ -597,7 +597,7 @@ function buildCoursePreviewHtml({ course, chapter, blocks, totalChapters }) {
 
       ${heroImg ? `
         <div class="preview-hero">
-          <img src="${esc(heroImg)}" alt="${esc(chapter.name)}" loading="lazy">
+          <img src="${esc(imgTransform(heroImg, 900))}" alt="${esc(chapter.name)}" loading="lazy">
           <div class="preview-hero-overlay">
             <span class="preview-hero-eyebrow">Reinh&ouml;ren &middot; Kapitel 1 von ${totalChapters}</span>
             <h1 class="preview-hero-title">${esc(chapter.name)}</h1>

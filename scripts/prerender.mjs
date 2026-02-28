@@ -53,6 +53,13 @@ function formatDateDE(iso) {
   return `${d.getDate()}. ${MONTHS_DE[d.getMonth()]} ${d.getFullYear()}`;
 }
 
+// ── Image transform (same as src/utils.js) ──
+function imgTransform(url, width, quality = 80) {
+  if (!url || !url.includes('/storage/v1/object/public/images/')) return url;
+  return url.replace('/storage/v1/object/public/images/', '/storage/v1/render/image/public/images/')
+    + `?width=${width}&quality=${quality}`;
+}
+
 // ── Section renderers (same output as src/public.js, simplified for Node) ──
 
 function renderHero(c) {
@@ -70,7 +77,7 @@ function renderHero(c) {
   const statsHtml = stats.length
     ? `<div class="pub-hero-stats">${stats.map(s => `<div class="pub-hero-stat"><span class="pub-hero-stat-label">${esc(s.label || '')}</span><span class="pub-hero-stat-value">${esc(s.value || '')}</span></div>`).join('')}</div>`
     : '';
-  return `<section class="pub-hero"><div class="pub-hero-text">${c.label ? `<p class="pub-hero-label">${esc(c.label)}</p>` : ''}<h1 class="pub-hero-heading">${esc(c.heading || '')}</h1>${c.description ? `<p class="pub-hero-desc">${esc(c.description)}</p>` : ''}${c.subheading ? `<p class="pub-hero-sub">${esc(c.subheading)}</p>` : ''}${(ctaHtml || cta2Html) ? `<div class="pub-hero-buttons">${ctaHtml}${cta2Html}</div>` : ''}${statsHtml}</div>${c.hero_image ? `<div class="pub-hero-image"><img src="${esc(c.hero_image)}" alt="${esc(c.heading || '')}" loading="lazy"></div>` : ''}</section>`;
+  return `<section class="pub-hero"><div class="pub-hero-text">${c.label ? `<p class="pub-hero-label">${esc(c.label)}</p>` : ''}<h1 class="pub-hero-heading">${esc(c.heading || '')}</h1>${c.description ? `<p class="pub-hero-desc">${esc(c.description)}</p>` : ''}${c.subheading ? `<p class="pub-hero-sub">${esc(c.subheading)}</p>` : ''}${(ctaHtml || cta2Html) ? `<div class="pub-hero-buttons">${ctaHtml}${cta2Html}</div>` : ''}${statsHtml}</div>${c.hero_image ? `<div class="pub-hero-image"><img src="${esc(imgTransform(c.hero_image, 900))}" alt="${esc(c.heading || '')}" loading="lazy"></div>` : ''}</section>`;
 }
 
 function nl2br(str) { return (str || '').replace(/\n/g, '<br>'); }
@@ -94,7 +101,7 @@ function renderTextBold(c) {
 }
 
 function renderProfile(c) {
-  return `<section class="pub-profile">${c.heading ? `<h2 class="pub-profile-heading">${esc(c.heading)}</h2>` : ''}<div class="pub-profile-row">${c.image ? `<div class="pub-profile-image"><img src="${esc(c.image)}" alt="${esc(c.name || '')}" loading="lazy"></div>` : ''}<div class="pub-profile-text">${c.name ? `<h3 class="pub-profile-name">${esc(c.name)}</h3>` : ''}${c.subtitle ? `<p class="pub-profile-subtitle">${esc(c.subtitle)}</p>` : ''}${c.text ? `<div class="pub-profile-body">${nl2br(esc(c.text))}</div>` : ''}</div></div></section>`;
+  return `<section class="pub-profile">${c.heading ? `<h2 class="pub-profile-heading">${esc(c.heading)}</h2>` : ''}<div class="pub-profile-row">${c.image ? `<div class="pub-profile-image"><img src="${esc(imgTransform(c.image, 400, 75))}" alt="${esc(c.name || '')}" loading="lazy"></div>` : ''}<div class="pub-profile-text">${c.name ? `<h3 class="pub-profile-name">${esc(c.name)}</h3>` : ''}${c.subtitle ? `<p class="pub-profile-subtitle">${esc(c.subtitle)}</p>` : ''}${c.text ? `<div class="pub-profile-body">${nl2br(esc(c.text))}</div>` : ''}</div></div></section>`;
 }
 
 function renderFeatures(c) {
@@ -118,7 +125,7 @@ function renderCta(c) {
 }
 
 function renderImage(c) {
-  return `<section class="pub-image-section"><img class="pub-image" src="${esc(c.url)}" alt="${esc(c.alt || '')}" loading="lazy">${c.caption ? `<p class="pub-image-caption">${esc(c.caption)}</p>` : ''}</section>`;
+  return `<section class="pub-image-section"><img class="pub-image" src="${esc(imgTransform(c.url, 900))}" alt="${esc(c.alt || '')}" loading="lazy">${c.caption ? `<p class="pub-image-caption">${esc(c.caption)}</p>` : ''}</section>`;
 }
 
 function renderAccordion(c) {
@@ -265,7 +272,7 @@ function buildBlogListHtml(posts) {
   if (!posts.length) return '<p class="pub-empty">Noch keine Beitr&auml;ge vorhanden.</p>';
   const cards = posts.map(p => `<article class="pub-blog-card">
     <a href="/blog/${esc(p.slug)}" style="text-decoration:none;color:inherit;">
-      ${p.cover_image ? `<img class="pub-blog-card-img" src="${esc(p.cover_image)}" alt="${esc(p.title)}" loading="lazy">` : '<div class="pub-blog-card-img pub-blog-card-placeholder"></div>'}
+      ${p.cover_image ? `<img class="pub-blog-card-img" src="${esc(imgTransform(p.cover_image, 400, 75))}" alt="${esc(p.title)}" loading="lazy">` : '<div class="pub-blog-card-img pub-blog-card-placeholder"></div>'}
       <div class="pub-blog-card-body">
         <time class="pub-blog-card-date">${formatDateDE(p.published_at)}</time>
         <h3 class="pub-blog-card-title">${esc(p.title)}</h3>

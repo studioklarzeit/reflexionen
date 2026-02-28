@@ -2,7 +2,7 @@
 
 import { sb } from './config.js';
 import { state } from './state.js';
-import { esc, showToast } from './utils.js';
+import { esc, showToast, imgTransform } from './utils.js';
 import { canAccessCourse } from './data.js';
 
 let chapterProgressCache = {};
@@ -110,7 +110,7 @@ function renderProChapters(course) {
     const pillLabel = isComplete ? '✓' : `${i + 1}`;
 
     const img = ch.image_url
-      ? `<div class="card-image"><img src="${esc(ch.image_url)}" alt="${esc(ch.name)}" loading="lazy"></div>`
+      ? `<div class="card-image"><img src="${esc(imgTransform(ch.image_url, 400, 75))}" alt="${esc(ch.name)}" loading="lazy"></div>`
       : `<div class="card-image card-image-placeholder"><span>✦</span></div>`;
 
     return `<div class="image-card" data-action="navigateTo" data-args='["chapterPlayer",{"courseId":"${course.id}","chapterId":"${ch.id}"}]'>
@@ -189,7 +189,6 @@ export async function submitProQuestion() {
     if (error) throw error;
 
     input.value = '';
-    document.getElementById('proCharCount').textContent = '';
 
     successEl.style.display = 'flex';
     setTimeout(() => { successEl.style.display = 'none'; }, 4000);

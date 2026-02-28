@@ -1,7 +1,7 @@
 import { sb } from './config.js';
 import { state } from './state.js';
-import { esc, btnLoading, showToast, showSaving, showSaved, showSaveErr, trDataErr } from './utils.js';
-import { getChapterQuestions } from './data.js';
+import { esc, btnLoading, showToast, showSaving, showSaved, showSaveErr, trDataErr, imgTransform } from './utils.js';
+import { getChapterQuestions, ensureContentData } from './data.js';
 
 // ══════════════════════════════════════
 // EXERCISES LIST (Cards — intermediate view)
@@ -34,7 +34,7 @@ export function renderExercisesList() {
   const heroEl = document.getElementById('exercisesHero');
   if (heroEl) {
     const heroImg = chapter.image_url
-      ? `<div class="chapter-hero-bg" style="background-image:url('${esc(chapter.image_url)}')"></div>`
+      ? `<div class="chapter-hero-bg lazy-bg" data-bg="${esc(imgTransform(chapter.image_url, 900))}"></div>`
       : '';
     heroEl.innerHTML =
       `${heroImg}` +
@@ -47,6 +47,7 @@ export function renderExercisesList() {
         `</div>` +
       `</div>`;
     heroEl.style.display = '';
+    window.observeLazyBgs?.();
   }
 
   // Hide default title section (hero replaces it)
@@ -87,7 +88,8 @@ export function renderExercisesList() {
 // QUESTIONS VIEW (Inputs — detail view)
 // ══════════════════════════════════════
 
-export function renderQuestionsView() {
+export async function renderQuestionsView() {
+  await ensureContentData();
   const course = state.cacheData.courses.find((c) => c.id === state.currentCourseId);
   const chapter = state.cacheData.chapters.find((ch) => ch.id === state.currentChapterId);
   const exercise = state.cacheData.exercises.find((ex) => ex.id === state.currentExerciseId);

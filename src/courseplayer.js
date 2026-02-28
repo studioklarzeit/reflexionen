@@ -1,8 +1,8 @@
 import { sb } from './config.js';
 import { state } from './state.js';
 import { navigateTo } from './navigation.js';
-import { showToast, esc } from './utils.js';
-import { canAccessCourse, getChapterQuestions } from './data.js';
+import { showToast, esc, imgTransform } from './utils.js';
+import { canAccessCourse, getChapterQuestions, ensureContentData } from './data.js';
 
 let currentAudio = null;
 let progressInterval = null;
@@ -46,7 +46,7 @@ export async function renderCoursePlayer() {
   if (heroEl && course.image_url) {
     heroEl.style.display = 'block';
     heroEl.innerHTML = `
-      <div class="chapter-hero-bg" style="background-image:url('${esc(course.image_url)}')"></div>
+      <div class="chapter-hero-bg lazy-bg" data-bg="${esc(imgTransform(course.image_url, 900))}"></div>
       <div class="chapter-hero-content">
         <h1 class="chapter-hero-title">${esc(course.name)}</h1>
         ${course.description ? `<p class="chapter-hero-desc">${esc(course.description)}</p>` : ''}
@@ -56,6 +56,7 @@ export async function renderCoursePlayer() {
         </div>
       </div>
     `;
+    window.observeLazyBgs?.();
   }
 
   // Title section
@@ -100,7 +101,7 @@ export async function renderCoursePlayer() {
         const pillLabel = isComplete ? '✓' : `${i + 1}`;
 
         const img = ch.image_url
-          ? `<div class="card-image"><img src="${esc(ch.image_url)}" alt="${esc(ch.name)}" loading="lazy"></div>`
+          ? `<div class="card-image"><img src="${esc(imgTransform(ch.image_url, 400, 75))}" alt="${esc(ch.name)}" loading="lazy"></div>`
           : `<div class="card-image card-image-placeholder"><span>✦</span></div>`;
 
         return `<div class="image-card" data-action="openChapterPlayer" data-args='["${ch.id}"]'>
@@ -158,7 +159,7 @@ export async function renderCoursePlayer() {
       extensionsListEl.innerHTML = extensions.map(ext => {
         const hasAccess = canAccessCourse(ext);
         const img = ext.image_url
-          ? `<div class="card-image"><img src="${esc(ext.image_url)}" alt="${esc(ext.name)}" loading="lazy"></div>`
+          ? `<div class="card-image"><img src="${esc(imgTransform(ext.image_url, 400, 75))}" alt="${esc(ext.name)}" loading="lazy"></div>`
           : `<div class="card-image card-image-placeholder"><span>✦</span></div>`;
 
         const dataAttrs = hasAccess
@@ -198,6 +199,9 @@ export async function renderChapterPlayer() {
   const course = state.cacheData.courses.find(c => c.id === state.currentCourseId);
   if (!course) return;
 
+  // Ensure content data is loaded (lazy)
+  await ensureContentData();
+
   // Load progress for resume
   await loadChapterProgress();
   const prog = chapterProgressCache[chapter.id];
@@ -234,7 +238,7 @@ export async function renderChapterPlayer() {
     <div class="chapter-player">
       ${heroImg ? `
         <div class="chapter-detail-hero">
-          <img src="${esc(heroImg)}" alt="${esc(chapter.name)}" loading="lazy">
+          <img src="${esc(imgTransform(heroImg, 900))}" alt="${esc(chapter.name)}" loading="lazy">
           <div class="chapter-detail-hero-overlay">
             <span class="chapter-detail-hero-eyebrow">${typeLabel}</span>
             <h1 class="chapter-detail-hero-title">${esc(chapter.name)}</h1>
@@ -347,7 +351,7 @@ function renderChapterContentSection(chapter) {
       if (block.type === 'text_bold') return `<div class="content-block content-text content-text-bold"><strong>${esc(c).replace(/\n/g, '<br>')}</strong></div>`;
       if (block.type === 'quote') return `<div class="content-block content-quote">„${esc(c)}"</div>`;
       if (block.type === 'divider') return `<div class="content-block content-divider"><span>· · ·</span></div>`;
-      if (block.type === 'image') return `<div class="content-block content-image"><img src="${esc(c)}" alt="" loading="lazy"></div>`;
+      if (block.type === 'image') return `<div class="content-block content-image"><img src="${esc(imgTransform(c, 900))}" alt="" loading="lazy"></div>`;
       return '';
     }).join('');
     return `<div class="chapter-text-section"><div class="chapter-text-content">${html}</div></div>`;

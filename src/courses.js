@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { esc } from './utils.js';
+import { esc, imgTransform } from './utils.js';
 import { canAccessCourse, getCourseQuestions } from './data.js';
 
 function progressPillHtml(pct) {
@@ -37,7 +37,7 @@ export function renderCoursesList() {
     const timeStr = formatTime(totalMinutes);
 
     const img = c.image_url
-      ? `<div class="card-image"><img src="${esc(c.image_url)}" alt="${esc(c.name)}" loading="lazy"></div>`
+      ? `<div class="card-image"><img src="${esc(imgTransform(c.image_url, 400, 75))}" alt="${esc(c.name)}" loading="lazy"></div>`
       : `<div class="card-image card-image-placeholder"><span>✦</span></div>`;
 
     if (hasAccess) {
