@@ -6,6 +6,8 @@ import { canAccessCourse, getChapterQuestions, ensureContentData } from './data.
 
 let currentAudio = null;
 let progressInterval = null;
+let _onChMeta = null;
+let _onChEnded = null;
 
 function formatTime(sec) {
   if (!sec || !isFinite(sec)) return '0:00';
@@ -298,16 +300,17 @@ export async function renderChapterPlayer() {
       currentAudio.currentTime = prog.audio_position_seconds;
     }
 
-    currentAudio.addEventListener('loadedmetadata', () => {
+    _onChMeta = () => {
       const tt = document.getElementById('chapterTotalTime');
       if (tt) tt.textContent = formatTime(currentAudio.duration);
-    });
-
-    currentAudio.addEventListener('ended', () => {
+    };
+    _onChEnded = () => {
       updatePlayIcon(false);
       clearInterval(progressInterval);
       saveChapterProgress(chapter.id, Math.round(currentAudio.duration), false);
-    });
+    };
+    currentAudio.addEventListener('loadedmetadata', _onChMeta);
+    currentAudio.addEventListener('ended', _onChEnded);
 
     // MediaSession: lock-screen artwork + controls
     if ('mediaSession' in navigator) {
@@ -436,6 +439,8 @@ export function seekChapterAudio(event) {
 
 export function stopChapterAudio() {
   if (currentAudio) {
+    if (_onChMeta) { currentAudio.removeEventListener('loadedmetadata', _onChMeta); _onChMeta = null; }
+    if (_onChEnded) { currentAudio.removeEventListener('ended', _onChEnded); _onChEnded = null; }
     currentAudio.pause();
     currentAudio.src = '';
     currentAudio = null;

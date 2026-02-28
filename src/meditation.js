@@ -7,6 +7,9 @@ let currentAudio = null;
 let currentMeditationId = null;
 let isPlaying = false;
 let progressInterval = null;
+let _onMedMeta = null;
+let _onMedEnded = null;
+let _onMedError = null;
 
 function formatTime(s) {
   if (!s || !isFinite(s)) return '0:00';
@@ -17,7 +20,13 @@ function formatTime(s) {
 
 function stopAudioCleanup() {
   if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
-  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (currentAudio) {
+    if (_onMedMeta) { currentAudio.removeEventListener('loadedmetadata', _onMedMeta); _onMedMeta = null; }
+    if (_onMedEnded) { currentAudio.removeEventListener('ended', _onMedEnded); _onMedEnded = null; }
+    if (_onMedError) { currentAudio.removeEventListener('error', _onMedError); _onMedError = null; }
+    currentAudio.pause();
+    currentAudio = null;
+  }
   isPlaying = false;
   currentMeditationId = null;
 }
@@ -189,12 +198,11 @@ export async function openMeditationDetail(id) {
 
     currentAudio = new Audio(blobUrl);
 
-    currentAudio.addEventListener('loadedmetadata', () => {
+    _onMedMeta = () => {
       const tt = document.getElementById('meditationTotalTime');
       if (tt) tt.textContent = formatTime(currentAudio.duration);
-    });
-
-    currentAudio.addEventListener('ended', () => {
+    };
+    _onMedEnded = () => {
       isPlaying = false;
       updatePlayIcon();
       if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
@@ -202,11 +210,13 @@ export async function openMeditationDetail(id) {
       if (bar) bar.style.width = '100%';
       logMeditationComplete(id, currentAudio.duration);
       URL.revokeObjectURL(blobUrl);
-    });
-
-    currentAudio.addEventListener('error', () => {
+    };
+    _onMedError = () => {
       showToast('Audio konnte nicht abgespielt werden.', 'error');
-    });
+    };
+    currentAudio.addEventListener('loadedmetadata', _onMedMeta);
+    currentAudio.addEventListener('ended', _onMedEnded);
+    currentAudio.addEventListener('error', _onMedError);
 
     await currentAudio.play();
     isPlaying = true;

@@ -505,6 +505,8 @@ function updateCourseSalesSeo(course, slug) {
 let coursePreviewCache = {};
 let previewAudio = null;
 let previewProgressInterval = null;
+let _onPrevMeta = null;
+let _onPrevEnded = null;
 
 function formatTime(sec) {
   if (!sec || !isFinite(sec)) return '0:00';
@@ -677,15 +679,16 @@ function initPreviewAudio(chapter) {
   previewAudio = new Audio(chapter.audio_url);
   previewAudio.preload = 'auto';
 
-  previewAudio.addEventListener('loadedmetadata', () => {
+  _onPrevMeta = () => {
     const tt = document.getElementById('previewTotalTime');
     if (tt) tt.textContent = formatTime(previewAudio.duration);
-  });
-
-  previewAudio.addEventListener('ended', () => {
+  };
+  _onPrevEnded = () => {
     updatePreviewPlayIcon(false);
     clearInterval(previewProgressInterval);
-  });
+  };
+  previewAudio.addEventListener('loadedmetadata', _onPrevMeta);
+  previewAudio.addEventListener('ended', _onPrevEnded);
 }
 
 export function togglePreviewAudio() {
@@ -712,6 +715,8 @@ export function seekPreviewAudio(event) {
 
 export function stopPreviewAudio() {
   if (previewAudio) {
+    if (_onPrevMeta) { previewAudio.removeEventListener('loadedmetadata', _onPrevMeta); _onPrevMeta = null; }
+    if (_onPrevEnded) { previewAudio.removeEventListener('ended', _onPrevEnded); _onPrevEnded = null; }
     previewAudio.pause();
     previewAudio = null;
   }
