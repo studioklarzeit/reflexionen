@@ -6,6 +6,46 @@ import { uploadImage, deleteImage } from './upload.js';
 import { renderCourseTree, closeTreeEditPanel } from './admin-tree.js';
 import { initImageUploadZones, handleImageFileSelect, updateImagePreview } from './admin.js';
 
+// ── CSP-safe change handlers (registered on window for event delegation) ──
+window.treeCourseTypeChanged = (val) => {
+  const el = document.getElementById('treeCourseSalesFields');
+  if (el) el.style.display = (val === 'online' || val === 'both') ? '' : 'none';
+};
+
+window.treeChapterContentTypeChanged = (val) => {
+  const tg = document.getElementById('treeChapterContentTextGroup');
+  const ig = document.getElementById('treeChapterContentImageGroup');
+  if (tg) tg.style.display = (val === 'divider' || val === 'image') ? 'none' : '';
+  if (ig) ig.style.display = val === 'image' ? '' : 'none';
+};
+
+window.treeQuestionTypeChanged = (val) => {
+  const pg = document.getElementById('treeQuestionPlaceholderGroup');
+  const og = document.getElementById('treeQuestionOptionsGroup');
+  const sg = document.getElementById('treeQuestionScaleGroup');
+  if (pg) pg.style.display = val === 'text' ? '' : 'none';
+  if (og) og.style.display = (val === 'choice' || val === 'multichoice') ? '' : 'none';
+  if (sg) sg.style.display = val === 'scale' ? '' : 'none';
+};
+
+window.treeContentTypeChanged = (val) => {
+  const tg = document.getElementById('treeContentTextGroup');
+  if (tg) tg.style.display = val === 'divider' ? 'none' : '';
+};
+
+window.treeElementTypeChanged = (val) => {
+  const qf = document.getElementById('treeElementQuestionFields');
+  const cf = document.getElementById('treeElementContentFields');
+  const ct = document.getElementById('treeContentTypeSelect');
+  const tg = document.getElementById('treeContentTextGroup');
+  if (qf) qf.style.display = val === 'question' ? '' : 'none';
+  if (cf) cf.style.display = val !== 'question' ? '' : 'none';
+  if (ct) ct.value = val !== 'question' ? val : 'heading';
+  if (tg) tg.style.display = val === 'divider' ? 'none' : '';
+};
+
+window.removeOptionRow = (el) => el?.closest('.option-row')?.remove();
+
 // ══════════════════════════════════════
 // PANEL MANAGEMENT
 // ══════════════════════════════════════
@@ -90,7 +130,7 @@ function renderCourseEditForm(container, courseId) {
     <div class="form-group"><label class="form-label">Erweiterung zu</label><select class="form-select" id="treeCourseParentSelect">${parentOpts}</select></div>
     <div class="form-group">
       <label class="form-label">Kurstyp</label>
-      <select class="form-select" id="treeCourseTypeSelect" onchange="document.getElementById('treeCourseSalesFields').style.display=(this.value==='online'||this.value==='both')?'':'none'">
+      <select class="form-select" id="treeCourseTypeSelect" data-change="treeCourseTypeChanged" data-val>
         <option value="exercise"${c.course_type === 'exercise' ? ' selected' : ''}>Übungskurs</option>
         <option value="online"${c.course_type === 'online' ? ' selected' : ''}>Online-Kurs</option>
         <option value="both"${c.course_type === 'both' ? ' selected' : ''}>Beides</option>
@@ -212,7 +252,7 @@ export function openNewCoursePanel() {
     <div class="form-group"><label class="form-label">Erweiterung zu</label><select class="form-select" id="treeCourseParentSelect">${parentOpts}</select></div>
     <div class="form-group">
       <label class="form-label">Kurstyp</label>
-      <select class="form-select" id="treeCourseTypeSelect" onchange="document.getElementById('treeCourseSalesFields').style.display=(this.value==='online'||this.value==='both')?'':'none'">
+      <select class="form-select" id="treeCourseTypeSelect" data-change="treeCourseTypeChanged" data-val>
         <option value="exercise">Übungskurs</option>
         <option value="online">Online-Kurs</option>
         <option value="both">Beides</option>
@@ -466,11 +506,7 @@ export function addTreeChapterContent(chapterId) {
     <input type="hidden" id="treeChapterContentChapterId" value="${chapterId}">
     <div class="form-group">
       <label class="form-label">Typ</label>
-      <select class="form-select" id="treeChapterContentType" onchange="
-        var t=this.value;
-        document.getElementById('treeChapterContentTextGroup').style.display=(t==='divider'||t==='image')?'none':'';
-        document.getElementById('treeChapterContentImageGroup').style.display=t==='image'?'':'none';
-      ">
+      <select class="form-select" id="treeChapterContentType" data-change="treeChapterContentTypeChanged" data-val>
         <option value="heading">Titel</option>
         <option value="subheading">Untertitel</option>
         <option value="text">Text</option>
@@ -630,7 +666,7 @@ function renderQuestionEditForm(container, questionId) {
   const opts = Array.isArray(q.options) ? q.options : [];
   const scaleOpts = typeof q.options === 'object' && !Array.isArray(q.options) ? q.options : {};
 
-  const optsHtml = opts.map(o => `<div class="option-row"><input class="form-input" value="${esc(o)}"><button class="icon-btn delete" onclick="this.parentElement.remove()">✕</button></div>`).join('');
+  const optsHtml = opts.map(o => `<div class="option-row"><input class="form-input" value="${esc(o)}"><button class="icon-btn delete" data-action="removeOptionRow" data-el>✕</button></div>`).join('');
 
   container.innerHTML = `
     <input type="hidden" id="treeEditId" value="${questionId}">
@@ -638,12 +674,7 @@ function renderQuestionEditForm(container, questionId) {
     <div class="form-row">
       <div class="form-group"><label class="form-label">Label</label><input class="form-input" id="treeQuestionLabelInput" value="${esc(q.label || '')}"></div>
       <div class="form-group"><label class="form-label">Fragetyp</label>
-        <select class="form-select" id="treeQuestionTypeSelect" onchange="
-          var t=this.value;
-          document.getElementById('treeQuestionPlaceholderGroup').style.display=t==='text'?'':'none';
-          document.getElementById('treeQuestionOptionsGroup').style.display=(t==='choice'||t==='multichoice')?'':'none';
-          document.getElementById('treeQuestionScaleGroup').style.display=t==='scale'?'':'none';
-        ">
+        <select class="form-select" id="treeQuestionTypeSelect" data-change="treeQuestionTypeChanged" data-val>
           <option value="text"${q.type === 'text' ? ' selected' : ''}>Textfeld</option>
           <option value="choice"${q.type === 'choice' ? ' selected' : ''}>Single Choice</option>
           <option value="multichoice"${q.type === 'multichoice' ? ' selected' : ''}>Multiple Choice</option>
@@ -683,7 +714,7 @@ export function treeAddOptionRow(val) {
   if (!ed) return;
   const row = document.createElement('div');
   row.className = 'option-row';
-  row.innerHTML = `<input class="form-input" placeholder="Antwortmöglichkeit …" value="${val ? esc(val) : ''}"><button class="icon-btn delete" onclick="this.parentElement.remove()">✕</button>`;
+  row.innerHTML = `<input class="form-input" placeholder="Antwortmöglichkeit …" value="${val ? esc(val) : ''}"><button class="icon-btn delete" data-action="removeOptionRow" data-el>✕</button>`;
   ed.appendChild(row);
 }
 
@@ -758,7 +789,7 @@ function renderContentEditForm(container, contentId) {
     <input type="hidden" id="treeContentExerciseId" value="${b.exercise_id}">
     <div class="form-group">
       <label class="form-label">Typ</label>
-      <select class="form-select" id="treeContentTypeSelect" onchange="document.getElementById('treeContentTextGroup').style.display=this.value==='divider'?'none':''">
+      <select class="form-select" id="treeContentTypeSelect" data-change="treeContentTypeChanged" data-val>
         <option value="heading"${b.type === 'heading' ? ' selected' : ''}>Titel</option>
         <option value="text"${b.type === 'text' ? ' selected' : ''}>Text</option>
         <option value="text_italic"${b.type === 'text_italic' ? ' selected' : ''}>Text kursiv</option>
@@ -817,13 +848,7 @@ function renderElementCreateForm(container, exerciseId) {
     <input type="hidden" id="treeContentExerciseId" value="${exerciseId}">
     <div class="form-group">
       <label class="form-label">Was hinzufügen?</label>
-      <select class="form-select" id="treeElementTypeSelect" onchange="
-        var t=this.value;
-        document.getElementById('treeElementQuestionFields').style.display=t==='question'?'':'none';
-        document.getElementById('treeElementContentFields').style.display=t!=='question'?'':'none';
-        document.getElementById('treeContentTypeSelect').value=t!=='question'?t:'heading';
-        document.getElementById('treeContentTextGroup').style.display=(t==='divider')?'none':'';
-      ">
+      <select class="form-select" id="treeElementTypeSelect" data-change="treeElementTypeChanged" data-val>
         <option value="question">Frage</option>
         <option value="heading">Titel</option>
         <option value="text">Text</option>
@@ -838,12 +863,7 @@ function renderElementCreateForm(container, exerciseId) {
       <div class="form-row">
         <div class="form-group"><label class="form-label">Label</label><input class="form-input" id="treeQuestionLabelInput" placeholder="z.B. Reflexion · 01"></div>
         <div class="form-group"><label class="form-label">Fragetyp</label>
-          <select class="form-select" id="treeQuestionTypeSelect" onchange="
-            var t=this.value;
-            document.getElementById('treeQuestionPlaceholderGroup').style.display=t==='text'?'':'none';
-            document.getElementById('treeQuestionOptionsGroup').style.display=(t==='choice'||t==='multichoice')?'':'none';
-            document.getElementById('treeQuestionScaleGroup').style.display=t==='scale'?'':'none';
-          ">
+          <select class="form-select" id="treeQuestionTypeSelect" data-change="treeQuestionTypeChanged" data-val>
             <option value="text">Textfeld</option>
             <option value="choice">Single Choice</option>
             <option value="multichoice">Multiple Choice</option>
