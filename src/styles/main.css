@@ -450,6 +450,82 @@ textarea:focus { background: rgba(255,255,255,0.15); }
 .icon-btn:hover { border-color: var(--text-muted); color: var(--text); }
 .icon-btn.delete:hover { border-color: var(--accent-rose); color: var(--accent-rose); }
 
+/* ── TREE VIEW ── */
+.tree-toolbar { display: flex; align-items: center; gap: 8px; padding: 16px 20px; background: var(--card); border: 1px solid var(--border-light); border-radius: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.tree-toolbar .tree-search { flex: 1; min-width: 180px; padding: 8px 14px; border: 1px solid var(--border-light); border-radius: 4px; font-family: var(--font-body); font-size: 14px; color: var(--text); background: var(--bg); outline: none; }
+.tree-toolbar .tree-search:focus { border-color: var(--accent-warm); }
+.tree-toolbar .tree-search::placeholder { color: var(--text-light); }
+
+.tree-layout { display: flex; gap: 0; min-height: 400px; position: relative; }
+.tree-panel { flex: 1; min-width: 0; }
+.tree-layout.has-edit-panel .tree-panel { flex: 0 0 56%; }
+.tree-edit-panel { flex: 0 0 44%; border-left: 1px solid var(--border-light); background: var(--card); border-radius: 0 6px 6px 0; position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; display: none; }
+.tree-edit-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border-light); position: sticky; top: 0; background: var(--card); z-index: 2; }
+.tree-edit-header h3 { font-family: var(--font-heading); font-size: var(--font-size-h5); margin: 0; }
+.tree-edit-header .close-btn { background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+.tree-edit-header .close-btn:hover { color: var(--text); background: var(--beige); }
+.tree-edit-body { padding: 20px; }
+
+/* Tree Nodes */
+.tree-root { list-style: none; padding: 0; margin: 0; }
+.tree-children { list-style: none; padding-left: 24px; margin: 0; }
+.tree-node { margin: 0; }
+.tree-node-row { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 4px; cursor: default; transition: background 0.15s; min-height: 38px; }
+.tree-node-row:hover { background: var(--beige); }
+.tree-node-row.selected { background: rgba(176,122,122,0.08); border-left: 3px solid var(--accent-warm); padding-left: 9px; }
+.tree-node-row .drag-handle { cursor: grab; color: var(--border); font-size: 12px; user-select: none; opacity: 0; transition: opacity 0.15s; flex-shrink: 0; }
+.tree-node-row:hover .drag-handle { opacity: 1; }
+.tree-node-row.dragging { opacity: 0.4; }
+.tree-node-row.drag-over { border-top: 2px solid var(--accent-warm); }
+
+/* Toggle arrow */
+.tree-toggle { background: none; border: none; cursor: pointer; font-size: 10px; color: var(--text-muted); padding: 4px; transition: transform 0.2s; flex-shrink: 0; width: 20px; text-align: center; }
+.tree-toggle.open { transform: rotate(90deg); }
+.tree-toggle.empty { visibility: hidden; }
+
+/* Node content */
+.tree-node-icon { font-size: 13px; flex-shrink: 0; }
+.tree-node-name { font-size: 14px; color: var(--text); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.tree-node-name:hover { color: var(--accent-warm); }
+.tree-node--course > .tree-node-row > .tree-node-name { font-weight: bold; font-size: 15px; }
+.tree-node--chapter > .tree-node-row > .tree-node-name { font-size: 14px; }
+.tree-node--exercise > .tree-node-row > .tree-node-name { font-size: 13px; color: var(--text-muted); }
+.tree-node--element > .tree-node-row > .tree-node-name { font-size: 12px; color: var(--text-light); }
+
+/* Badges */
+.tree-badge { font-size: 10px; color: var(--text-light); background: var(--beige); padding: 2px 6px; border-radius: 3px; flex-shrink: 0; }
+.tree-badge--lock { background: none; }
+
+/* Meta (child count) */
+.tree-node-meta { margin-left: auto; font-size: 11px; color: var(--text-light); white-space: nowrap; flex-shrink: 0; padding-right: 4px; }
+
+/* Actions */
+.tree-node-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.15s; flex-shrink: 0; }
+.tree-node-row:hover .tree-node-actions { opacity: 1; }
+.tree-action-btn { font-size: 12px !important; padding: 2px 6px !important; min-width: 24px; height: 24px; }
+
+/* Element badges */
+.tree-element-badge { font-size: 10px; padding: 2px 8px; border-radius: 3px; white-space: nowrap; flex-shrink: 0; }
+.tree-element-badge--question { background: var(--accent-warm); color: white; }
+.tree-element-badge--content { background: var(--beige); color: var(--text-muted); }
+
+/* Chapter content in side panel */
+.tree-content-list { display: flex; flex-direction: column; gap: 4px; }
+.tree-content-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 4px; font-size: 13px; }
+.tree-content-item:hover { background: var(--beige); }
+.tree-content-preview { flex: 1; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tree-content-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.15s; }
+.tree-content-item:hover .tree-content-actions { opacity: 1; }
+
+/* Mobile: edit panel becomes fullscreen overlay */
+@media (max-width: 700px) {
+  .tree-layout { flex-direction: column; }
+  .tree-layout.has-edit-panel .tree-panel { flex: none; width: 100%; }
+  .tree-edit-panel { position: fixed; inset: 0; z-index: 100; border-radius: 0; border-left: none; max-height: none; flex: none; width: 100%; }
+  .tree-node-actions { opacity: 1; }
+  .tree-node-row .drag-handle { opacity: 0.5; }
+}
+
 /* Bulk Upload */
 .bulk-upload-wrap { margin-bottom: 24px; }
 .bulk-toggle { display: flex; align-items: center; gap: 8px; width: 100%; padding: 16px 20px; background: var(--card); border: 1px solid var(--border-light); border-radius: 6px; cursor: pointer; font-family: var(--font-body); font-size: 14px; color: var(--text); transition: all 0.2s; }

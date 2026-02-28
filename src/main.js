@@ -63,7 +63,21 @@ import {
 import {
   toggleBulkUpload, updateBulkChapterSelect, downloadBulkTemplate,
   handleBulkFileSelect, executeBulkImport, clearBulkUpload,
+  openTreeBulkUpload, onBulkLevelChange,
 } from './bulkupload.js';
+import {
+  renderCourseTree, toggleTreeNode, expandAllTree, collapseAllTree,
+  editTreeNode, addChildNode, closeTreeEditPanel, deleteTreeNode,
+  searchTree,
+} from './admin-tree.js';
+import {
+  treeSaveCourse, openNewCoursePanel,
+  treeSaveChapter, treeHandleChapterAudio,
+  treeSaveExercise,
+  treeSaveQuestion, treeAddOptionRow,
+  treeSaveContent, treeSaveElement,
+  addTreeChapterContent, treeSaveChapterContent, deleteTreeChapterContent,
+} from './admin-tree-crud.js';
 import {
   loadPageEditor, savePage, editPage, deletePage, resetPageForm,
   loadPageSections, loadCourseSalesSections, addSection, saveSectionFields, editSection, deleteSection,
@@ -243,6 +257,18 @@ Object.assign(window, {
   // Bulk Upload
   toggleBulkUpload, updateBulkChapterSelect, downloadBulkTemplate,
   handleBulkFileSelect, executeBulkImport, clearBulkUpload,
+  openTreeBulkUpload, onBulkLevelChange,
+  // Course Tree View
+  renderCourseTree, toggleTreeNode, expandAllTree, collapseAllTree,
+  editTreeNode, addChildNode, closeTreeEditPanel, deleteTreeNode,
+  searchTree,
+  // Tree CRUD
+  treeSaveCourse, openNewCoursePanel,
+  treeSaveChapter, treeHandleChapterAudio,
+  treeSaveExercise,
+  treeSaveQuestion, treeAddOptionRow,
+  treeSaveContent, treeSaveElement,
+  addTreeChapterContent, treeSaveChapterContent, deleteTreeChapterContent,
   // Course Player (lazy loaded, assigned dynamically)
   openChapterPlayer: (...a) => import('./courseplayer.js').then(m => m.openChapterPlayer(...a)),
   toggleChapterAudio: (...a) => import('./courseplayer.js').then(m => m.toggleChapterAudio(...a)),

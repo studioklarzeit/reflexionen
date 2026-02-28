@@ -390,9 +390,7 @@
         <button class="admin-nav-label" data-action="toggleAdminGroup" data-args='["Website"]'>Website</button>
       </div>
       <div class="admin-nav-pills-area open" id="adminPillsKurse">
-        <button class="nav-pill active" data-action="switchAdminTab" data-args='["courses"]'>Kurse</button>
-        <button class="nav-pill" data-action="switchAdminTab" data-args='["chapters"]'>Kapitel</button>
-        <button class="nav-pill" data-action="switchAdminTab" data-args='["exercises"]'>Übungen</button>
+        <button class="nav-pill active" data-action="switchAdminTab" data-args='["courseTree"]'>Kursstruktur</button>
       </div>
       <div class="admin-nav-pills-area" id="adminPillsEinstellungen">
         <button class="nav-pill" data-action="switchAdminTab" data-args='["users"]'>User</button>
@@ -415,224 +413,37 @@
       </div>
     </div>
 
-    <div class="admin-tab active" id="adminTabCourses">
-      <div class="admin-form">
-        <h3 id="courseFormTitle">Neuen Kurs erstellen</h3><input type="hidden" id="editCourseId">
-        <div class="form-group"><label class="form-label">Kursname</label><input class="form-input" id="courseNameInput" placeholder="z.B. Selbstreflexion"></div>
-        <div class="form-group"><label class="form-label">Beschreibung</label><textarea class="form-textarea" id="courseDescInput" placeholder="Kurze Beschreibung …"></textarea></div>
-        <div class="form-group">
-          <label class="form-label">Kursbild</label>
-          <input type="hidden" id="courseImageUrl">
-          <div class="image-upload-zone" id="courseImagePreview" data-action="triggerClickOn" data-args='["courseImageInput"]'>
-            <span class="image-upload-label">Bild hierher ziehen oder klicken</span>
-          </div>
-          <input type="file" id="courseImageInput" accept="image/*" style="display:none;" data-change="handleImageFileSelect" data-args='["courseImageInput","courseImagePreview"]'>
-        </div>
-        <div class="form-group"><label class="form-check"><input type="checkbox" id="courseRestrictedInput"><span>Zugang einschränken (nur per Einladungslink)</span></label></div>
-
-        <div class="form-group">
-          <label class="form-label">Erweiterung zu (optional)</label>
-          <select class="form-select" id="courseParentSelect">
-            <option value="">— Kein Elternkurs (eigenständig) —</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Kurstyp</label>
-          <select class="form-select" id="courseTypeSelect" data-change="toggleCourseSalesFields">
-            <option value="exercise">Übungskurs (nur Übungen)</option>
-            <option value="online">Online-Kurs (Audio + Text + Übungen)</option>
-            <option value="both">Beides</option>
-          </select>
-        </div>
-
-        <div id="courseSalesFields" style="display:none;">
-          <h4 style="margin:24px 0 16px; font-family:var(--font-heading); font-size:var(--font-size-h4); color:var(--text);">Verkaufsseite</h4>
-          <div class="form-group"><label class="form-check"><input type="checkbox" id="courseSalesPublished"><span>Verkaufsseite veröffentlichen</span></label></div>
-          <div class="form-group"><label class="form-label">URL-Slug</label><input class="form-input" id="courseSalesSlug" placeholder="z.B. muede-obwohl-du"></div>
-          <div class="form-group"><label class="form-label">Überschrift (Verkaufsseite)</label><input class="form-input" id="courseSalesHeadline" placeholder="z.B. Endlich verstehen, warum du müde bist"></div>
-          <div class="form-group"><label class="form-label">Beschreibung (Verkaufsseite)</label><textarea class="form-textarea" id="courseSalesDesc" rows="4" placeholder="Ausführliche Beschreibung für Käufer..."></textarea></div>
-          <div class="form-group"><label class="form-label">Features (je Zeile ein Punkt)</label><textarea class="form-textarea" id="courseSalesFeatures" rows="4" placeholder="13 Kapitel mit Audio und Text&#10;Praktische Übungen zu jedem Kapitel&#10;Lebenslanger Zugang"></textarea></div>
-          <div class="form-group"><label class="form-label">CTA-Button Text</label><input class="form-input" id="courseSalesCta" value="Jetzt starten"></div>
-
-          <h4 style="margin:24px 0 16px; font-family:var(--font-heading); font-size:var(--font-size-h4); color:var(--text);">Verkaufsseite Sektionen</h4>
-          <p style="font-size:var(--font-size-p2);font-style:italic;color:var(--text-muted);margin-bottom:12px;">Baue die Verkaufsseite mit Drag &amp; Drop auf. Füge z.B. Hero, Text und einen &laquo;Kauf-CTA&raquo; hinzu.</p>
-          <button class="btn btn-ghost btn-sm" data-action="loadCourseSalesSections" style="margin-bottom:16px;"><span class="btn-text">Sektionen bearbeiten</span></button>
-
-          <h4 style="margin:24px 0 16px; font-family:var(--font-heading); font-size:var(--font-size-h4); color:var(--text);">Preise</h4>
-          <div class="form-row">
-            <div class="form-group" style="flex:1;"><label class="form-label">Einmalpreis (CHF)</label><input class="form-input" id="coursePriceOnetime" type="number" step="0.01" placeholder="z.B. 99"></div>
-            <div class="form-group" style="flex:1;"><label class="form-label">Stripe Price ID (Einmal)</label><input class="form-input" id="courseStripePriceOnetime" placeholder="price_xxx"></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group" style="flex:1;"><label class="form-label">Abo-Preis / Monat (CHF)</label><input class="form-input" id="coursePriceSubscription" type="number" step="0.01" placeholder="z.B. 19"></div>
-            <div class="form-group" style="flex:1;"><label class="form-label">Stripe Price ID (Abo)</label><input class="form-input" id="courseStripePriceSubscription" placeholder="price_xxx"></div>
-          </div>
-        </div>
-
-        <div class="actions"><button class="btn btn-primary btn-sm" id="saveCourseBtn" data-action="saveCourse"><span class="btn-text">Speichern</span></button><button class="btn btn-ghost btn-sm" data-action="resetCourseForm">Abbrechen</button></div>
+    <!-- Course Tree View (replaces old Courses/Chapters/Exercises tabs) -->
+    <div class="admin-tab active" id="adminTabCourseTree">
+      <div class="tree-toolbar">
+        <button class="btn btn-primary btn-sm" data-action="openNewCoursePanel"><span class="btn-text">+ Neuer Kurs</span></button>
+        <button class="btn btn-ghost btn-sm" data-action="openTreeBulkUpload"><span class="btn-text">Bulk Upload</span></button>
+        <input type="text" class="tree-search" id="treeSearchInput" placeholder="Suchen …" data-input="searchTree" data-val>
+        <button class="btn btn-ghost btn-sm" data-action="expandAllTree">Alle ↕</button>
+        <button class="btn btn-ghost btn-sm" data-action="collapseAllTree">Alle ↑</button>
       </div>
-      <div id="adminCoursesList"></div>
+      <div id="treeBulkUploadSection" style="display:none;"></div>
+      <div class="tree-layout">
+        <div class="tree-panel" id="treePanel">
+          <ul class="tree-root" id="courseTree"></ul>
+        </div>
+        <div class="tree-edit-panel" id="treeEditPanel" style="display:none;">
+          <div class="tree-edit-header">
+            <h3 id="treeEditTitle"></h3>
+            <button class="close-btn" data-action="closeTreeEditPanel">&times;</button>
+          </div>
+          <div class="tree-edit-body" id="treeEditBody"></div>
+        </div>
+      </div>
     </div>
 
-    <div class="admin-tab" id="adminTabChapters" style="display:none;">
-      <div class="admin-form">
-        <h3 id="chapterFormTitle">Neues Kapitel erstellen</h3><input type="hidden" id="editChapterId">
-        <div class="form-group"><label class="form-label">Kurs auswählen</label><select class="form-select" id="chapterCourseSelect" data-change="toggleChapterOnlineFields"></select></div>
-        <div class="form-group"><label class="form-label">Kapitelname</label><input class="form-input" id="chapterNameInput" placeholder="z.B. Innere Wahrnehmung"></div>
-        <div class="form-row">
-          <div class="form-group" style="flex:3;"><label class="form-label">Beschreibung</label><textarea class="form-textarea" id="chapterDescInput" placeholder="Kurze Beschreibung …"></textarea></div>
-          <div class="form-group" style="flex:1;"><label class="form-label">Geschätzte Zeit (Min.)</label><input class="form-input" id="chapterTimeInput" type="number" min="1" placeholder="z.B. 15"></div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Kapitelbild</label>
-          <input type="hidden" id="chapterImageUrl">
-          <div class="image-upload-zone" id="chapterImagePreview" data-action="triggerClickOn" data-args='["chapterImageInput"]'>
-            <span class="image-upload-label">Bild hierher ziehen oder klicken</span>
-          </div>
-          <input type="file" id="chapterImageInput" accept="image/*" style="display:none;" data-change="handleImageFileSelect" data-args='["chapterImageInput","chapterImagePreview"]'>
-        </div>
+    <!-- Hidden: old forms are kept for backward compatibility with pagebuilder sales sections -->
+    <div id="adminCoursesList" style="display:none;"></div>
+    <div id="pageSectionsEditor" style="display:none;"></div>
 
-        <div id="chapterOnlineFields" style="display:none;">
-          <h4 style="margin:24px 0 16px; font-family:var(--font-heading); font-size:var(--font-size-h4); color:var(--text);">Online-Kurs Inhalt</h4>
-          <div class="form-group">
-            <label class="form-label">Kapiteltyp</label>
-            <select class="form-select" id="chapterTypeSelect">
-              <option value="standard">Standard (mit Übung)</option>
-              <option value="vorwort">Vorwort</option>
-              <option value="abschluss">Abschlusswort</option>
-              <option value="content">Nur Inhalt (keine Übung)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Audio-Datei (MP3)</label>
-            <div class="audio-upload-zone" id="chapterAudioPreview" data-action="triggerClickOn" data-args='["chapterAudioInput"]'>
-              <span class="audio-upload-label">MP3 hierher ziehen oder klicken</span>
-            </div>
-            <input type="file" id="chapterAudioInput" accept="audio/*" style="display:none;" data-change="handleChapterAudioSelect">
-            <input type="hidden" id="chapterAudioUrl" value="">
-            <input type="hidden" id="chapterAudioDuration" value="0">
-          </div>
-        </div>
-
-        <div class="actions"><button class="btn btn-primary btn-sm" id="saveChapterBtn" data-action="saveChapter"><span class="btn-text">Speichern</span></button><button class="btn btn-ghost btn-sm" data-action="resetChapterForm">Abbrechen</button></div>
-      </div>
-
-      <!-- Chapter Content Blocks Editor (shown after saving a chapter) -->
-      <div id="chapterContentSection" style="display:none;">
-        <div class="admin-form">
-          <h3>Kapitelinhalt bearbeiten</h3>
-          <div class="form-group">
-            <label class="form-label">Was möchtest du hinzufügen?</label>
-            <select class="form-select" id="chapterContentAddType" data-change="onChapterContentAddTypeChange">
-              <option value="heading">Titel</option>
-              <option value="subheading">Untertitel</option>
-              <option value="text">Textabschnitt</option>
-              <option value="text_italic">Textabschnitt kursiv</option>
-              <option value="text_bold">Textabschnitt fett</option>
-              <option value="quote">Zitat / Slogan</option>
-              <option value="divider">Trennlinie</option>
-              <option value="image">Bild</option>
-            </select>
-          </div>
-          <input type="hidden" id="editChapterContentId">
-          <div id="chapterContentFieldsWrap">
-            <div class="form-group" id="chapterContentTextGroup"><label class="form-label">Inhalt</label><textarea class="form-textarea" id="chapterContentTextInput" placeholder="Text eingeben …"></textarea></div>
-            <div class="form-group" id="chapterContentImageGroup" style="display:none;">
-              <label class="form-label">Bild hochladen</label>
-              <div class="image-upload-zone" id="chapterContentImagePreview" data-action="triggerClickOn" data-args='["chapterContentImageInput"]'>
-                <span class="image-upload-label">Bild hierher ziehen oder klicken</span>
-              </div>
-              <input type="file" id="chapterContentImageInput" accept="image/*" style="display:none;" data-change="handleImageFileSelect" data-args='["chapterContentImageInput","chapterContentImagePreview"]'>
-            </div>
-          </div>
-          <div class="actions">
-            <button class="btn btn-primary btn-sm" id="saveChapterContentBtn" data-action="saveChapterContent"><span class="btn-text">Hinzufügen</span></button>
-            <button class="btn btn-ghost btn-sm" data-action="resetChapterContentForm">Abbrechen</button>
-          </div>
-        </div>
-        <div id="adminChapterContentList"></div>
-      </div>
-
-      <div id="adminChaptersList"></div>
-    </div>
-
-    <div class="admin-tab" id="adminTabExercises" style="display:none;">
-      <div class="admin-form">
-        <h3 id="exerciseFormTitle">Neue Übung erstellen</h3><input type="hidden" id="editExerciseId">
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Kurs</label><select class="form-select" id="exerciseCourseFilter" data-change="updateExerciseChapterSelect"></select></div>
-          <div class="form-group"><label class="form-label">Kapitel</label><select class="form-select" id="exerciseChapterSelect"></select></div>
-        </div>
-        <div class="form-group"><label class="form-label">Übungsname</label><input class="form-input" id="exerciseNameInput" placeholder="z.B. Innere Wahrnehmung"></div>
-        <div class="form-group"><label class="form-label">Beschreibung (optional)</label><textarea class="form-textarea" id="exerciseDescInput" placeholder="Kurze Beschreibung …"></textarea></div>
-        <div class="actions"><button class="btn btn-primary btn-sm" id="saveExerciseBtn" data-action="saveExercise"><span class="btn-text">Speichern</span></button><button class="btn btn-ghost btn-sm" data-action="resetExerciseForm">Abbrechen</button></div>
-      </div>
-
-      <!-- Content blocks + Questions for selected exercise -->
-      <div id="exerciseContentSection" style="display:none;">
-        <div class="admin-form">
-          <h3>Element hinzufügen</h3>
-          <div class="form-group">
-            <label class="form-label">Was möchtest du hinzufügen?</label>
-            <select class="form-select" id="exerciseAddType" data-change="onExerciseAddTypeChange">
-              <option value="question">Frage</option>
-              <option value="heading">Titel</option>
-              <option value="text">Text</option>
-              <option value="text_italic">Text kursiv</option>
-              <option value="text_bold">Text fett</option>
-              <option value="quote">Zitat / Slogan</option>
-              <option value="divider">Trennlinie</option>
-            </select>
-          </div>
-
-          <!-- Content block fields -->
-          <input type="hidden" id="editContentId">
-          <div id="contentFieldsWrap" style="display:none;">
-            <div class="form-group" id="contentTextGroup" style="display:none;"><label class="form-label">Inhalt</label><textarea class="form-textarea" id="contentTextInput" placeholder="Text eingeben …"></textarea></div>
-          </div>
-
-          <!-- Question fields -->
-          <input type="hidden" id="editQuestionId">
-          <div id="questionFieldsWrap">
-            <div class="form-row">
-              <div class="form-group"><label class="form-label">Label (optional)</label><input class="form-input" id="questionLabelInput" placeholder="z.B. Reflexion · 01"></div>
-              <div class="form-group"><label class="form-label">Fragetyp</label><select class="form-select" id="questionTypeSelect" data-change="onQuestionTypeChange"><option value="text">Textfeld</option><option value="choice">Single Choice</option><option value="multichoice">Multiple Choice</option><option value="scale">Skala</option></select></div>
-            </div>
-            <div class="form-group"><label class="form-label">Frage</label><textarea class="form-textarea" id="questionQuestionInput" placeholder="Die Reflexionsfrage …"></textarea></div>
-            <div class="form-group"><label class="form-label">Hinweis (optional)</label><textarea class="form-textarea" id="questionHintInput" placeholder="Ein unterstützender Hinweis …" style="min-height:60px;"></textarea></div>
-            <div class="form-group" id="questionPlaceholderGroup"><label class="form-label">Platzhaltertext</label><input class="form-input" id="questionPlaceholderInput" placeholder="z.B. Beschreibe dein Gefühl …"></div>
-            <div class="form-group" id="questionOptionsGroup" style="display:none;">
-              <label class="form-label">Antwortmöglichkeiten</label>
-              <div class="options-editor" id="questionOptionsEditor"></div>
-              <button class="add-option-btn" data-action="addOptionRow">+ Option hinzufügen</button>
-            </div>
-            <div class="form-group" id="questionScaleGroup" style="display:none;">
-              <label class="form-label">Skala-Einstellungen</label>
-              <div class="form-row">
-                <div class="form-group"><label class="form-label">Min</label><input class="form-input" id="questionScaleMin" type="number" value="1"></div>
-                <div class="form-group"><label class="form-label">Max</label><input class="form-input" id="questionScaleMax" type="number" value="10"></div>
-                <div class="form-group"><label class="form-label">Schritt</label><input class="form-input" id="questionScaleStep" type="number" value="1"></div>
-              </div>
-              <div class="form-row">
-                <div class="form-group"><label class="form-label">Label links</label><input class="form-input" id="questionScaleLabelMin" placeholder="z.B. Gar nicht"></div>
-                <div class="form-group"><label class="form-label">Label rechts</label><input class="form-input" id="questionScaleLabelMax" placeholder="z.B. Sehr stark"></div>
-              </div>
-            </div>
-            <div class="form-group"><label class="form-label">Breite</label><select class="form-select" id="questionWidthSelect"><option value="normal">Normal (halbe Breite)</option><option value="wide">Breit (volle Breite)</option></select></div>
-          </div>
-
-          <div class="actions">
-            <button class="btn btn-primary btn-sm" id="saveElementBtn" data-action="saveElement"><span class="btn-text">Hinzufügen</span></button>
-            <button class="btn btn-ghost btn-sm" data-action="resetElementForm">Abbrechen</button>
-          </div>
-        </div>
-        <div id="adminContentList"></div>
-      </div>
-
-      <div id="bulkUploadSection"></div>
-      <div id="adminExercisesList"></div>
-    </div>
+    <!-- Old tab containers kept hidden for backward compatibility -->
+    <div style="display:none;" id="adminTabChapters"></div>
+    <div style="display:none;" id="adminTabExercises"><div id="bulkUploadSection"></div><div id="adminExercisesList"></div></div>
 
     <div class="admin-tab" id="adminTabUsers" style="display:none;">
       <div id="adminUsersList"></div>

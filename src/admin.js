@@ -8,6 +8,7 @@ import { renderBulkUpload } from './bulkupload.js';
 // ── ADMIN TABS ──
 
 const TAB_GROUPS = {
+  courseTree: 'Kurse',
   courses: 'Kurse', chapters: 'Kurse', exercises: 'Kurse',
   users: 'Einstellungen', onboarding: 'Einstellungen', typography: 'Einstellungen', colors: 'Einstellungen',
   journal: 'Tools', checkin: 'Tools', weeklyImpulse: 'Tools', meditation: 'Tools', messages: 'Tools',
@@ -39,11 +40,13 @@ export function switchAdminTab(tab) {
   document.querySelectorAll('#adminPills .nav-pill').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.admin-tab').forEach(t => { t.style.display = 'none'; });
 
-  const tabs = ['courses', 'chapters', 'exercises', 'users', 'onboarding', 'typography', 'colors', 'journal', 'checkin', 'weeklyImpulse', 'meditation', 'messages', 'proQuestions', 'pages', 'blog', 'seoTracking'];
+  const tabs = ['courseTree', 'users', 'onboarding', 'typography', 'colors', 'journal', 'checkin', 'weeklyImpulse', 'meditation', 'messages', 'proQuestions', 'pages', 'blog', 'seoTracking'];
   const idx = tabs.indexOf(tab);
   const pills = document.querySelectorAll('#adminPills .nav-pill');
   if (pills[idx]) pills[idx].classList.add('active');
-  document.getElementById('adminTab' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
+
+  const tabEl = document.getElementById('adminTab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+  if (tabEl) tabEl.style.display = 'block';
 
   // Auto-open the parent group
   const groupName = TAB_GROUPS[tab];
@@ -54,6 +57,7 @@ export function switchAdminTab(tab) {
     }
   }
 
+  if (tab === 'courseTree') { import('./admin-tree.js').then(m => m.renderCourseTree()); }
   if (tab === 'courses') { populateParentCourseSelect(); renderAdminCourses(); }
   if (tab === 'chapters') { populateCourseSelects(); renderAdminChapters(); }
   if (tab === 'exercises') { populateCourseSelects(); renderAdminExercises(); }
