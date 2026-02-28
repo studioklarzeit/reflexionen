@@ -542,9 +542,9 @@ textarea:focus { background: rgba(255,255,255,0.15); }
 
 .completion-banner { background: linear-gradient(135deg, var(--accent-dark) 0%, #b8a090 100%); border-radius: 10px; padding: 40px 44px; color: var(--card); margin-bottom: 36px; display: none; animation: fadeUp 0.5s ease both; }
 .completion-banner.visible { display: block; }
-.completion-label { font-size: 12px; font-style: var(--font-style-p3); color: rgba(237,230,226,0.55); margin-bottom: 12px; display: block; letter-spacing: 0.3px; }
-.completion-title { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 400; margin-bottom: 12px; line-height: 1.3; letter-spacing: -0.02em; }
-.completion-text { font-size: var(--font-size-p2); color: rgba(237,230,226,0.65); font-style: var(--font-style-p2); font-weight: var(--font-weight-p2); line-height: 1.55; max-width: 480px; }
+.completion-label { font-size: 12px; font-family: var(--font-body); font-style: italic; color: rgba(237,230,226,0.5); margin-bottom: 16px; display: block; letter-spacing: 0.3px; }
+.completion-title { font-family: var(--font-heading); font-size: 2rem; font-weight: 400; color: #faf8f4 !important; margin-bottom: 14px; line-height: 1.25; letter-spacing: -0.02em; text-shadow: 0 1px 8px rgba(0,0,0,0.06); }
+.completion-text { font-family: var(--font-body); font-size: 1rem; color: rgba(250,248,244,0.6); line-height: 1.6; max-width: 500px; }
 
 .summary-section { margin-bottom: 48px; display: none; }
 .summary-section.visible { display: block; }
