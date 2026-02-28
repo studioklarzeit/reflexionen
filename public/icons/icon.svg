@@ -1,25 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <!-- Subtiler Schatten unter dem K -->
     <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
       <feDropShadow dx="3" dy="5" stdDeviation="6" flood-color="#8B7568" flood-opacity="0.45"/>
     </filter>
-    <!-- Leichter innerer Glanz oben links -->
     <linearGradient id="letterGrad" x1="0" y1="0" x2="0.3" y2="1">
       <stop offset="0%" stop-color="#F8F3F0"/>
       <stop offset="100%" stop-color="#DDD4CE"/>
     </linearGradient>
-    <!-- Hintergrund-Gradient für Tiefe -->
     <radialGradient id="bgGrad" cx="0.4" cy="0.35" r="0.7">
       <stop offset="0%" stop-color="#CCAFA2"/>
       <stop offset="100%" stop-color="#B89A8C"/>
     </radialGradient>
   </defs>
 
-  <!-- Hintergrund mit Gradient -->
   <rect width="512" height="512" rx="96" fill="url(#bgGrad)"/>
 
-  <!-- K mit Schatten + Gradient-Füllung -->
   <g fill="url(#letterGrad)" filter="url(#shadow)">
     <!-- Vertikaler Stamm -->
     <rect x="152" y="116" width="32" height="280" rx="1"/>
