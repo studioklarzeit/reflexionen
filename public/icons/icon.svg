@@ -1,4 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="80" fill="#C4A99B"/>
-  <text x="256" y="310" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="230" font-weight="400" fill="#EDE6E2" letter-spacing="-10">SK</text>
+  <rect width="512" height="512" rx="96" fill="#C4A99B"/>
+  <!-- Stilisiertes K — eleganter thin-Serif Monogramm -->
+  <g fill="#EDE6E2">
+    <!-- Vertikaler Stamm -->
+    <rect x="152" y="116" width="32" height="280" rx="1"/>
+    <!-- Obere Serife Stamm -->
+    <rect x="132" y="116" width="72" height="8" rx="1"/>
+    <!-- Untere Serife Stamm -->
+    <rect x="132" y="388" width="72" height="8" rx="1"/>
+    <!-- Oberer Schenkel — dünner, eleganter -->
+    <polygon points="184,262 184,242 342,116 362,116 362,128"/>
+    <!-- Unterer Schenkel — dünner, eleganter -->
+    <polygon points="184,266 184,286 342,396 362,396 362,384"/>
+    <!-- Obere Serife Schenkel -->
+    <rect x="334" y="116" width="40" height="8" rx="1"/>
+    <!-- Untere Serife Schenkel -->
+    <rect x="334" y="388" width="40" height="8" rx="1"/>
+  </g>
 </svg>
