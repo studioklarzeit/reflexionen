@@ -2054,7 +2054,7 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
 /* Mute-Button */
 .impulse-splash-mute {
   position: absolute;
-  bottom: 0; left: 50%; transform: translateX(-50%);
+  top: 61px; left: 50%; transform: translateX(-50%);
   background: none; border: none; cursor: pointer;
   white-space: nowrap;
   font-family: 'PT Serif', Georgia, serif;
