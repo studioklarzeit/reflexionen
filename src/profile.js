@@ -503,6 +503,7 @@ export async function confirmDeleteAccount() {
     state.isAdmin = false;
     state.cacheAnswers = {};
     state.cacheAccess = [];
+    state.chapterProgress = {};
     state.cacheData = { courses: [], chapters: [], exercises: [] };
 
     const { navigateTo } = await import('./navigation.js');

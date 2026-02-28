@@ -46,6 +46,16 @@ export async function loadAllData() {
   await loadCoreData();
 }
 
+export async function loadChapterProgress() {
+  if (!state.currentUser) return;
+  const { data } = await sb
+    .from('chapter_progress')
+    .select('*')
+    .eq('user_id', state.currentUser.id);
+  state.chapterProgress = {};
+  (data || []).forEach(p => { state.chapterProgress[p.chapter_id] = p; });
+}
+
 export async function loadUserAnswers() {
   if (!state.currentUser) return;
   const { data, error } = await sb

@@ -13,6 +13,7 @@ export const state = {
   cacheAnswerDates: {}, // keyed by question_id → updated_at ISO string
   cacheAccess: [],
   cacheAccessFull: [],
+  chapterProgress: {},  // keyed by chapter_id
   pendingInvite: null,
   pendingStripeSuccess: null,
 };

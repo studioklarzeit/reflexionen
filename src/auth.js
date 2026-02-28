@@ -2,7 +2,7 @@ import { sb, SUPABASE_URL, SUPABASE_KEY } from './config.js';
 import { state } from './state.js';
 import { btnLoading, showToast, trAuthErr } from './utils.js';
 import { navigateTo } from './navigation.js';
-import { loadCoreData, loadAdminStatus, loadCourseAccess, loadUserAnswers, resetLazyFlags } from './data.js';
+import { loadCoreData, loadAdminStatus, loadCourseAccess, loadUserAnswers, loadChapterProgress, resetLazyFlags } from './data.js';
 import { redeemInvite } from './admin.js';
 import { updateMobileDarkLabel } from './mobile.js';
 
@@ -358,13 +358,13 @@ export async function handleAuth() {
 
 export async function postLogin() {
   window.setLoadProgress?.(30);
-  await loadCoreData();
-  window.setLoadProgress?.(55);
-  await loadAdminStatus();
-  window.setLoadProgress?.(65);
-  await loadCourseAccess();
-  window.setLoadProgress?.(80);
-  await loadUserAnswers();
+  await Promise.all([
+    loadCoreData(),
+    loadAdminStatus(),
+    loadCourseAccess(),
+    loadUserAnswers(),
+    loadChapterProgress(),
+  ]);
   window.setLoadProgress?.(90);
 
   // Load notification count (non-blocking)
@@ -463,6 +463,7 @@ export async function handleLogout() {
   state.isAdmin = false;
   state.cacheAnswers = {};
   state.cacheAccess = [];
+  state.chapterProgress = {};
   state.cacheData = { courses: [], chapters: [], exercises: [] };
   resetLazyFlags();
   navigateTo('auth');

@@ -6,7 +6,6 @@ import { canAccessCourse, getChapterQuestions, ensureContentData } from './data.
 
 let currentAudio = null;
 let progressInterval = null;
-let chapterProgressCache = {};
 
 function formatTime(sec) {
   if (!sec || !isFinite(sec)) return '0:00';
@@ -30,15 +29,12 @@ export async function renderCoursePlayer() {
     return;
   }
 
-  // Load chapter progress
-  await loadChapterProgress();
-
   const chapters = state.cacheData.chapters
     .filter(ch => ch.course_id === state.currentCourseId)
     .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
   const totalChapters = chapters.length;
-  const completedChapters = chapters.filter(ch => chapterProgressCache[ch.id]?.completed).length;
+  const completedChapters = chapters.filter(ch => state.chapterProgress[ch.id]?.completed).length;
   const pct = totalChapters ? Math.round((completedChapters / totalChapters) * 100) : 0;
 
   // Hero
@@ -93,7 +89,7 @@ export async function renderCoursePlayer() {
     } else {
       // Chapter cards
       const chapterCards = chapters.map((ch, i) => {
-        const prog = chapterProgressCache[ch.id];
+        const prog = state.chapterProgress[ch.id];
         const isComplete = prog?.completed;
         const typeLabel = ch.chapter_type === 'vorwort' ? 'Vorwort' :
                           ch.chapter_type === 'abschluss' ? 'Abschlusswort' : '';
@@ -202,9 +198,7 @@ export async function renderChapterPlayer() {
   // Ensure content data is loaded (lazy)
   await ensureContentData();
 
-  // Load progress for resume
-  await loadChapterProgress();
-  const prog = chapterProgressCache[chapter.id];
+  const prog = state.chapterProgress[chapter.id];
 
   // Breadcrumb — Pro course links back to Monatsreflektionen page
   const isProCourse = course.name?.toLowerCase().includes('monatsreflektion');
@@ -454,16 +448,6 @@ export function stopChapterAudio() {
 // PROGRESS TRACKING
 // ══════════════════════════════════════
 
-async function loadChapterProgress() {
-  if (!state.currentUser) return;
-  const { data } = await sb
-    .from('chapter_progress')
-    .select('*')
-    .eq('user_id', state.currentUser.id);
-  chapterProgressCache = {};
-  (data || []).forEach(p => { chapterProgressCache[p.chapter_id] = p; });
-}
-
 async function saveChapterProgress(chapterId, positionSeconds, completed) {
   if (!state.currentUser) return;
   const record = {
@@ -476,7 +460,7 @@ async function saveChapterProgress(chapterId, positionSeconds, completed) {
   if (completed) record.completed_at = new Date().toISOString();
 
   await sb.from('chapter_progress').upsert(record, { onConflict: 'user_id,chapter_id' });
-  chapterProgressCache[chapterId] = { ...chapterProgressCache[chapterId], ...record };
+  state.chapterProgress[chapterId] = { ...state.chapterProgress[chapterId], ...record };
 }
 
 export async function markChapterCompleteAndNext(chapterId) {
