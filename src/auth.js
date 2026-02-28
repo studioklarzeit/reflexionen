@@ -459,6 +459,8 @@ export async function handleResetPassword() {
 
 export async function handleLogout() {
   localStorage.removeItem('klarzeit_remember');
+  localStorage.removeItem('klarzeit_passkey_id');
+  localStorage.removeItem('klarzeit_passkey_email');
   try { await sb.auth.signOut(); } catch (_) { /* ignore */ }
   state.currentUser = null;
   state.isAdmin = false;

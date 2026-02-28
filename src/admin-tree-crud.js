@@ -444,9 +444,10 @@ export async function treeSaveChapter() {
       // Get duration from audio element
       audio_duration_seconds = await new Promise((resolve) => {
         const a = new Audio();
-        a.addEventListener('loadedmetadata', () => resolve(Math.round(a.duration)));
-        a.addEventListener('error', () => resolve(null));
-        a.src = URL.createObjectURL(audioFile);
+        const blobUrl = URL.createObjectURL(audioFile);
+        a.addEventListener('loadedmetadata', () => { URL.revokeObjectURL(blobUrl); resolve(Math.round(a.duration)); });
+        a.addEventListener('error', () => { URL.revokeObjectURL(blobUrl); resolve(null); });
+        a.src = blobUrl;
       });
       // Upload to meditation bucket (same pattern as admin.js)
       const ext = audioFile.name.split('.').pop();
