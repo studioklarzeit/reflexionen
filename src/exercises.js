@@ -34,7 +34,7 @@ export function renderExercisesList() {
   const heroEl = document.getElementById('exercisesHero');
   if (heroEl) {
     const heroImg = chapter.image_url
-      ? `<div class="chapter-hero-bg" style="background-image:url('${esc(imgTransform(chapter.image_url, 900))}')"></div>`
+      ? `<div class="chapter-hero-bg lazy-bg" data-bg="${esc(imgTransform(chapter.image_url, 900))}"></div>`
       : '';
     heroEl.innerHTML =
       `${heroImg}` +
