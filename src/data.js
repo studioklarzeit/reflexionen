@@ -3,11 +3,12 @@ import { state } from './state.js';
 
 // Core data: loaded at login (4 queries instead of 6)
 export async function loadCoreData() {
-  const [cr, ch, ex, qu] = await Promise.all([
+  const [cr, ch, ex, qu, md] = await Promise.all([
     sb.from('courses').select('*').order('sort_order'),
     sb.from('chapters').select('*').order('sort_order'),
     sb.from('exercises').select('*').order('sort_order'),
     sb.from('questions').select('*').order('sort_order'),
+    sb.from('meditations').select('*').eq('is_active', true).order('sort_order'),
   ]);
   if (cr.error) throw cr.error;
   if (ch.error) throw ch.error;
@@ -18,6 +19,7 @@ export async function loadCoreData() {
     chapters: ch.data || [],
     exercises: ex.data || [],
     questions: qu.data || [],
+    meditations: (md && !md.error) ? (md.data || []) : [],
     contentBlocks: [],
     chapterContentBlocks: [],
   };

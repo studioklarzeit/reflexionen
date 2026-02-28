@@ -71,28 +71,22 @@ async function logMeditationComplete(meditationId, listenedSeconds) {
 export async function renderMeditation() {
   const el = document.getElementById('meditationContent');
   if (!el) return;
-  el.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:40px 0;">Lade Meditationen …</p>';
 
-  try {
-    if (!cachedMeditations) {
+  // Use preloaded data from state, fallback to fetch
+  if (!cachedMeditations) {
+    if (state.cacheData.meditations?.length) {
+      cachedMeditations = state.cacheData.meditations;
+    } else {
+      el.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:40px 0;">Lade Meditationen …</p>';
       const { data, error } = await sb.from('meditations')
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order');
-      if (error) throw error;
+        .select('*').eq('is_active', true).order('sort_order');
+      if (error) { el.innerHTML = '<div class="empty-state">Fehler beim Laden.</div>'; return; }
       cachedMeditations = data || [];
     }
+  }
 
-    const streak = await computeStreak();
-
+  try {
     let html = '';
-
-    if (streak > 0) {
-      html += `<div class="meditation-streak">
-        <span class="meditation-streak-count">${streak}</span>
-        <span class="meditation-streak-label">Tag${streak !== 1 ? 'e' : ''} in Folge</span>
-      </div>`;
-    }
 
     if (!cachedMeditations.length) {
       html += '<div class="empty-state" style="text-align:center;padding:40px 0;color:var(--text-muted);">Noch keine Meditationen verfügbar.</div>';
@@ -116,6 +110,16 @@ export async function renderMeditation() {
     }
 
     el.innerHTML = html;
+
+    // Load streak in background, update DOM when ready
+    computeStreak().then(s => {
+      if (s > 0) {
+        const streakEl = document.createElement('div');
+        streakEl.className = 'meditation-streak';
+        streakEl.innerHTML = `<span class="meditation-streak-count">${s}</span><span class="meditation-streak-label">Tag${s !== 1 ? 'e' : ''} in Folge</span>`;
+        el.prepend(streakEl);
+      }
+    }).catch(() => {});
   } catch (e) {
     console.error(e);
     el.innerHTML = '<p style="text-align:center;color:var(--error);padding:40px 0;">Fehler beim Laden der Meditationen.</p>';
