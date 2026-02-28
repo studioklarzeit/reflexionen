@@ -484,14 +484,6 @@ export async function setupHeader() {
   document.getElementById('mobileAdminBadge').style.display = state.isAdmin ? 'inline' : 'none';
   document.getElementById('mobileAdminLink').style.display = state.isAdmin ? 'flex' : 'none';
 
-  // Pro link visibility (desktop + mobile)
-  import('./pro.js').then(({ isProMember }) => {
-    const show = isProMember();
-    const proMobile = document.getElementById('mobileProLink');
-    const proDesktop = document.getElementById('headerProLink');
-    if (proMobile) proMobile.style.display = show ? 'flex' : 'none';
-    if (proDesktop) proDesktop.style.display = show ? '' : 'none';
-  });
   updateMobileDarkLabel();
 }
 
