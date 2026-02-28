@@ -42,7 +42,7 @@ export async function renderCoursePlayer() {
   if (heroEl && course.image_url) {
     heroEl.style.display = 'block';
     heroEl.innerHTML = `
-      <div class="chapter-hero-bg lazy-bg" data-bg="${esc(imgTransform(course.image_url, 900))}"></div>
+      <div class="chapter-hero-bg" style="background-image:url('${esc(imgTransform(course.image_url, 900))}')"></div>
       <div class="chapter-hero-content">
         <h1 class="chapter-hero-title">${esc(course.name)}</h1>
         ${course.description ? `<p class="chapter-hero-desc">${esc(course.description)}</p>` : ''}
@@ -232,7 +232,7 @@ export async function renderChapterPlayer() {
     <div class="chapter-player">
       ${heroImg ? `
         <div class="chapter-detail-hero">
-          <img src="${esc(imgTransform(heroImg, 900))}" alt="${esc(chapter.name)}" loading="lazy">
+          <img src="${esc(imgTransform(heroImg, 900))}" alt="${esc(chapter.name)}">
           <div class="chapter-detail-hero-overlay">
             <span class="chapter-detail-hero-eyebrow">${typeLabel}</span>
             <h1 class="chapter-detail-hero-title">${esc(chapter.name)}</h1>
