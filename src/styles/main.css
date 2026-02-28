@@ -2957,9 +2957,9 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
 .chapter-exercise-link { margin-bottom: 48px; cursor: pointer; }
 .chapter-exercise-link-inner {
   display: flex; align-items: center; gap: 20px;
-  padding: 32px 36px;
+  padding: 48px 44px;
   background: linear-gradient(135deg, var(--accent-dark) 0%, #b8a090 100%);
-  border-radius: 12px;
+  border-radius: 10px;
   transition: transform 0.25s, box-shadow 0.25s;
 }
 .chapter-exercise-link:hover .chapter-exercise-link-inner {
@@ -2967,9 +2967,9 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
   box-shadow: 0 8px 32px rgba(0,0,0,0.1);
 }
 .chapter-exercise-link-content { flex: 1; }
-.chapter-exercise-link-eyebrow { font-size: 12px; color: rgba(250,248,244,0.5); letter-spacing: 0.3px; margin-bottom: 8px; font-family: var(--font-body); font-style: italic; }
-.chapter-exercise-link-content h4 { font-family: var(--font-heading); font-size: var(--font-size-h4); color: #faf8f4; margin-bottom: 6px; letter-spacing: -0.02em; }
-.chapter-exercise-link-content p { font-size: 14px; color: rgba(250,248,244,0.6); line-height: 1.5; margin: 0; }
+.chapter-exercise-link-eyebrow { font-size: 12px; color: rgba(237,230,226,0.5); letter-spacing: 0.3px; margin-bottom: 16px; font-family: var(--font-body); font-style: italic; }
+.chapter-exercise-link-content h4 { font-family: var(--font-heading); font-size: 2rem; font-weight: 400; color: #faf8f4; margin-bottom: 14px; letter-spacing: -0.02em; text-shadow: 0 1px 8px rgba(0,0,0,0.06); }
+.chapter-exercise-link-content p { font-family: var(--font-body); font-size: 1rem; color: rgba(250,248,244,0.6); line-height: 1.6; margin: 0; max-width: 500px; }
 .chapter-exercise-link-arrow { color: rgba(250,248,244,0.5); font-size: 22px; flex-shrink: 0; transition: transform 0.2s; }
 .chapter-exercise-link:hover .chapter-exercise-link-arrow { transform: translateX(3px); color: #faf8f4; }
 
