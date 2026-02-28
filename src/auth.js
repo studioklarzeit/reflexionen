@@ -31,7 +31,9 @@ let _appUnlocked = false;
 let _lastHidden = 0;
 
 function isMobileDevice() {
-  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && window.innerWidth <= 1024;
+  // Only enable on actual mobile devices — exclude desktops/laptops explicitly
+  if (/Windows|Macintosh|Linux x86_64|CrOS/i.test(navigator.userAgent)) return false;
+  return /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
 }
 
 function supportsPasskey() {
