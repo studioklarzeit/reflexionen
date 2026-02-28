@@ -3,7 +3,6 @@ import { state } from './state.js';
 import { btnLoading, showToast, trAuthErr } from './utils.js';
 import { navigateTo } from './navigation.js';
 import { loadCoreData, loadAdminStatus, loadCourseAccess, loadUserAnswers, loadChapterProgress, loadToolImages, resetLazyFlags } from './data.js';
-import { redeemInvite } from './admin.js';
 import { updateMobileDarkLabel } from './mobile.js';
 
 // ── AUTH MODE ──
@@ -390,6 +389,7 @@ export async function postLogin() {
   });
 
   if (state.pendingInvite) {
+    const { redeemInvite } = await import('./admin.js');
     await redeemInvite(state.pendingInvite);
     state.pendingInvite = null;
   }

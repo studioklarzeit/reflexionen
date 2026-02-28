@@ -1,4 +1,4 @@
-var CACHE_NAME = 'klarzeit-cache-v11';
+var CACHE_NAME = 'klarzeit-cache-v12';
 var MAX_CACHE_ITEMS = 200;
 var STATIC_URLS = [
   '/',

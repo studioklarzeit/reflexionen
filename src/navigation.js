@@ -2,7 +2,6 @@ import { state } from './state.js';
 import { renderCoursesList } from './courses.js';
 import { renderChaptersList } from './chapters.js';
 import { renderExercisesList, renderQuestionsView } from './exercises.js';
-import { switchAdminTab } from './admin.js';
 import { renderOnboarding } from './onboarding.js';
 import { renderTools } from './tools.js';
 
@@ -161,7 +160,7 @@ export function navigateTo(view, params) {
         break;
       case 'admin':
         document.getElementById('viewAdmin').classList.add('active');
-        switchAdminTab('courses');
+        import('./admin.js').then(m => m.switchAdminTab('courses'));
         break;
       case 'profile': {
         const { renderProfile } = await import('./profile.js');

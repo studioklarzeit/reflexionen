@@ -8,6 +8,7 @@ import { showToast, trDataErr } from './utils.js';
 import { initDarkMode, toggleDarkMode } from './darkmode.js';
 import { navigateTo } from './navigation.js';
 import { loadOnboardingData } from './onboarding.js';
+import { loadAndApplyTypography, loadAndApplyColors } from './theme.js';
 import {
   handleAuth, handleLogout, handleResetPassword,
   toggleAuthMode, handleForgotPassword, togglePasswordVisibility,
@@ -61,34 +62,12 @@ import {
 import {
   renderPro, submitProQuestion,
 } from './pro.js';
-import {
-  toggleBulkUpload, updateBulkChapterSelect, downloadBulkTemplate,
-  handleBulkFileSelect, executeBulkImport, clearBulkUpload,
-  openTreeBulkUpload, onBulkLevelChange,
-} from './bulkupload.js';
-import {
-  renderCourseTree, toggleTreeNode, expandAllTree, collapseAllTree,
-  editTreeNode, addChildNode, closeTreeEditPanel, deleteTreeNode,
-  searchTree,
-} from './admin-tree.js';
-import {
-  treeSaveCourse, openNewCoursePanel,
-  treeSaveChapter, treeHandleChapterAudio,
-  treeSaveExercise,
-  treeSaveQuestion, treeAddOptionRow,
-  treeSaveContent, treeSaveElement,
-  addTreeChapterContent, treeSaveChapterContent, deleteTreeChapterContent,
-} from './admin-tree-crud.js';
-import {
-  loadPageEditor, savePage, editPage, deletePage, resetPageForm,
-  loadPageSections, loadCourseSalesSections, addSection, saveSectionFields, editSection, deleteSection,
-  onSectionTypeChange, initPageDragDrop,
-  loadBlogEditor, saveBlogPost, editBlogPost, deleteBlogPost, resetBlogForm,
-  loadBlogSections, saveBlogSectionFields, editBlogSection, deleteBlogSection,
-  onBlogSectionTypeChange, resetBlogSectionForm, removeBlogCoverImage,
-  addDynamicItem, removeDynamicItem, handlePbImageSelect, removePbImage,
-  resetSectionForm,
-} from './pagebuilder.js';
+// Admin modules: lazy-loaded via dynamic import (code-splitting)
+const _la = fn => (...a) => import('./admin.js').then(m => m[fn](...a));
+const _lp = fn => (...a) => import('./pagebuilder.js').then(m => m[fn](...a));
+const _lb = fn => (...a) => import('./bulkupload.js').then(m => m[fn](...a));
+const _lt = fn => (...a) => import('./admin-tree.js').then(m => m[fn](...a));
+const _lc = fn => (...a) => import('./admin-tree-crud.js').then(m => m[fn](...a));
 import {
   renderPublicPage, renderBlogList, renderBlogPost,
   renderPublicContact, submitPublicContact,
@@ -110,39 +89,7 @@ import {
   saveProfileDetails,
   toggleImpulseSetting,
 } from './profile.js';
-import {
-  switchAdminTab, toggleAdminGroup, saveCourse, editCourse, deleteCourse, resetCourseForm, toggleCourseSalesFields, populateParentCourseSelect,
-  saveChapter, editChapter, deleteChapter, resetChapterForm, handleChapterAudioSelect, toggleChapterOnlineFields,
-  saveExercise, editExercise, deleteExercise, resetExerciseForm,
-  updateExerciseChapterSelect,
-  saveQuestion, editQuestion, deleteQuestion, resetQuestionForm,
-  onQuestionTypeChange, addOptionRow, updateQuestionExerciseSelect,
-  renderAdminCourses, manageInvites, createInvite,
-  toggleAdmin, showUserProgress,
-  openAdminDeleteUserModal, closeAdminDeleteUserModal, confirmAdminDeleteUser,
-  openSendMessageModal, closeSendMessageModal, confirmSendMessage,
-  addOnboardElement, saveOnboarding, previewOnboarding,
-  onboardElements, renderOnboardElements,
-  handleImageFileSelect, removeCourseImage, removeChapterImage, initImageUploadZones,
-  saveLoginBg, removeLoginBgImage,
-  loadToolImagesEditor, handleToolImageSelect, removeToolImage, saveToolImages,
-  saveTypography, previewTypography, loadAndApplyTypography,
-  addJournalImpulseRow, removeJournalImpulseRow, updateJournalImpulse, saveJournalImpulses,
-  saveColors, previewColors, loadAndApplyColors,
-  addCheckinQuestion, removeCheckinQ, updateCheckinQ,
-  addCheckinOption, removeCheckinOption, updateCheckinOption, saveCheckinQuestions,
-  saveWeeklyImpulses,
-  saveMeditation, editMeditation, deleteMeditation, resetMeditationForm,
-  handleMeditationAudioSelect, handleMeditationImageSelect, removeMeditationImage,
-  loadAdminMessages, filterMessages, deleteMessage, loadAdminProQuestions,
-  saveContent, editContent, deleteContent, resetContentForm,
-  onContentTypeChange,
-  saveElement, resetElementForm, onExerciseAddTypeChange,
-  renderAdminContent,
-  onChapterContentAddTypeChange, saveChapterContent,
-  editChapterContentBlock, deleteChapterContentBlock,
-  resetChapterContentForm, renderAdminChapterContent,
-} from './admin.js';
+// admin.js — no static import (lazy-loaded via _la helper above)
 
 // ── Public mobile nav toggle ──
 function togglePublicMobileNav() {
@@ -201,39 +148,52 @@ Object.assign(window, {
   openDeleteAnswersModal, closeDeleteAnswersModal, onDeleteConfirmInput, confirmDeleteAllAnswers,
   openDeleteAccountModal, closeDeleteAccountModal, onDeleteAccountConfirmInput, confirmDeleteAccount,
   handleChangePassword, openStripePortal, saveProfileDetails, toggleImpulseSetting,
-  // Admin
-  switchAdminTab, toggleAdminGroup, saveCourse, editCourse, deleteCourse, resetCourseForm, toggleCourseSalesFields, populateParentCourseSelect,
-  saveChapter, editChapter, deleteChapter, resetChapterForm, handleChapterAudioSelect, toggleChapterOnlineFields,
-  saveExercise, editExercise, deleteExercise, resetExerciseForm,
-  updateExerciseChapterSelect,
-  saveQuestion, editQuestion, deleteQuestion, resetQuestionForm,
-  onQuestionTypeChange, addOptionRow, updateQuestionExerciseSelect,
-  renderAdminCourses, manageInvites, createInvite,
-  toggleAdmin, showUserProgress,
-  openAdminDeleteUserModal, closeAdminDeleteUserModal, confirmAdminDeleteUser,
-  openSendMessageModal, closeSendMessageModal, confirmSendMessage,
+  // Admin (lazy-loaded)
+  switchAdminTab: _la('switchAdminTab'), toggleAdminGroup: _la('toggleAdminGroup'),
+  saveCourse: _la('saveCourse'), editCourse: _la('editCourse'), deleteCourse: _la('deleteCourse'),
+  resetCourseForm: _la('resetCourseForm'), toggleCourseSalesFields: _la('toggleCourseSalesFields'),
+  populateParentCourseSelect: _la('populateParentCourseSelect'),
+  saveChapter: _la('saveChapter'), editChapter: _la('editChapter'), deleteChapter: _la('deleteChapter'),
+  resetChapterForm: _la('resetChapterForm'), handleChapterAudioSelect: _la('handleChapterAudioSelect'),
+  toggleChapterOnlineFields: _la('toggleChapterOnlineFields'),
+  saveExercise: _la('saveExercise'), editExercise: _la('editExercise'), deleteExercise: _la('deleteExercise'),
+  resetExerciseForm: _la('resetExerciseForm'), updateExerciseChapterSelect: _la('updateExerciseChapterSelect'),
+  saveQuestion: _la('saveQuestion'), editQuestion: _la('editQuestion'), deleteQuestion: _la('deleteQuestion'),
+  resetQuestionForm: _la('resetQuestionForm'), onQuestionTypeChange: _la('onQuestionTypeChange'),
+  addOptionRow: _la('addOptionRow'), updateQuestionExerciseSelect: _la('updateQuestionExerciseSelect'),
+  renderAdminCourses: _la('renderAdminCourses'), manageInvites: _la('manageInvites'), createInvite: _la('createInvite'),
+  toggleAdmin: _la('toggleAdmin'), showUserProgress: _la('showUserProgress'),
+  openAdminDeleteUserModal: _la('openAdminDeleteUserModal'), closeAdminDeleteUserModal: _la('closeAdminDeleteUserModal'),
+  confirmAdminDeleteUser: _la('confirmAdminDeleteUser'),
+  openSendMessageModal: _la('openSendMessageModal'), closeSendMessageModal: _la('closeSendMessageModal'),
+  confirmSendMessage: _la('confirmSendMessage'),
   // Notifications
   renderNotifications, markNotificationRead,
-  addOnboardElement, saveOnboarding, previewOnboarding,
-  handleImageFileSelect, removeCourseImage, removeChapterImage,
-  saveLoginBg, removeLoginBgImage,
-  loadToolImagesEditor, handleToolImageSelect, removeToolImage, saveToolImages,
-  saveTypography, previewTypography,
-  addJournalImpulseRow, removeJournalImpulseRow, updateJournalImpulse, saveJournalImpulses,
-  saveColors, previewColors,
-  addCheckinQuestion, removeCheckinQ, updateCheckinQ,
-  addCheckinOption, removeCheckinOption, updateCheckinOption, saveCheckinQuestions,
-  saveWeeklyImpulses,
-  saveMeditation, editMeditation, deleteMeditation, resetMeditationForm,
-  handleMeditationAudioSelect, handleMeditationImageSelect, removeMeditationImage,
-  loadAdminMessages, filterMessages, deleteMessage, loadAdminProQuestions,
-  saveContent, editContent, deleteContent, resetContentForm,
-  onContentTypeChange,
-  saveElement, resetElementForm, onExerciseAddTypeChange,
-  renderAdminContent,
-  onChapterContentAddTypeChange, saveChapterContent,
-  editChapterContentBlock, deleteChapterContentBlock,
-  resetChapterContentForm, renderAdminChapterContent,
+  addOnboardElement: _la('addOnboardElement'), saveOnboarding: _la('saveOnboarding'), previewOnboarding: _la('previewOnboarding'),
+  handleImageFileSelect: _la('handleImageFileSelect'), removeCourseImage: _la('removeCourseImage'), removeChapterImage: _la('removeChapterImage'),
+  saveLoginBg: _la('saveLoginBg'), removeLoginBgImage: _la('removeLoginBgImage'),
+  loadToolImagesEditor: _la('loadToolImagesEditor'), handleToolImageSelect: _la('handleToolImageSelect'),
+  removeToolImage: _la('removeToolImage'), saveToolImages: _la('saveToolImages'),
+  saveTypography: _la('saveTypography'), previewTypography: _la('previewTypography'),
+  addJournalImpulseRow: _la('addJournalImpulseRow'), removeJournalImpulseRow: _la('removeJournalImpulseRow'),
+  updateJournalImpulse: _la('updateJournalImpulse'), saveJournalImpulses: _la('saveJournalImpulses'),
+  saveColors: _la('saveColors'), previewColors: _la('previewColors'),
+  addCheckinQuestion: _la('addCheckinQuestion'), removeCheckinQ: _la('removeCheckinQ'), updateCheckinQ: _la('updateCheckinQ'),
+  addCheckinOption: _la('addCheckinOption'), removeCheckinOption: _la('removeCheckinOption'),
+  updateCheckinOption: _la('updateCheckinOption'), saveCheckinQuestions: _la('saveCheckinQuestions'),
+  saveWeeklyImpulses: _la('saveWeeklyImpulses'),
+  saveMeditation: _la('saveMeditation'), editMeditation: _la('editMeditation'), deleteMeditation: _la('deleteMeditation'),
+  resetMeditationForm: _la('resetMeditationForm'), handleMeditationAudioSelect: _la('handleMeditationAudioSelect'),
+  handleMeditationImageSelect: _la('handleMeditationImageSelect'), removeMeditationImage: _la('removeMeditationImage'),
+  loadAdminMessages: _la('loadAdminMessages'), filterMessages: _la('filterMessages'),
+  deleteMessage: _la('deleteMessage'), loadAdminProQuestions: _la('loadAdminProQuestions'),
+  saveContent: _la('saveContent'), editContent: _la('editContent'), deleteContent: _la('deleteContent'),
+  resetContentForm: _la('resetContentForm'), onContentTypeChange: _la('onContentTypeChange'),
+  saveElement: _la('saveElement'), resetElementForm: _la('resetElementForm'),
+  onExerciseAddTypeChange: _la('onExerciseAddTypeChange'), renderAdminContent: _la('renderAdminContent'),
+  onChapterContentAddTypeChange: _la('onChapterContentAddTypeChange'), saveChapterContent: _la('saveChapterContent'),
+  editChapterContentBlock: _la('editChapterContentBlock'), deleteChapterContentBlock: _la('deleteChapterContentBlock'),
+  resetChapterContentForm: _la('resetChapterContentForm'), renderAdminChapterContent: _la('renderAdminChapterContent'),
   // Journal
   renderJournal, saveJournalEntry, editJournalEntry,
   saveJournalEdit, cancelJournalEdit, deleteJournalEntry,
@@ -258,21 +218,25 @@ Object.assign(window, {
   // Weekly Impulse
   exportImpulsePDF, shareImpulse, dismissImpulse, dismissImpulse30, renderImpulseView,
   dismissLoading, dismissLoading30,
-  // Bulk Upload
-  toggleBulkUpload, updateBulkChapterSelect, downloadBulkTemplate,
-  handleBulkFileSelect, executeBulkImport, clearBulkUpload,
-  openTreeBulkUpload, onBulkLevelChange,
-  // Course Tree View
-  renderCourseTree, toggleTreeNode, expandAllTree, collapseAllTree,
-  editTreeNode, addChildNode, closeTreeEditPanel, deleteTreeNode,
-  searchTree,
-  // Tree CRUD
-  treeSaveCourse, openNewCoursePanel,
-  treeSaveChapter, treeHandleChapterAudio,
-  treeSaveExercise,
-  treeSaveQuestion, treeAddOptionRow,
-  treeSaveContent, treeSaveElement,
-  addTreeChapterContent, treeSaveChapterContent, deleteTreeChapterContent,
+  // Bulk Upload (lazy)
+  toggleBulkUpload: _lb('toggleBulkUpload'), updateBulkChapterSelect: _lb('updateBulkChapterSelect'),
+  downloadBulkTemplate: _lb('downloadBulkTemplate'), handleBulkFileSelect: _lb('handleBulkFileSelect'),
+  executeBulkImport: _lb('executeBulkImport'), clearBulkUpload: _lb('clearBulkUpload'),
+  openTreeBulkUpload: _lb('openTreeBulkUpload'), onBulkLevelChange: _lb('onBulkLevelChange'),
+  // Course Tree View (lazy)
+  renderCourseTree: _lt('renderCourseTree'), toggleTreeNode: _lt('toggleTreeNode'),
+  expandAllTree: _lt('expandAllTree'), collapseAllTree: _lt('collapseAllTree'),
+  editTreeNode: _lt('editTreeNode'), addChildNode: _lt('addChildNode'),
+  closeTreeEditPanel: _lt('closeTreeEditPanel'), deleteTreeNode: _lt('deleteTreeNode'),
+  searchTree: _lt('searchTree'),
+  // Tree CRUD (lazy)
+  treeSaveCourse: _lc('treeSaveCourse'), openNewCoursePanel: _lc('openNewCoursePanel'),
+  treeSaveChapter: _lc('treeSaveChapter'), treeHandleChapterAudio: _lc('treeHandleChapterAudio'),
+  treeSaveExercise: _lc('treeSaveExercise'),
+  treeSaveQuestion: _lc('treeSaveQuestion'), treeAddOptionRow: _lc('treeAddOptionRow'),
+  treeSaveContent: _lc('treeSaveContent'), treeSaveElement: _lc('treeSaveElement'),
+  addTreeChapterContent: _lc('addTreeChapterContent'), treeSaveChapterContent: _lc('treeSaveChapterContent'),
+  deleteTreeChapterContent: _lc('deleteTreeChapterContent'),
   // Course Player (lazy loaded, assigned dynamically)
   openChapterPlayer: (...a) => import('./courseplayer.js').then(m => m.openChapterPlayer(...a)),
   toggleChapterAudio: (...a) => import('./courseplayer.js').then(m => m.toggleChapterAudio(...a)),
@@ -286,15 +250,23 @@ Object.assign(window, {
   // SEO & Tracking (lazy loaded)
   saveSeoSettings: (...a) => import('./seo.js').then(m => m.saveSeoSettings(...a)),
   loadSeoEditor: (...a) => import('./seo.js').then(m => m.loadSeoEditor(...a)),
-  // Page Builder (CMS)
-  loadPageEditor, savePage, editPage, deletePage, resetPageForm,
-  loadPageSections, loadCourseSalesSections, addSection, saveSectionFields, editSection, deleteSection,
-  onSectionTypeChange, initPageDragDrop,
-  loadBlogEditor, saveBlogPost, editBlogPost, deleteBlogPost, resetBlogForm,
-  loadBlogSections, saveBlogSectionFields, editBlogSection, deleteBlogSection,
-  onBlogSectionTypeChange, resetBlogSectionForm, removeBlogCoverImage,
-  addDynamicItem, removeDynamicItem, handlePbImageSelect, removePbImage,
-  resetSectionForm,
+  // Page Builder (lazy)
+  loadPageEditor: _lp('loadPageEditor'), savePage: _lp('savePage'), editPage: _lp('editPage'),
+  deletePage: _lp('deletePage'), resetPageForm: _lp('resetPageForm'),
+  loadPageSections: _lp('loadPageSections'), loadCourseSalesSections: _lp('loadCourseSalesSections'),
+  addSection: _lp('addSection'), saveSectionFields: _lp('saveSectionFields'),
+  editSection: _lp('editSection'), deleteSection: _lp('deleteSection'),
+  onSectionTypeChange: _lp('onSectionTypeChange'), initPageDragDrop: _lp('initPageDragDrop'),
+  loadBlogEditor: _lp('loadBlogEditor'), saveBlogPost: _lp('saveBlogPost'),
+  editBlogPost: _lp('editBlogPost'), deleteBlogPost: _lp('deleteBlogPost'),
+  resetBlogForm: _lp('resetBlogForm'),
+  loadBlogSections: _lp('loadBlogSections'), saveBlogSectionFields: _lp('saveBlogSectionFields'),
+  editBlogSection: _lp('editBlogSection'), deleteBlogSection: _lp('deleteBlogSection'),
+  onBlogSectionTypeChange: _lp('onBlogSectionTypeChange'), resetBlogSectionForm: _lp('resetBlogSectionForm'),
+  removeBlogCoverImage: _lp('removeBlogCoverImage'),
+  addDynamicItem: _lp('addDynamicItem'), removeDynamicItem: _lp('removeDynamicItem'),
+  handlePbImageSelect: _lp('handlePbImageSelect'), removePbImage: _lp('removePbImage'),
+  resetSectionForm: _lp('resetSectionForm'),
   // Public Website
   renderPublicPage, renderBlogList, renderBlogPost,
   renderPublicContact, submitPublicContact,
@@ -302,12 +274,14 @@ Object.assign(window, {
   showToast,
 });
 
-// Expose onboardElements + renderOnboardElements for inline onchange handlers
+// Expose onboardElements + renderOnboardElements (lazy — admin only)
+let _adminMod = null;
+const _getAdminMod = () => { if (!_adminMod) { const p = import('./admin.js'); p.then(m => { _adminMod = m; }); return p; } return Promise.resolve(_adminMod); };
 Object.defineProperty(window, 'onboardElements', {
-  get: () => onboardElements,
+  get: () => _adminMod ? _adminMod.onboardElements : [],
   set: () => {},
 });
-window.renderOnboardElements = renderOnboardElements;
+window.renderOnboardElements = (...a) => _getAdminMod().then(m => m.renderOnboardElements(...a));
 window.__clearImpulseCache = clearImpulseCache;
 window.__clearCheckinCache = clearCheckinCache;
 window.__clearWeeklyImpulseCache = clearWeeklyImpulseCache;
@@ -398,17 +372,14 @@ async function init() {
     if (cached) showImpulseOnSplash(cached);
   } catch (_) {}
 
-  // Load login background image
-  try {
-    const { data: bgData } = await sb.from('settings').select('value').eq('key', 'login_bg').single();
-    if (bgData?.value) {
-      document.getElementById('authBg').style.backgroundImage = `url(${bgData.value})`;
-    }
-  } catch (e) { /* no login bg set */ }
-
-  // Load typography settings
-  await loadAndApplyTypography();
-  await loadAndApplyColors();
+  // Load settings in parallel (login bg, typography, colors)
+  await Promise.all([
+    sb.from('settings').select('value').eq('key', 'login_bg').single().then(({ data }) => {
+      if (data?.value) document.getElementById('authBg').style.backgroundImage = `url(${data.value})`;
+    }).catch(() => {}),
+    loadAndApplyTypography(),
+    loadAndApplyColors(),
+  ]);
   setLoadProgress(15);
 
   // Load SEO settings & initialize tracking (non-blocking)
@@ -455,10 +426,12 @@ async function init() {
       getCurrentImpulseText().then(text => showImpulseOnSplash(text)).catch(() => {});
 
       try {
-        await loadOnboardingData();
+        const [,] = await Promise.all([
+          loadOnboardingData(),
+          postLogin(),
+        ]);
         setLoadProgress(25);
-        await postLogin();
-        initImageUploadZones();
+        if (state.isAdmin) import('./admin.js').then(m => m.initImageUploadZones());
         updateDockEmail();
       } catch (e) {
         console.error(e);
