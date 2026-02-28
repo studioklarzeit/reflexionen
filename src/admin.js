@@ -1,4 +1,4 @@
-import { sb } from './config.js';
+import { sb, SUPABASE_URL, SUPABASE_KEY } from './config.js';
 import { state } from './state.js';
 import { esc, btnLoading, showToast, trDataErr } from './utils.js';
 import { loadAllData, loadCourseAccess } from './data.js';
@@ -1003,7 +1003,7 @@ export async function showUserProgress(userId) {
 
   try {
     const { data, error } = await sb.rpc('admin_get_user_progress', { target_user_id: userId });
-    if (error) throw error;
+    if (error) { console.error('RPC error:', error); throw error; }
 
     const courseAccess = data?.course_access || [];
     const chapterProgress = data?.chapter_progress || [];
@@ -1122,17 +1122,29 @@ export function closeAdminDeleteUserModal() {
   _pendingDeleteUserEmail = null;
 }
 
+async function invokeEdgeFunction(fnName, payload) {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) throw new Error('Nicht eingeloggt');
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/${fnName}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+      'apikey': SUPABASE_KEY,
+    },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `Fehler ${res.status}`);
+  return data;
+}
+
 export async function confirmAdminDeleteUser() {
   if (!_pendingDeleteUserId) return;
   btnLoading('adminDeleteUserConfirmBtn', true);
 
   try {
-    const { data, error } = await sb.functions.invoke('admin-delete-user', {
-      body: { targetUserId: _pendingDeleteUserId },
-    });
-    if (error) throw new Error(error.message || 'Fehler');
-    if (data?.error) throw new Error(data.error);
-
+    await invokeEdgeFunction('admin-delete-user', { targetUserId: _pendingDeleteUserId });
     closeAdminDeleteUserModal();
     showToast('User wurde gelöscht.');
     renderAdminUsers();
@@ -1201,16 +1213,12 @@ export async function confirmSendMessage() {
   btnLoading('adminSendMsgBtn', true);
 
   try {
-    const { data, error } = await sb.functions.invoke('send-user-email', {
-      body: {
-        to: _pendingMsgUserEmail,
-        targetUserId: _pendingMsgUserId,
-        subject: subject || undefined,
-        message: body,
-      },
+    const data = await invokeEdgeFunction('send-user-email', {
+      to: _pendingMsgUserEmail,
+      targetUserId: _pendingMsgUserId,
+      subject: subject || undefined,
+      message: body,
     });
-    if (error) throw new Error(error.message || 'Fehler');
-    if (data?.error) throw new Error(data.error);
 
     closeSendMessageModal();
     const emailInfo = data?.emailSent ? 'E-Mail gesendet' : 'Benachrichtigung gespeichert (kein E-Mail-Service)';

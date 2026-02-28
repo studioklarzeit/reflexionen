@@ -1,4 +1,4 @@
-import { sb } from './config.js';
+import { sb, SUPABASE_URL, SUPABASE_KEY } from './config.js';
 import { state } from './state.js';
 import { btnLoading, showToast, trAuthErr } from './utils.js';
 import { navigateTo } from './navigation.js';
@@ -357,15 +357,20 @@ export async function postLogin() {
 
   // Payment Link: Pending Käufe von Squarespace dem User zuweisen
   try {
-    const session = await sb.auth.getSession();
-    const token = session?.data?.session?.access_token;
-    if (token) {
-      const resp = await sb.functions.invoke('claim-purchases', {
-        headers: { Authorization: `Bearer ${token}` },
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/claim-purchases`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': SUPABASE_KEY,
+        },
       });
-      if (resp.data?.claimed > 0) {
-        await loadCourseAccess(); // Access neu laden
-        console.log(`Claimed ${resp.data.claimed} pending purchase(s)`);
+      const respData = await res.json().catch(() => ({}));
+      if (respData?.claimed > 0) {
+        await loadCourseAccess();
+        console.log(`Claimed ${respData.claimed} pending purchase(s)`);
       }
     }
   } catch (e) {
