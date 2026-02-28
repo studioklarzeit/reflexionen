@@ -517,9 +517,9 @@ textarea:focus { background: rgba(255,255,255,0.15); }
 .auth-divider { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--text-light); font-size: 12px; }
 .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-light); }
 /* Lock Screen */
-#lockScreen { display: none; position: fixed; inset: 0; z-index: 99999; background: var(--bg); align-items: center; justify-content: center; }
+#lockScreen { display: none; position: fixed; inset: 0; z-index: 99999; background: var(--bg); align-items: flex-start; justify-content: center; }
 #lockScreen.visible { display: flex; }
-.lock-content { text-align: center; padding: 32px; }
+.lock-content { text-align: center; padding: 32px; padding-top: 25vh; }
 .lock-icon { color: var(--accent-warm); margin-bottom: 20px; }
 .lock-icon svg { width: 48px; height: 48px; }
 .lock-text { font-family: var(--font-heading); font-size: 1.2rem; color: var(--text-primary); margin-bottom: 28px; }
