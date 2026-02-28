@@ -4407,3 +4407,143 @@ body.dark .pub-contact-btn {
 .view#viewPublicBlogPost {
   padding-bottom: 0;
 }
+
+/* ═══════════════════════════════════════════
+   ADMIN — RESPONSIVE (MOBILE)
+   ═══════════════════════════════════════════ */
+
+@media (max-width: 700px) {
+
+  /* ── Admin Navigation: horizontal scroll statt wrap ── */
+  .admin-nav { margin-bottom: 20px; }
+
+  .admin-nav-headers {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .admin-nav-headers::-webkit-scrollbar { display: none; }
+
+  .admin-nav-label {
+    padding: 10px 14px;
+    font-size: 14px;
+    white-space: nowrap;
+    min-width: 0;
+    flex-shrink: 0;
+  }
+
+  .admin-nav-pills-area { padding: 0 6px 6px; }
+
+  .nav-pill { padding: 8px 14px; font-size: 12px; }
+
+  /* ── Admin Form: weniger Padding auf Mobile ── */
+  .admin-form { padding: 16px; margin-bottom: 16px; }
+  .admin-form h3 { font-size: 1.1rem; margin-bottom: 16px; }
+
+  /* ── Form-Elemente: Touch-freundlich ── */
+  .form-input, .form-textarea, .form-select {
+    font-size: 16px; /* verhindert iOS zoom */
+    padding: 10px 12px;
+  }
+  .form-group { margin-bottom: 14px; }
+
+  /* ── Buttons in Admin: nicht full-width ── */
+  #viewAdmin .btn-primary,
+  #viewAdmin .btn-secondary {
+    width: auto;
+  }
+  .admin-form .btn-primary,
+  .admin-form .btn-secondary {
+    width: 100%;
+  }
+
+  /* ── Typography Grid: vertikal statt 6 Spalten ── */
+  .typo-grid { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .typo-grid-header {
+    grid-template-columns: 60px 1fr 40px 1fr 50px 50px;
+    gap: 4px;
+    padding: 6px 10px;
+    font-size: 10px;
+    min-width: 420px;
+  }
+  .typo-grid-row {
+    grid-template-columns: 60px 1fr 40px 1fr 50px 50px;
+    gap: 4px;
+    padding: 8px 10px;
+    min-width: 420px;
+  }
+  .typo-grid-label { font-size: 12px; }
+  .form-input-color { width: 36px; height: 30px; }
+
+  /* ── Admin Tables: horizontal scroll ── */
+  .admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .admin-table { min-width: 500px; }
+  .admin-table th, .admin-table td { padding: 8px 10px; font-size: 12px; }
+
+  /* ── Tree Toolbar: kompakt statt breit ── */
+  .tree-toolbar {
+    padding: 10px 12px;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .tree-toolbar .tree-search {
+    flex: 1 1 100%;
+    min-width: 0;
+    order: -1;
+    margin-bottom: 4px;
+  }
+  .tree-toolbar .btn-sm { padding: 8px 12px; font-size: 12px; }
+
+  /* ── Tree Panel: kompaktere Nodes ── */
+  .tree-children { padding-left: 16px; }
+  .tree-node-row { padding: 6px 8px; gap: 4px; min-height: 34px; }
+  .tree-node-name { font-size: 13px; }
+  .tree-node--course > .tree-node-row > .tree-node-name { font-size: 14px; }
+  .tree-node--chapter > .tree-node-row > .tree-node-name { font-size: 13px; }
+  .tree-node--exercise > .tree-node-row > .tree-node-name { font-size: 12px; }
+  .tree-node--element > .tree-node-row > .tree-node-name { font-size: 11px; }
+  .tree-node-meta { font-size: 10px; padding-right: 2px; }
+  .tree-badge { font-size: 9px; padding: 1px 5px; }
+
+  /* ── Tree Edit Panel: fullscreen overlay ── */
+  .tree-edit-panel {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tree-edit-body { padding: 16px; }
+  .tree-edit-header { padding: 12px 16px; }
+  .tree-edit-header h3 { font-size: 1rem; }
+
+  /* ── Bulk Upload: weniger Padding ── */
+  .bulk-toggle { padding: 12px 14px; font-size: 13px; }
+  .bulk-content { padding: 16px; }
+  .bulk-dropzone { padding: 20px; }
+  .bulk-dropzone-text { font-size: 13px; }
+
+  /* ── Option Rows (Fragen-Editor) ── */
+  .option-row { flex-wrap: wrap; }
+  .option-row input { min-width: 0; }
+
+  /* ── Image Upload Zone ── */
+  .image-upload-zone { padding: 16px; min-height: 80px; }
+
+  /* ── Admin Messages: kompakter ── */
+  .admin-messages-filter { width: 100%; overflow-x: auto; }
+  .admin-message-card { padding: 14px; }
+  .admin-message-subject { font-size: 14px; }
+  .admin-message-body { font-size: 13px; }
+  .admin-message-header { flex-wrap: wrap; gap: 4px; }
+
+  /* ── Section Cards (Pagebuilder, Blog) ── */
+  .section-card { padding: 12px 14px; gap: 10px; }
+  .section-card-type { min-width: 60px; font-size: 10px; }
+  .section-card-preview { font-size: 12px; }
+
+  /* ── Invite Box ── */
+  .invite-box { padding: 10px 12px; font-size: 12px; }
+
+  /* ── Page Title im Admin ── */
+  #viewAdmin .page-title-section { margin-bottom: 12px; }
+  #viewAdmin .page-title { font-size: 1.5rem; }
+  #viewAdmin .page-intro { font-size: 0.9rem; }
+}
