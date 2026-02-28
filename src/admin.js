@@ -2039,7 +2039,7 @@ export function removeLoginBgImage() {
 // ══════════════════════════════════════
 
 const TOOL_DEFS = [
-  { key: 'journal', label: 'Muster-Tagebuch' },
+  { key: 'journal', label: 'Schutzmuster-Tagebuch' },
   { key: 'friendView', label: 'Freundinnen-Blick' },
   { key: 'checkin', label: 'Stimmungs-Check-In' },
   { key: 'bodycheck', label: 'Körper-Check-In' },
