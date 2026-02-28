@@ -1125,20 +1125,17 @@ export function closeAdminDeleteUserModal() {
 async function invokeEdgeFunction(fnName, payload) {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) throw new Error('Nicht eingeloggt');
-  console.log('Edge function call:', fnName, 'Token:', session.access_token?.substring(0, 20) + '...', 'Key:', SUPABASE_KEY?.substring(0, 20) + '...');
   const res = await fetch(`${SUPABASE_URL}/functions/v1/${fnName}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
       'apikey': SUPABASE_KEY,
+      'x-user-token': session.access_token,
     },
     body: JSON.stringify(payload),
   });
-  const text = await res.text();
-  console.log(`Edge ${fnName} response ${res.status}:`, text);
-  let data;
-  try { data = JSON.parse(text); } catch { data = {}; }
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || data.msg || data.message || `Fehler ${res.status}`);
   return data;
 }

@@ -372,8 +372,9 @@ export async function postLogin() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
         'apikey': SUPABASE_KEY,
+        'x-user-token': session.access_token,
       },
     }).then(r => r.json().catch(() => ({}))).then(d => {
       if (d?.claimed > 0) {
