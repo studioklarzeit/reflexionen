@@ -324,11 +324,9 @@ window.setLoadProgress = setLoadProgress;
 function showImpulseOnSplash(text) {
   if (!text) return;
   const q = document.getElementById('loadingSplashQuote');
-  const d = document.getElementById('loadingSplashDivider');
-  const l = document.getElementById('loadingSplashLabel');
-  if (q) { q.textContent = '\u00AB' + text + '\u00BB'; q.classList.add('visible'); }
-  if (d) { d.style.display = ''; d.classList.add('visible'); }
-  if (l) { l.style.display = ''; l.classList.add('visible'); }
+  if (q) q.textContent = '\u00AB' + text + '\u00BB';
+  // Cache for instant display on next load
+  try { localStorage.setItem('klarzeit_last_impulse', text); } catch (_) {}
 }
 
 function finishLoading(showImpulse) {
@@ -374,6 +372,12 @@ async function init() {
   updateOnlineStatus();
   navigateTo('loading');
   setLoadProgress(5);
+
+  // Show cached impulse text instantly
+  try {
+    const cached = localStorage.getItem('klarzeit_last_impulse');
+    if (cached) showImpulseOnSplash(cached);
+  } catch (_) {}
 
   // Load login background image
   try {

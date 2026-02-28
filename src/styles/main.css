@@ -1963,30 +1963,23 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
   color: #3B3937;
   letter-spacing: -0.01em;
   max-width: 520px;
-  opacity: 0;
-  transition: opacity 0.8s ease, transform 0.8s ease;
-  transform: translateY(16px);
-}
-.loading-splash-quote.visible {
-  opacity: 1; transform: translateY(0);
+  min-height: 1.5em;
+  animation: loadSlideUp 0.9s ease 0.4s both;
 }
 .loading-splash-divider {
   width: 56px; height: 1px;
   background: #C9A96E;
-  margin: 40px 0; opacity: 0;
-  transition: opacity 0.6s ease 0.2s;
+  margin: 40px 0; opacity: 0.5;
+  animation: loadFadeIn 0.8s ease 0.5s both;
 }
-.loading-splash-divider.visible { opacity: 0.5; }
 .loading-splash-label {
   font-family: 'PT Serif', Georgia, serif;
   font-size: 10px; letter-spacing: 0.15em;
   text-transform: uppercase;
   color: #A89888;
   font-style: italic;
-  opacity: 0;
-  transition: opacity 0.6s ease 0.3s;
+  animation: loadFadeIn 0.8s ease 0.5s both;
 }
-.loading-splash-label.visible { opacity: 1; }
 @keyframes loadSlideUp {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
