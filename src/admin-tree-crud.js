@@ -916,3 +916,16 @@ export async function treeSaveElement() {
     await treeSaveContent();
   }
 }
+
+// ══════════════════════════════════════
+// REGISTER ON WINDOW (for event delegation)
+// ══════════════════════════════════════
+window.openNewCoursePanel = openNewCoursePanel;
+window.treeSaveCourse = treeSaveCourse;
+window.treeSaveChapter = treeSaveChapter;
+window.addTreeChapterContent = addTreeChapterContent;
+window.treeSaveChapterContent = treeSaveChapterContent;
+window.treeSaveExercise = treeSaveExercise;
+window.treeSaveQuestion = treeSaveQuestion;
+window.treeSaveContent = treeSaveContent;
+window.treeSaveElement = treeSaveElement;

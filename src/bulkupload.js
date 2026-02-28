@@ -1058,3 +1058,6 @@ async function executeBulkImportForTree() {
     }
   }
 }
+
+// Register on window for event delegation
+window.openTreeBulkUpload = openTreeBulkUpload;

@@ -392,3 +392,16 @@ export function searchTree(query) {
 
   renderCourseTree();
 }
+
+// ══════════════════════════════════════
+// REGISTER ON WINDOW (for event delegation)
+// ══════════════════════════════════════
+window.renderCourseTree = renderCourseTree;
+window.toggleTreeNode = toggleTreeNode;
+window.editTreeNode = editTreeNode;
+window.addChildNode = addChildNode;
+window.closeTreeEditPanel = closeTreeEditPanel;
+window.deleteTreeNode = deleteTreeNode;
+window.expandAllTree = expandAllTree;
+window.collapseAllTree = collapseAllTree;
+window.searchTree = searchTree;
