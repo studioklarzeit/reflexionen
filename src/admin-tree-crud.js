@@ -51,16 +51,14 @@ window.removeOptionRow = (el) => el?.closest('.option-row')?.remove();
 // ══════════════════════════════════════
 
 export function openEditPanel(id, type) {
-  const panel = document.getElementById('treeEditPanel');
-  const body = document.getElementById('treeEditBody');
-  const title = document.getElementById('treeEditTitle');
-  const layout = document.querySelector('.tree-layout');
+  const panel = document.getElementById('courseInlineForm');
+  const body = document.getElementById('courseInlineFormBody');
+  const title = document.getElementById('courseInlineFormTitle');
   if (!panel || !body) return;
 
   panel.style.display = 'block';
-  layout?.classList.add('has-edit-panel');
 
-  const labels = { course: 'Kurs', chapter: 'Kapitel', exercise: 'Übung', question: 'Frage', content: 'Inhaltsblock' };
+  const labels = { course: 'Kurs', chapter: 'Kapitel', exercise: 'Übung', question: 'Frage', content: 'Inhaltsblock', chapterContent: 'Kapitelinhalt' };
   title.textContent = `${labels[type] || type} bearbeiten`;
 
   if (type === 'course') renderCourseEditForm(body, id);
@@ -68,20 +66,19 @@ export function openEditPanel(id, type) {
   else if (type === 'exercise') renderExerciseEditForm(body, id);
   else if (type === 'question') renderQuestionEditForm(body, id);
   else if (type === 'content') renderContentEditForm(body, id);
+  else if (type === 'chapterContent') renderChapterContentEditForm(body, id);
 
   // Re-init image upload zones after rendering
   setTimeout(() => initImageUploadZones(), 50);
 }
 
 export function openCreatePanel(parentId, parentType) {
-  const panel = document.getElementById('treeEditPanel');
-  const body = document.getElementById('treeEditBody');
-  const title = document.getElementById('treeEditTitle');
-  const layout = document.querySelector('.tree-layout');
+  const panel = document.getElementById('courseInlineForm');
+  const body = document.getElementById('courseInlineFormBody');
+  const title = document.getElementById('courseInlineFormTitle');
   if (!panel || !body) return;
 
   panel.style.display = 'block';
-  layout?.classList.add('has-edit-panel');
 
   if (parentType === 'course') {
     // Add chapter to this course
@@ -222,14 +219,12 @@ export async function treeSaveCourse() {
 // ══════════════════════════════════════
 
 export function openNewCoursePanel() {
-  const panel = document.getElementById('treeEditPanel');
-  const body = document.getElementById('treeEditBody');
-  const title = document.getElementById('treeEditTitle');
-  const layout = document.querySelector('.tree-layout');
+  const panel = document.getElementById('courseInlineForm');
+  const body = document.getElementById('courseInlineFormBody');
+  const title = document.getElementById('courseInlineFormTitle');
   if (!panel || !body) return;
 
   panel.style.display = 'block';
-  layout?.classList.add('has-edit-panel');
   title.textContent = 'Neuen Kurs erstellen';
 
   const parentCourses = state.cacheData.courses.filter(x => !x.parent_course_id);
@@ -494,10 +489,44 @@ export async function treeSaveChapter() {
 // CHAPTER CONTENT (sub-panel)
 // ══════════════════════════════════════
 
+function renderChapterContentEditForm(container, blockId) {
+  const block = (state.cacheData.chapterContentBlocks || []).find(b => b.id === blockId);
+  if (!block) { container.innerHTML = '<p>Block nicht gefunden.</p>'; return; }
+
+  const showText = block.type !== 'divider' && block.type !== 'image';
+  const showImage = block.type === 'image';
+  const typeOpts = ['heading','subheading','text','text_italic','text_bold','quote','divider','image'];
+  const typeLabels = { heading: 'Titel', subheading: 'Untertitel', text: 'Text', text_italic: 'Text kursiv', text_bold: 'Text fett', quote: 'Zitat', divider: 'Trennlinie', image: 'Bild' };
+
+  container.innerHTML = `
+    <input type="hidden" id="treeEditId" value="${blockId}">
+    <input type="hidden" id="treeChapterContentChapterId" value="${block.chapter_id}">
+    <div class="form-group">
+      <label class="form-label">Typ</label>
+      <select class="form-select" id="treeChapterContentType" data-change="treeChapterContentTypeChanged" data-val>
+        ${typeOpts.map(t => `<option value="${t}"${t === block.type ? ' selected' : ''}>${typeLabels[t]}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group" id="treeChapterContentTextGroup" style="display:${showText ? '' : 'none'};"><label class="form-label">Inhalt</label><textarea class="form-textarea" id="treeChapterContentTextInput">${esc(block.content || '')}</textarea></div>
+    <div class="form-group" id="treeChapterContentImageGroup" style="display:${showImage ? '' : 'none'};">
+      <label class="form-label">Bild hochladen</label>
+      <div class="image-upload-zone${block.type === 'image' && block.content ? ' has-image' : ''}" id="treeChapterContentImagePreview" data-action="triggerClickOn" data-args='["treeChapterContentImageInput"]'>
+        ${block.type === 'image' && block.content ? `<img src="${esc(block.content)}" alt="Bild">` : '<span class="image-upload-label">Bild hierher ziehen oder klicken</span>'}
+      </div>
+      <input type="file" id="treeChapterContentImageInput" accept="image/*" style="display:none;" data-change="handleImageFileSelect" data-args='["treeChapterContentImageInput","treeChapterContentImagePreview"]'>
+    </div>
+    <div class="actions" style="margin-top:20px;">
+      <button class="btn btn-primary btn-sm" id="treeSaveChapterContentBtn" data-action="treeSaveChapterContent"><span class="btn-text">Speichern</span></button>
+      <button class="btn btn-ghost btn-sm" data-action="editTreeNode" data-args='["${block.chapter_id}","chapter"]'>Zurück</button>
+    </div>`;
+
+  setTimeout(() => initImageUploadZones(), 50);
+}
+
 export function addTreeChapterContent(chapterId) {
-  const panel = document.getElementById('treeEditPanel');
-  const body = document.getElementById('treeEditBody');
-  const title = document.getElementById('treeEditTitle');
+  const panel = document.getElementById('courseInlineForm');
+  const body = document.getElementById('courseInlineFormBody');
+  const title = document.getElementById('courseInlineFormTitle');
   if (!panel || !body) return;
 
   title.textContent = 'Kapitelinhalt hinzufügen';

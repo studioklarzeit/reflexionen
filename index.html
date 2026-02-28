@@ -381,7 +381,6 @@
   </div>
 
   <div class="view" id="viewAdmin">
-    <div class="page-title-section"><span class="eyebrow">Verwaltung</span><h1 class="page-title">Admin-Bereich</h1><p class="page-intro">— Erstelle und verwalte Kurse, Kapitel, Übungen und User.</p></div>
     <div class="admin-nav" id="adminPills">
       <div class="admin-nav-headers">
         <button class="admin-nav-label active" data-action="toggleAdminGroup" data-args='["Kurse"]'>Kurse</button>
@@ -413,28 +412,19 @@
       </div>
     </div>
 
-    <!-- Course Tree View (replaces old Courses/Chapters/Exercises tabs) -->
+    <!-- Course Drill-Down View (Blog-style flat list) -->
     <div class="admin-tab active" id="adminTabCourseTree">
-      <div class="tree-toolbar">
-        <button class="btn btn-primary btn-sm" data-action="openNewCoursePanel"><span class="btn-text">+ Neuer Kurs</span></button>
-        <button class="btn btn-ghost btn-sm" data-action="openTreeBulkUpload"><span class="btn-text">Bulk Upload</span></button>
+      <div class="course-breadcrumb" id="courseBreadcrumb"></div>
+      <div class="tree-toolbar" id="courseToolbar">
+        <button class="btn btn-primary btn-sm" id="courseAddBtn" data-action="courseAddItem"><span class="btn-text">+ Neuer Kurs</span></button>
         <input type="text" class="tree-search" id="treeSearchInput" placeholder="Suchen …" data-input="searchTree" data-val>
-        <button class="btn btn-ghost btn-sm" data-action="expandAllTree">Alle ↕</button>
-        <button class="btn btn-ghost btn-sm" data-action="collapseAllTree">Alle ↑</button>
       </div>
       <div id="treeBulkUploadSection" style="display:none;"></div>
-      <div class="tree-layout">
-        <div class="tree-panel" id="treePanel">
-          <ul class="tree-root" id="courseTree"></ul>
-        </div>
-        <div class="tree-edit-panel" id="treeEditPanel" style="display:none;">
-          <div class="tree-edit-header">
-            <h3 id="treeEditTitle"></h3>
-            <button class="close-btn" data-action="closeTreeEditPanel">&times;</button>
-          </div>
-          <div class="tree-edit-body" id="treeEditBody"></div>
-        </div>
+      <div class="admin-form" id="courseInlineForm" style="display:none;">
+        <h3 id="courseInlineFormTitle"></h3>
+        <div id="courseInlineFormBody"></div>
       </div>
+      <div id="courseItemList" style="margin-top:12px;"></div>
     </div>
 
     <!-- Hidden: old forms are kept for backward compatibility with pagebuilder sales sections -->

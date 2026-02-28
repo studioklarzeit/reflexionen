@@ -2,233 +2,339 @@ import { sb } from './config.js';
 import { state } from './state.js';
 import { esc, showToast, trDataErr } from './utils.js';
 import { loadAllData } from './data.js';
-import { openEditPanel, openCreatePanel } from './admin-tree-crud.js';
+import { openEditPanel, openCreatePanel, openNewCoursePanel } from './admin-tree-crud.js';
 
-// ── Tree State ──
-let expandedNodes = new Set();
-let selectedNodeId = null;
-let selectedNodeType = null;
+// ── Drill-Down State ──
+let drillLevel = 'courses';    // 'courses' | 'chapters' | 'exercises' | 'elements'
+let drillCourseId = null;
+let drillChapterId = null;
+let drillExerciseId = null;
+let editingId = null;
+let editingType = null;
 
-export function getSelectedNode() { return { id: selectedNodeId, type: selectedNodeType }; }
+export function getSelectedNode() { return { id: editingId, type: editingType }; }
 
 // ══════════════════════════════════════
-// RENDER TREE
+// MAIN RENDER (name kept for compat)
 // ══════════════════════════════════════
 
 export function renderCourseTree() {
-  const el = document.getElementById('courseTree');
+  renderBreadcrumb();
+  renderToolbarButton();
+  renderCurrentLevelList();
+  initDragDrop();
+}
+
+// ══════════════════════════════════════
+// BREADCRUMB
+// ══════════════════════════════════════
+
+function renderBreadcrumb() {
+  const el = document.getElementById('courseBreadcrumb');
   if (!el) return;
 
+  const parts = [];
+  parts.push({ label: 'Kurse', level: 'courses' });
+
+  if (drillCourseId) {
+    const course = (state.cacheData.courses || []).find(c => c.id === drillCourseId);
+    parts.push({ label: course?.name || '…', level: 'chapters', courseId: drillCourseId });
+  }
+  if (drillChapterId) {
+    const chapter = (state.cacheData.chapters || []).find(c => c.id === drillChapterId);
+    parts.push({ label: chapter?.name || '…', level: 'exercises', courseId: drillCourseId, chapterId: drillChapterId });
+  }
+  if (drillExerciseId) {
+    const exercise = (state.cacheData.exercises || []).find(e => e.id === drillExerciseId);
+    parts.push({ label: exercise?.name || '…', level: 'elements', courseId: drillCourseId, chapterId: drillChapterId, exerciseId: drillExerciseId });
+  }
+
+  el.innerHTML = parts.map((p, i) => {
+    if (i === parts.length - 1) {
+      return `<span class="breadcrumb-current">${esc(p.label)}</span>`;
+    }
+    const args = [p.level, p.courseId || '', p.chapterId || '', p.exerciseId || ''].map(a => `"${a}"`).join(',');
+    return `<button class="breadcrumb-link" data-action="drillTo" data-args='[${args}]'>${esc(p.label)}</button><span class="breadcrumb-sep">›</span>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// TOOLBAR BUTTON
+// ══════════════════════════════════════
+
+function renderToolbarButton() {
+  const btn = document.getElementById('courseAddBtn');
+  if (!btn) return;
+
+  const labels = {
+    courses: '+ Neuer Kurs',
+    chapters: '+ Neues Kapitel',
+    exercises: '+ Neue Übung',
+    elements: '+ Element',
+  };
+  btn.querySelector('.btn-text').textContent = labels[drillLevel] || '+ Neu';
+}
+
+// ══════════════════════════════════════
+// LIST RENDERING
+// ══════════════════════════════════════
+
+function renderCurrentLevelList() {
+  const el = document.getElementById('courseItemList');
+  if (!el) return;
+
+  if (drillLevel === 'courses') renderCoursesList(el);
+  else if (drillLevel === 'chapters') renderChaptersList(el);
+  else if (drillLevel === 'exercises') renderExercisesList(el);
+  else if (drillLevel === 'elements') renderElementsList(el);
+}
+
+function renderCoursesList(el) {
   const courses = state.cacheData.courses || [];
   if (!courses.length) {
     el.innerHTML = '<div class="empty-state">Noch keine Kurse. Erstelle deinen ersten Kurs.</div>';
     return;
   }
 
-  // Only top-level courses (no parent)
-  const topLevel = courses.filter(c => !c.parent_course_id);
+  const topLevel = courses.filter(c => !c.parent_course_id).sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
   const extensions = courses.filter(c => c.parent_course_id);
 
-  el.innerHTML = topLevel.map(c => renderCourseNode(c, extensions)).join('');
-  initTreeDragDrop();
-}
-
-function renderCourseNode(course, extensions) {
-  const chapters = (state.cacheData.chapters || []).filter(ch => ch.course_id === course.id);
-  const exts = (extensions || []).filter(e => e.parent_course_id === course.id);
-  const isOpen = expandedNodes.has('course-' + course.id);
-  const isSelected = selectedNodeId === course.id && selectedNodeType === 'course';
-  const childCount = chapters.length;
-  const typeLabel = course.course_type === 'online' ? '📖' : course.course_type === 'both' ? '📖📝' : '📝';
-
-  let childrenHtml = '';
-  if (isOpen) {
-    const chapterItems = chapters
-      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-      .map(ch => renderChapterNode(ch)).join('');
-    const extItems = exts.map(e => renderCourseNode(e, [])).join('');
-    childrenHtml = `<ul class="tree-children">${chapterItems}${extItems}</ul>`;
+  // Interleave: after each parent, show its extensions
+  const ordered = [];
+  for (const c of topLevel) {
+    ordered.push(c);
+    const exts = extensions.filter(e => e.parent_course_id === c.id).sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+    ordered.push(...exts);
   }
+  // Orphan extensions (parent not in top-level)
+  const usedExtIds = new Set(ordered.filter(c => c.parent_course_id).map(c => c.id));
+  extensions.filter(e => !usedExtIds.has(e.id)).forEach(e => ordered.push(e));
 
-  return `<li class="tree-node tree-node--course" data-id="${course.id}" data-type="course">
-    <div class="tree-node-row${isSelected ? ' selected' : ''}" draggable="true" data-drag-id="${course.id}" data-drag-table="courses">
+  el.innerHTML = ordered.map(c => {
+    const chapters = (state.cacheData.chapters || []).filter(ch => ch.course_id === c.id);
+    const typeLabel = c.course_type === 'online' ? 'Online' : c.course_type === 'both' ? 'Beides' : 'Übung';
+    const parentName = c.parent_course_id ? (courses.find(p => p.id === c.parent_course_id)?.name || '') : '';
+    const isEditing = editingId === c.id && editingType === 'course';
+
+    return `<div class="drag-item${isEditing ? ' editing' : ''}" draggable="true" data-drag-id="${c.id}" data-drag-table="courses">
       <span class="drag-handle" title="Ziehen">⠿</span>
-      <button class="tree-toggle${isOpen ? ' open' : ''}${!childCount && !exts.length ? ' empty' : ''}" data-action="toggleTreeNode" data-args='["course-${course.id}"]'>▸</button>
-      <span class="tree-node-icon">${typeLabel}</span>
-      <span class="tree-node-name" data-action="editTreeNode" data-args='["${course.id}","course"]'>${esc(course.name)}</span>
-      ${course.restricted ? '<span class="tree-badge tree-badge--lock" title="Eingeschränkt">🔒</span>' : ''}
-      <span class="tree-node-meta">${childCount} Kapitel</span>
-      <span class="tree-node-actions">
-        <button class="icon-btn tree-action-btn" data-action="addChildNode" data-args='["${course.id}","course"]' title="Kapitel hinzufügen">+</button>
-        <button class="icon-btn tree-action-btn" data-action="editTreeNode" data-args='["${course.id}","course"]' title="Bearbeiten">✎</button>
-        <button class="icon-btn tree-action-btn delete" data-action="deleteTreeNode" data-args='["${course.id}","course"]' title="Löschen">✕</button>
-      </span>
-    </div>
-    ${childrenHtml}
-  </li>`;
-}
-
-function renderChapterNode(chapter) {
-  const exercises = (state.cacheData.exercises || []).filter(ex => ex.chapter_id === chapter.id);
-  const isOpen = expandedNodes.has('chapter-' + chapter.id);
-  const isSelected = selectedNodeId === chapter.id && selectedNodeType === 'chapter';
-  const childCount = exercises.length;
-  const course = (state.cacheData.courses || []).find(c => c.id === chapter.course_id);
-  const isOnline = course && (course.course_type === 'online' || course.course_type === 'both');
-  const typeIcon = chapter.chapter_type === 'vorwort' ? '📄' : chapter.chapter_type === 'abschluss' ? '📄' : isOnline ? '🎧' : '';
-
-  let childrenHtml = '';
-  if (isOpen) {
-    const items = exercises
-      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-      .map(ex => renderExerciseNode(ex)).join('');
-    childrenHtml = `<ul class="tree-children">${items}</ul>`;
-  }
-
-  return `<li class="tree-node tree-node--chapter" data-id="${chapter.id}" data-type="chapter">
-    <div class="tree-node-row${isSelected ? ' selected' : ''}" draggable="true" data-drag-id="${chapter.id}" data-drag-table="chapters">
-      <span class="drag-handle" title="Ziehen">⠿</span>
-      <button class="tree-toggle${isOpen ? ' open' : ''}${!childCount ? ' empty' : ''}" data-action="toggleTreeNode" data-args='["chapter-${chapter.id}"]'>▸</button>
-      ${typeIcon ? `<span class="tree-node-icon">${typeIcon}</span>` : ''}
-      <span class="tree-node-name" data-action="editTreeNode" data-args='["${chapter.id}","chapter"]'>${esc(chapter.name)}</span>
-      ${chapter.estimated_minutes ? `<span class="tree-badge">${chapter.estimated_minutes} Min.</span>` : ''}
-      <span class="tree-node-meta">${childCount} Übungen</span>
-      <span class="tree-node-actions">
-        <button class="icon-btn tree-action-btn" data-action="addChildNode" data-args='["${chapter.id}","chapter"]' title="Übung hinzufügen">+</button>
-        <button class="icon-btn tree-action-btn" data-action="editTreeNode" data-args='["${chapter.id}","chapter"]' title="Bearbeiten">✎</button>
-        <button class="icon-btn tree-action-btn delete" data-action="deleteTreeNode" data-args='["${chapter.id}","chapter"]' title="Löschen">✕</button>
-      </span>
-    </div>
-    ${childrenHtml}
-  </li>`;
-}
-
-function renderExerciseNode(exercise) {
-  const questions = (state.cacheData.questions || []).filter(q => q.exercise_id === exercise.id);
-  const contentBlocks = (state.cacheData.contentBlocks || []).filter(b => b.exercise_id === exercise.id);
-  const isOpen = expandedNodes.has('exercise-' + exercise.id);
-  const isSelected = selectedNodeId === exercise.id && selectedNodeType === 'exercise';
-  const childCount = questions.length + contentBlocks.length;
-
-  let childrenHtml = '';
-  if (isOpen) {
-    // Merge questions and content blocks, sorted by sort_order
-    const items = [
-      ...questions.map(q => ({ ...q, _kind: 'question' })),
-      ...contentBlocks.map(b => ({ ...b, _kind: 'content' })),
-    ].sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999));
-
-    const itemsHtml = items.map(item => renderElementNode(item)).join('');
-    childrenHtml = `<ul class="tree-children">${itemsHtml}</ul>`;
-  }
-
-  return `<li class="tree-node tree-node--exercise" data-id="${exercise.id}" data-type="exercise">
-    <div class="tree-node-row${isSelected ? ' selected' : ''}" draggable="true" data-drag-id="${exercise.id}" data-drag-table="exercises">
-      <span class="drag-handle" title="Ziehen">⠿</span>
-      <button class="tree-toggle${isOpen ? ' open' : ''}${!childCount ? ' empty' : ''}" data-action="toggleTreeNode" data-args='["exercise-${exercise.id}"]'>▸</button>
-      <span class="tree-node-name" data-action="editTreeNode" data-args='["${exercise.id}","exercise"]'>${esc(exercise.name)}</span>
-      <span class="tree-node-meta">${questions.length} Fragen</span>
-      <span class="tree-node-actions">
-        <button class="icon-btn tree-action-btn" data-action="addChildNode" data-args='["${exercise.id}","exercise"]' title="Element hinzufügen">+</button>
-        <button class="icon-btn tree-action-btn" data-action="editTreeNode" data-args='["${exercise.id}","exercise"]' title="Bearbeiten">✎</button>
-        <button class="icon-btn tree-action-btn delete" data-action="deleteTreeNode" data-args='["${exercise.id}","exercise"]' title="Löschen">✕</button>
-      </span>
-    </div>
-    ${childrenHtml}
-  </li>`;
-}
-
-function renderElementNode(item) {
-  const isSelected = selectedNodeId === item.id && (
-    (item._kind === 'question' && selectedNodeType === 'question') ||
-    (item._kind === 'content' && selectedNodeType === 'content')
-  );
-
-  if (item._kind === 'question') {
-    const qTypeLabels = { text: 'Textfrage', choice: 'Single Choice', multichoice: 'Multi Choice', scale: 'Skala' };
-    const preview = (item.question || '').substring(0, 50) + ((item.question || '').length > 50 ? '…' : '');
-    return `<li class="tree-node tree-node--element" data-id="${item.id}" data-type="question">
-      <div class="tree-node-row${isSelected ? ' selected' : ''}" draggable="true" data-drag-id="${item.id}" data-drag-table="questions">
-        <span class="drag-handle" title="Ziehen">⠿</span>
-        <span class="tree-element-badge tree-element-badge--question">${qTypeLabels[item.type] || 'Frage'}</span>
-        <span class="tree-node-name" data-action="editTreeNode" data-args='["${item.id}","question"]'>${esc(preview)}</span>
-        <span class="tree-node-actions">
-          <button class="icon-btn tree-action-btn" data-action="editTreeNode" data-args='["${item.id}","question"]' title="Bearbeiten">✎</button>
-          <button class="icon-btn tree-action-btn delete" data-action="deleteTreeNode" data-args='["${item.id}","question"]' title="Löschen">✕</button>
-        </span>
+      <div style="flex:1;min-width:0;">
+        <strong>${esc(c.name)}</strong>
+        ${parentName ? `<span style="color:var(--text-muted);font-size:13px;margin-left:8px;">↳ ${esc(parentName)}</span>` : ''}
       </div>
-    </li>`;
-  } else {
-    const typeLabels = { heading: 'Titel', text: 'Text', text_italic: 'Text kursiv', text_bold: 'Text fett', quote: 'Zitat', divider: 'Trennlinie', image: 'Bild' };
-    const preview = item.type === 'divider' ? '· · ·' : item.type === 'image' ? '📷 Bild' : (item.content || '').substring(0, 50) + ((item.content || '').length > 50 ? '…' : '');
-    return `<li class="tree-node tree-node--element" data-id="${item.id}" data-type="content">
-      <div class="tree-node-row${isSelected ? ' selected' : ''}" draggable="true" data-drag-id="${item.id}" data-drag-table="exercise_content">
-        <span class="drag-handle" title="Ziehen">⠿</span>
-        <span class="tree-element-badge tree-element-badge--content">${typeLabels[item.type] || item.type}</span>
-        <span class="tree-node-name" data-action="editTreeNode" data-args='["${item.id}","content"]'>${esc(preview)}</span>
-        <span class="tree-node-actions">
-          <button class="icon-btn tree-action-btn" data-action="editTreeNode" data-args='["${item.id}","content"]' title="Bearbeiten">✎</button>
-          <button class="icon-btn tree-action-btn delete" data-action="deleteTreeNode" data-args='["${item.id}","content"]' title="Löschen">✕</button>
-        </span>
+      <span class="badge badge-muted" style="margin-right:6px;">${typeLabel}</span>
+      ${c.restricted ? '<span style="margin-right:6px;" title="Eingeschränkt">🔒</span>' : ''}
+      <span style="color:var(--text-muted);font-size:13px;margin-right:8px;">${chapters.length} Kapitel</span>
+      <div class="actions-cell">
+        <button class="icon-btn" data-action="drillIntoCourse" data-args='["${c.id}"]' title="Kapitel anzeigen">▸</button>
+        <button class="icon-btn" data-action="editTreeNode" data-args='["${c.id}","course"]' title="Bearbeiten">✎</button>
+        <button class="icon-btn delete" data-action="deleteTreeNode" data-args='["${c.id}","course"]' title="Löschen">✕</button>
       </div>
-    </li>`;
+    </div>`;
+  }).join('');
+}
+
+function renderChaptersList(el) {
+  const chapters = (state.cacheData.chapters || [])
+    .filter(ch => ch.course_id === drillCourseId)
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+
+  if (!chapters.length) {
+    el.innerHTML = '<div class="empty-state">Keine Kapitel. Erstelle dein erstes Kapitel.</div>';
+    return;
+  }
+
+  el.innerHTML = chapters.map(ch => {
+    const exercises = (state.cacheData.exercises || []).filter(ex => ex.chapter_id === ch.id);
+    const course = (state.cacheData.courses || []).find(c => c.id === ch.course_id);
+    const isOnline = course && (course.course_type === 'online' || course.course_type === 'both');
+    const typeIcon = ch.chapter_type === 'vorwort' ? '📄' : ch.chapter_type === 'abschluss' ? '📄' : isOnline ? '🎧' : '';
+    const isEditing = editingId === ch.id && editingType === 'chapter';
+
+    return `<div class="drag-item${isEditing ? ' editing' : ''}" draggable="true" data-drag-id="${ch.id}" data-drag-table="chapters">
+      <span class="drag-handle" title="Ziehen">⠿</span>
+      <div style="flex:1;min-width:0;">
+        ${typeIcon ? `<span style="margin-right:4px;">${typeIcon}</span>` : ''}<strong>${esc(ch.name)}</strong>
+      </div>
+      ${ch.estimated_minutes ? `<span class="badge badge-muted" style="margin-right:6px;">${ch.estimated_minutes} Min.</span>` : ''}
+      <span style="color:var(--text-muted);font-size:13px;margin-right:8px;">${exercises.length} Übungen</span>
+      <div class="actions-cell">
+        <button class="icon-btn" data-action="drillIntoChapter" data-args='["${ch.id}"]' title="Übungen anzeigen">▸</button>
+        <button class="icon-btn" data-action="editTreeNode" data-args='["${ch.id}","chapter"]' title="Bearbeiten">✎</button>
+        <button class="icon-btn delete" data-action="deleteTreeNode" data-args='["${ch.id}","chapter"]' title="Löschen">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderExercisesList(el) {
+  const exercises = (state.cacheData.exercises || [])
+    .filter(ex => ex.chapter_id === drillChapterId)
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+
+  if (!exercises.length) {
+    el.innerHTML = '<div class="empty-state">Keine Übungen. Erstelle deine erste Übung.</div>';
+    return;
+  }
+
+  el.innerHTML = exercises.map(ex => {
+    const questions = (state.cacheData.questions || []).filter(q => q.exercise_id === ex.id);
+    const contentBlocks = (state.cacheData.contentBlocks || []).filter(b => b.exercise_id === ex.id);
+    const elemCount = questions.length + contentBlocks.length;
+    const isEditing = editingId === ex.id && editingType === 'exercise';
+
+    return `<div class="drag-item${isEditing ? ' editing' : ''}" draggable="true" data-drag-id="${ex.id}" data-drag-table="exercises">
+      <span class="drag-handle" title="Ziehen">⠿</span>
+      <div style="flex:1;min-width:0;">
+        <strong>${esc(ex.name)}</strong>
+      </div>
+      <span style="color:var(--text-muted);font-size:13px;margin-right:8px;">${questions.length} Fragen · ${contentBlocks.length} Inhalte</span>
+      <div class="actions-cell">
+        <button class="icon-btn" data-action="drillIntoExercise" data-args='["${ex.id}"]' title="Elemente anzeigen">▸</button>
+        <button class="icon-btn" data-action="editTreeNode" data-args='["${ex.id}","exercise"]' title="Bearbeiten">✎</button>
+        <button class="icon-btn delete" data-action="deleteTreeNode" data-args='["${ex.id}","exercise"]' title="Löschen">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderElementsList(el) {
+  const questions = (state.cacheData.questions || []).filter(q => q.exercise_id === drillExerciseId);
+  const contentBlocks = (state.cacheData.contentBlocks || []).filter(b => b.exercise_id === drillExerciseId);
+
+  const items = [
+    ...questions.map(q => ({ ...q, _kind: 'question' })),
+    ...contentBlocks.map(b => ({ ...b, _kind: 'content' })),
+  ].sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999));
+
+  if (!items.length) {
+    el.innerHTML = '<div class="empty-state">Keine Elemente. Füge Fragen oder Inhalte hinzu.</div>';
+    return;
+  }
+
+  el.innerHTML = items.map(item => {
+    const table = item._kind === 'question' ? 'questions' : 'exercise_content';
+    const type = item._kind;
+    const isEditing = editingId === item.id && editingType === type;
+
+    if (item._kind === 'question') {
+      const qTypeLabels = { text: 'Textfrage', choice: 'Single Choice', multichoice: 'Multi Choice', scale: 'Skala' };
+      const preview = (item.question || '').substring(0, 60) + ((item.question || '').length > 60 ? '…' : '');
+      return `<div class="drag-item${isEditing ? ' editing' : ''}" draggable="true" data-drag-id="${item.id}" data-drag-table="${table}">
+        <span class="drag-handle" title="Ziehen">⠿</span>
+        <span class="badge badge-muted" style="margin-right:6px;">${qTypeLabels[item.type] || 'Frage'}</span>
+        <div style="flex:1;min-width:0;"><span>${esc(preview)}</span></div>
+        <div class="actions-cell">
+          <button class="icon-btn" data-action="editTreeNode" data-args='["${item.id}","question"]' title="Bearbeiten">✎</button>
+          <button class="icon-btn delete" data-action="deleteTreeNode" data-args='["${item.id}","question"]' title="Löschen">✕</button>
+        </div>
+      </div>`;
+    } else {
+      const typeLabels = { heading: 'Titel', text: 'Text', text_italic: 'Text kursiv', text_bold: 'Text fett', quote: 'Zitat', divider: 'Trennlinie', image: 'Bild' };
+      const preview = item.type === 'divider' ? '· · ·' : item.type === 'image' ? '📷 Bild' : (item.content || '').substring(0, 60) + ((item.content || '').length > 60 ? '…' : '');
+      return `<div class="drag-item${isEditing ? ' editing' : ''}" draggable="true" data-drag-id="${item.id}" data-drag-table="${table}">
+        <span class="drag-handle" title="Ziehen">⠿</span>
+        <span class="badge badge-muted" style="margin-right:6px;">${typeLabels[item.type] || item.type}</span>
+        <div style="flex:1;min-width:0;"><span>${esc(preview)}</span></div>
+        <div class="actions-cell">
+          <button class="icon-btn" data-action="editTreeNode" data-args='["${item.id}","content"]' title="Bearbeiten">✎</button>
+          <button class="icon-btn delete" data-action="deleteTreeNode" data-args='["${item.id}","content"]' title="Löschen">✕</button>
+        </div>
+      </div>`;
+    }
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// DRILL NAVIGATION
+// ══════════════════════════════════════
+
+export function drillIntoCourse(courseId) {
+  drillLevel = 'chapters';
+  drillCourseId = courseId;
+  drillChapterId = null;
+  drillExerciseId = null;
+  hideInlineForm();
+  renderCourseTree();
+}
+
+export function drillIntoChapter(chapterId) {
+  drillLevel = 'exercises';
+  drillChapterId = chapterId;
+  drillExerciseId = null;
+  // Find course for this chapter
+  if (!drillCourseId) {
+    const ch = (state.cacheData.chapters || []).find(c => c.id === chapterId);
+    if (ch) drillCourseId = ch.course_id;
+  }
+  hideInlineForm();
+  renderCourseTree();
+}
+
+export function drillIntoExercise(exerciseId) {
+  drillLevel = 'elements';
+  drillExerciseId = exerciseId;
+  // Find chapter for this exercise
+  if (!drillChapterId) {
+    const ex = (state.cacheData.exercises || []).find(e => e.id === exerciseId);
+    if (ex) drillChapterId = ex.chapter_id;
+  }
+  hideInlineForm();
+  renderCourseTree();
+}
+
+export function drillTo(level, courseId, chapterId, exerciseId) {
+  drillLevel = level || 'courses';
+  drillCourseId = courseId || null;
+  drillChapterId = chapterId || null;
+  drillExerciseId = exerciseId || null;
+  hideInlineForm();
+  renderCourseTree();
+}
+
+// ══════════════════════════════════════
+// ADD ITEM (context-sensitive)
+// ══════════════════════════════════════
+
+export function courseAddItem() {
+  if (drillLevel === 'courses') {
+    openNewCoursePanel();
+  } else if (drillLevel === 'chapters') {
+    openCreatePanel(drillCourseId, 'course');
+  } else if (drillLevel === 'exercises') {
+    openCreatePanel(drillChapterId, 'chapter');
+  } else if (drillLevel === 'elements') {
+    openCreatePanel(drillExerciseId, 'exercise');
   }
 }
 
 // ══════════════════════════════════════
-// TOGGLE / EXPAND / COLLAPSE
-// ══════════════════════════════════════
-
-export function toggleTreeNode(nodeKey) {
-  if (expandedNodes.has(nodeKey)) {
-    expandedNodes.delete(nodeKey);
-  } else {
-    expandedNodes.add(nodeKey);
-  }
-  renderCourseTree();
-}
-
-export function expandAllTree() {
-  const courses = state.cacheData.courses || [];
-  const chapters = state.cacheData.chapters || [];
-  const exercises = state.cacheData.exercises || [];
-  courses.forEach(c => expandedNodes.add('course-' + c.id));
-  chapters.forEach(ch => expandedNodes.add('chapter-' + ch.id));
-  exercises.forEach(ex => expandedNodes.add('exercise-' + ex.id));
-  renderCourseTree();
-}
-
-export function collapseAllTree() {
-  expandedNodes.clear();
-  renderCourseTree();
-}
-
-// ══════════════════════════════════════
-// SELECTION & EDIT PANEL
+// SELECTION & EDIT
 // ══════════════════════════════════════
 
 export function editTreeNode(id, type) {
-  selectedNodeId = id;
-  selectedNodeType = type;
-  renderCourseTree();
+  editingId = id;
+  editingType = type;
   openEditPanel(id, type);
+  renderCurrentLevelList();
 }
 
 export function addChildNode(parentId, parentType) {
-  // Expand parent first
-  expandedNodes.add(parentType + '-' + parentId);
-  renderCourseTree();
   openCreatePanel(parentId, parentType);
 }
 
 export function closeTreeEditPanel() {
-  selectedNodeId = null;
-  selectedNodeType = null;
-  const panel = document.getElementById('treeEditPanel');
-  if (panel) panel.style.display = 'none';
-  const layout = document.querySelector('.tree-layout');
-  if (layout) layout.classList.remove('has-edit-panel');
-  renderCourseTree();
+  editingId = null;
+  editingType = null;
+  hideInlineForm();
+  renderCurrentLevelList();
+}
+
+function hideInlineForm() {
+  editingId = null;
+  editingType = null;
+  const form = document.getElementById('courseInlineForm');
+  if (form) form.style.display = 'none';
 }
 
 // ══════════════════════════════════════
@@ -250,9 +356,8 @@ export async function deleteTreeNode(id, type) {
     const { error } = await sb.from(table).delete().eq('id', id);
     if (error) throw error;
     await loadAllData();
-    // Close panel if deleted node was selected
-    if (selectedNodeId === id && selectedNodeType === type) {
-      closeTreeEditPanel();
+    if (editingId === id && editingType === type) {
+      hideInlineForm();
     }
     renderCourseTree();
     showToast(`${labels[type]} gelöscht.`);
@@ -260,76 +365,66 @@ export async function deleteTreeNode(id, type) {
 }
 
 // ══════════════════════════════════════
-// DRAG & DROP (within same level)
+// DRAG & DROP (flat list)
 // ══════════════════════════════════════
-
-function initTreeDragDrop() {
-  const rows = document.querySelectorAll('#courseTree .tree-node-row[draggable="true"]');
-  rows.forEach(row => {
-    row.addEventListener('dragstart', onTreeDragStart);
-    row.addEventListener('dragover', onTreeDragOver);
-    row.addEventListener('dragleave', onTreeDragLeave);
-    row.addEventListener('drop', onTreeDrop);
-    row.addEventListener('dragend', onTreeDragEnd);
-  });
-}
 
 let dragInfo = null;
 
-function onTreeDragStart(e) {
-  const row = e.currentTarget;
-  const node = row.closest('.tree-node');
+function initDragDrop() {
+  const items = document.querySelectorAll('#courseItemList .drag-item[draggable="true"]');
+  items.forEach(item => {
+    item.addEventListener('dragstart', onDragStart);
+    item.addEventListener('dragover', onDragOver);
+    item.addEventListener('dragleave', onDragLeave);
+    item.addEventListener('drop', onDrop);
+    item.addEventListener('dragend', onDragEnd);
+  });
+}
+
+function onDragStart(e) {
+  const item = e.currentTarget;
   dragInfo = {
-    id: row.dataset.dragId,
-    table: row.dataset.dragTable,
-    parentList: node.parentElement, // the <ul> containing this node
+    id: item.dataset.dragId,
+    table: item.dataset.dragTable,
   };
-  row.classList.add('dragging');
+  item.classList.add('dragging');
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', dragInfo.id);
 }
 
-function onTreeDragOver(e) {
+function onDragOver(e) {
   e.preventDefault();
-  const row = e.currentTarget;
-  const node = row.closest('.tree-node');
+  const item = e.currentTarget;
   if (!dragInfo) return;
-  // Only allow drop within same parent list and same table type
-  if (node.parentElement !== dragInfo.parentList) return;
-  if (row.dataset.dragTable !== dragInfo.table) return;
+  if (item.dataset.dragTable !== dragInfo.table) return;
   e.dataTransfer.dropEffect = 'move';
-  row.classList.add('drag-over');
+  item.classList.add('drag-over');
 }
 
-function onTreeDragLeave(e) {
+function onDragLeave(e) {
   e.currentTarget.classList.remove('drag-over');
 }
 
-async function onTreeDrop(e) {
+async function onDrop(e) {
   e.preventDefault();
-  const row = e.currentTarget;
-  row.classList.remove('drag-over');
+  const item = e.currentTarget;
+  item.classList.remove('drag-over');
   if (!dragInfo) return;
+  if (item.dataset.dragTable !== dragInfo.table) return;
 
-  const node = row.closest('.tree-node');
-  if (node.parentElement !== dragInfo.parentList) return;
-  if (row.dataset.dragTable !== dragInfo.table) return;
-
-  const targetId = row.dataset.dragId;
+  const targetId = item.dataset.dragId;
   if (targetId === dragInfo.id) return;
 
-  // Get all nodes in same parent list
-  const siblings = Array.from(dragInfo.parentList.children);
-  const ids = siblings.map(li => li.querySelector('.tree-node-row[draggable="true"]')?.dataset.dragId).filter(Boolean);
+  const container = document.getElementById('courseItemList');
+  const siblings = Array.from(container.querySelectorAll(`.drag-item[data-drag-table="${dragInfo.table}"]`));
+  const ids = siblings.map(el => el.dataset.dragId).filter(Boolean);
   const fromIdx = ids.indexOf(dragInfo.id);
   const toIdx = ids.indexOf(targetId);
   if (fromIdx === -1 || toIdx === -1) return;
 
-  // Reorder
   ids.splice(fromIdx, 1);
   ids.splice(toIdx, 0, dragInfo.id);
 
-  // Save to DB
   try {
     const table = dragInfo.table;
     await Promise.all(ids.map((id, i) =>
@@ -340,58 +435,36 @@ async function onTreeDrop(e) {
   } catch (e) { showToast('Sortierung fehlgeschlagen.', 'error'); }
 }
 
-function onTreeDragEnd(e) {
+function onDragEnd(e) {
   e.currentTarget.classList.remove('dragging');
-  document.querySelectorAll('.tree-node-row.drag-over').forEach(r => r.classList.remove('drag-over'));
+  document.querySelectorAll('.drag-item.drag-over').forEach(r => r.classList.remove('drag-over'));
   dragInfo = null;
 }
 
 // ══════════════════════════════════════
-// SEARCH & FILTER (bonus)
+// SEARCH
 // ══════════════════════════════════════
 
 export function searchTree(query) {
+  const items = document.querySelectorAll('#courseItemList .drag-item');
   if (!query) {
-    renderCourseTree();
+    items.forEach(el => el.style.display = '');
     return;
   }
   const q = query.toLowerCase();
-  const courses = state.cacheData.courses || [];
-  const chapters = state.cacheData.chapters || [];
-  const exercises = state.cacheData.exercises || [];
-  const questions = state.cacheData.questions || [];
-
-  // Find matching items and expand their parents
-  expandedNodes.clear();
-  questions.filter(item => (item.question || '').toLowerCase().includes(q)).forEach(item => {
-    const ex = exercises.find(e => e.id === item.exercise_id);
-    if (ex) {
-      expandedNodes.add('exercise-' + ex.id);
-      const ch = chapters.find(c => c.id === ex.chapter_id);
-      if (ch) {
-        expandedNodes.add('chapter-' + ch.id);
-        expandedNodes.add('course-' + ch.course_id);
-      }
-    }
+  items.forEach(el => {
+    const text = el.textContent.toLowerCase();
+    el.style.display = text.includes(q) ? '' : 'none';
   });
-  exercises.filter(item => (item.name || '').toLowerCase().includes(q)).forEach(item => {
-    expandedNodes.add('exercise-' + item.id);
-    const ch = chapters.find(c => c.id === item.chapter_id);
-    if (ch) {
-      expandedNodes.add('chapter-' + ch.id);
-      expandedNodes.add('course-' + ch.course_id);
-    }
-  });
-  chapters.filter(item => (item.name || '').toLowerCase().includes(q)).forEach(item => {
-    expandedNodes.add('chapter-' + item.id);
-    expandedNodes.add('course-' + item.course_id);
-  });
-  courses.filter(item => (item.name || '').toLowerCase().includes(q)).forEach(item => {
-    expandedNodes.add('course-' + item.id);
-  });
-
-  renderCourseTree();
 }
+
+// ══════════════════════════════════════
+// COMPAT STUBS (no longer needed but registered)
+// ══════════════════════════════════════
+
+export function toggleTreeNode() {}
+export function expandAllTree() {}
+export function collapseAllTree() {}
 
 // ══════════════════════════════════════
 // REGISTER ON WINDOW (for event delegation)
@@ -405,3 +478,8 @@ window.deleteTreeNode = deleteTreeNode;
 window.expandAllTree = expandAllTree;
 window.collapseAllTree = collapseAllTree;
 window.searchTree = searchTree;
+window.drillIntoCourse = drillIntoCourse;
+window.drillIntoChapter = drillIntoChapter;
+window.drillIntoExercise = drillIntoExercise;
+window.drillTo = drillTo;
+window.courseAddItem = courseAddItem;
