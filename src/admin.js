@@ -955,14 +955,23 @@ export async function renderAdminUsers() {
   if (error) { el.innerHTML = '<div class="empty-state">Fehler beim Laden der User.</div>'; return; }
   if (!profiles || !profiles.length) { el.innerHTML = '<div class="empty-state">Keine User gefunden.</div>'; return; }
 
-  const rows = profiles.map((p) =>
-    `<tr><td><span class="user-status ${p.is_admin ? 'admin' : 'user'}"></span>${esc(p.email || '—')}</td>` +
-    `<td style="font-size:12px;color:var(--text-muted);">${new Date(p.created_at).toLocaleDateString('de-CH')}</td>` +
-    `<td>${p.is_admin ? 'Admin' : 'User'}</td>` +
-    `<td><div class="actions-cell"><button class="icon-btn" data-action="toggleAdmin" data-args='["${p.id}",${!p.is_admin}]'>${p.is_admin ? '↓ User' : '↑ Admin'}</button></div></td></tr>`
-  ).join('');
+  const rows = profiles.map((p) => {
+    const emailSafe = esc(p.email || '—');
+    const emailJson = esc(JSON.stringify(p.email || ''));
+    return `<tr id="userRow-${p.id}">` +
+      `<td><span class="user-status ${p.is_admin ? 'admin' : 'user'}"></span>${emailSafe}</td>` +
+      `<td style="font-size:12px;color:var(--text-muted);">${new Date(p.created_at).toLocaleDateString('de-CH')}</td>` +
+      `<td>${p.is_admin ? 'Admin' : 'User'}</td>` +
+      `<td><div class="actions-cell">` +
+        `<button class="icon-btn" data-action="showUserProgress" data-args='["${p.id}"]' title="Fortschritt">📊</button>` +
+        `<button class="icon-btn" data-action="openSendMessageModal" data-args='["${p.id}",${emailJson}]' title="Nachricht">✉</button>` +
+        `<button class="icon-btn" data-action="toggleAdmin" data-args='["${p.id}",${!p.is_admin}]'>${p.is_admin ? '↓ User' : '↑ Admin'}</button>` +
+        (!p.is_admin ? `<button class="icon-btn delete" data-action="openAdminDeleteUserModal" data-args='["${p.id}",${emailJson}]' title="Löschen">✕</button>` : '') +
+      `</div></td></tr>` +
+      `<tr id="userDetail-${p.id}" class="user-detail-row" style="display:none;"><td colspan="4"><div id="userDetailContent-${p.id}" class="user-detail-content"></div></td></tr>`;
+  }).join('');
 
-  el.innerHTML = `<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>E-Mail</th><th>Registriert</th><th>Rolle</th><th style="text-align:right">Aktion</th></tr></thead><tbody>${rows}</tbody></table></div>` +
+  el.innerHTML = `<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>E-Mail</th><th>Registriert</th><th>Rolle</th><th style="text-align:right">Aktionen</th></tr></thead><tbody>${rows}</tbody></table></div>` +
     `<p style="font-size:12px;font-style:italic;color:var(--text-light);margin-top:8px;">${profiles.length} User insgesamt</p>`;
 }
 
@@ -974,6 +983,243 @@ export async function toggleAdmin(userId, makeAdmin) {
     renderAdminUsers();
     showToast(makeAdmin ? 'Admin-Rechte vergeben.' : 'Admin-Rechte entzogen.');
   } catch (e) { showToast(trDataErr(e, 'save'), 'error'); }
+}
+
+// ── USER PROGRESS ──
+
+export async function showUserProgress(userId) {
+  const detailRow = document.getElementById('userDetail-' + userId);
+  const detailContent = document.getElementById('userDetailContent-' + userId);
+  if (!detailRow || !detailContent) return;
+
+  // Toggle visibility
+  if (detailRow.style.display !== 'none') {
+    detailRow.style.display = 'none';
+    return;
+  }
+
+  detailRow.style.display = '';
+  detailContent.innerHTML = '<div class="empty-state" style="padding:20px;"><div class="spinner" style="margin-bottom:8px;"></div>Fortschritt wird geladen …</div>';
+
+  try {
+    const { data, error } = await sb.rpc('admin_get_user_progress', { target_user_id: userId });
+    if (error) throw error;
+
+    const courseAccess = data?.course_access || [];
+    const chapterProgress = data?.chapter_progress || [];
+    const userAnswers = data?.answers || [];
+
+    if (!courseAccess.length) {
+      detailContent.innerHTML = '<p style="padding:16px;color:var(--text-muted);font-style:italic;">Keine Kurszugänge.</p>';
+      return;
+    }
+
+    const courses = state.cacheData.courses;
+    const chapters = state.cacheData.chapters;
+    const exercises = state.cacheData.exercises;
+    const questions = state.cacheData.questions || [];
+
+    const courseCards = courseAccess.map(ca => {
+      const course = courses.find(c => c.id === ca.course_id);
+      if (!course) return '';
+
+      const courseChapters = chapters.filter(ch => ch.course_id === course.id);
+      const completedChapters = courseChapters.filter(ch =>
+        chapterProgress.some(cp => cp.chapter_id === ch.id && cp.is_completed)
+      );
+
+      const courseExIds = exercises
+        .filter(ex => courseChapters.some(ch => ch.id === ex.chapter_id))
+        .map(ex => ex.id);
+      const courseQIds = questions
+        .filter(q => courseExIds.includes(q.exercise_id))
+        .map(q => q.id);
+      const answeredCount = userAnswers.filter(a => courseQIds.includes(a.question_id)).length;
+
+      const chPct = courseChapters.length ? Math.round((completedChapters.length / courseChapters.length) * 100) : 0;
+      const qPct = courseQIds.length ? Math.round((answeredCount / courseQIds.length) * 100) : 0;
+
+      const accessLabel = ca.access_type === 'subscription' ? 'Abo' : ca.access_type === 'invite' ? 'Einladung' : 'Kauf';
+
+      return `<div class="user-progress-course">
+        <div class="user-progress-course-name">${esc(course.name)}</div>
+        <div class="user-progress-stats">
+          <div class="user-progress-stat">
+            <span class="user-progress-label">Kapitel</span>
+            <div class="user-progress-bar"><div class="user-progress-bar-fill" style="width:${chPct}%"></div></div>
+            <span class="user-progress-value">${completedChapters.length}/${courseChapters.length}</span>
+          </div>
+          <div class="user-progress-stat">
+            <span class="user-progress-label">Fragen</span>
+            <div class="user-progress-bar"><div class="user-progress-bar-fill" style="width:${qPct}%"></div></div>
+            <span class="user-progress-value">${answeredCount}/${courseQIds.length}</span>
+          </div>
+        </div>
+        <span class="user-progress-access-type">${accessLabel}</span>
+      </div>`;
+    }).filter(Boolean).join('');
+
+    detailContent.innerHTML = courseCards || '<p style="padding:16px;color:var(--text-muted);font-style:italic;">Keine Kurse gefunden.</p>';
+  } catch (e) {
+    console.error('Progress load error:', e);
+    detailContent.innerHTML = '<p style="padding:16px;color:var(--accent-rose);">Fehler beim Laden des Fortschritts.</p>';
+  }
+}
+
+// ── ADMIN DELETE USER ──
+
+let _pendingDeleteUserId = null;
+let _pendingDeleteUserEmail = null;
+
+export function openAdminDeleteUserModal(userId, email) {
+  _pendingDeleteUserId = userId;
+  _pendingDeleteUserEmail = email;
+
+  let overlay = document.getElementById('adminDeleteUserModal');
+  if (overlay) overlay.remove();
+
+  overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'adminDeleteUserModal';
+  overlay.style.display = 'flex';
+  overlay.innerHTML = `<div class="modal">
+    <button class="modal-close" data-action="closeAdminDeleteUserModal">&times;</button>
+    <div class="modal-icon"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></div>
+    <h2>User löschen?</h2>
+    <p>Alle Daten von <strong>${esc(email)}</strong> werden unwiderruflich gelöscht — Antworten, Fortschritt, Kurszugänge, Journal-Einträge und der Account.</p>
+    <p class="modal-confirm-label">Tippe die E-Mail-Adresse zur Bestätigung:</p>
+    <input class="modal-confirm-input" id="adminDeleteUserConfirmInput" placeholder="${esc(email)}">
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" data-action="closeAdminDeleteUserModal">Abbrechen</button>
+      <button class="btn btn-primary btn-sm" id="adminDeleteUserConfirmBtn" disabled data-action="confirmAdminDeleteUser"><span class="btn-text">User löschen</span></button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => {
+    overlay.classList.add('active');
+    const input = document.getElementById('adminDeleteUserConfirmInput');
+    if (input) {
+      input.focus();
+      input.addEventListener('input', _onDeleteConfirmInput);
+    }
+  });
+}
+
+function _onDeleteConfirmInput() {
+  const input = document.getElementById('adminDeleteUserConfirmInput');
+  const btn = document.getElementById('adminDeleteUserConfirmBtn');
+  if (!input || !btn) return;
+  btn.disabled = input.value.trim().toLowerCase() !== (_pendingDeleteUserEmail || '').toLowerCase();
+}
+
+export function closeAdminDeleteUserModal() {
+  const modal = document.getElementById('adminDeleteUserModal');
+  if (modal) {
+    modal.classList.remove('active');
+    setTimeout(() => modal.remove(), 200);
+  }
+  _pendingDeleteUserId = null;
+  _pendingDeleteUserEmail = null;
+}
+
+export async function confirmAdminDeleteUser() {
+  if (!_pendingDeleteUserId) return;
+  btnLoading('adminDeleteUserConfirmBtn', true);
+
+  try {
+    const { data, error } = await sb.functions.invoke('admin-delete-user', {
+      body: { targetUserId: _pendingDeleteUserId },
+    });
+    if (error) throw new Error(error.message || 'Fehler');
+    if (data?.error) throw new Error(data.error);
+
+    closeAdminDeleteUserModal();
+    showToast('User wurde gelöscht.');
+    renderAdminUsers();
+  } catch (e) {
+    console.error('Admin delete error:', e);
+    showToast('Fehler beim Löschen: ' + e.message, 'error');
+    btnLoading('adminDeleteUserConfirmBtn', false);
+  }
+}
+
+// ── SEND MESSAGE (EMAIL + IN-APP) ──
+
+let _pendingMsgUserId = null;
+let _pendingMsgUserEmail = null;
+
+export function openSendMessageModal(userId, email) {
+  _pendingMsgUserId = userId;
+  _pendingMsgUserEmail = email;
+
+  let overlay = document.getElementById('adminSendMessageModal');
+  if (overlay) overlay.remove();
+
+  overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'adminSendMessageModal';
+  overlay.style.display = 'flex';
+  overlay.innerHTML = `<div class="modal" style="max-width:520px;text-align:left;">
+    <button class="modal-close" data-action="closeSendMessageModal">&times;</button>
+    <h2 style="margin-bottom:16px;">Nachricht an ${esc(email)}</h2>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label class="form-label">Betreff (optional)</label>
+      <input class="form-input" id="adminMsgSubject" type="text" maxlength="120" placeholder="Betreff">
+    </div>
+    <div class="form-group" style="margin-bottom:16px;">
+      <label class="form-label">Nachricht</label>
+      <textarea class="form-textarea" id="adminMsgBody" rows="5" maxlength="2000" placeholder="Deine Nachricht …" style="resize:vertical;"></textarea>
+    </div>
+    <p style="font-size:11px;color:var(--text-light);margin-bottom:16px;">Wird als E-Mail gesendet und als In-App Benachrichtigung gespeichert.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" data-action="closeSendMessageModal">Abbrechen</button>
+      <button class="btn btn-primary btn-sm" id="adminSendMsgBtn" data-action="confirmSendMessage"><span class="btn-text">Senden</span></button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => {
+    overlay.classList.add('active');
+    document.getElementById('adminMsgSubject')?.focus();
+  });
+}
+
+export function closeSendMessageModal() {
+  const modal = document.getElementById('adminSendMessageModal');
+  if (modal) {
+    modal.classList.remove('active');
+    setTimeout(() => modal.remove(), 200);
+  }
+  _pendingMsgUserId = null;
+  _pendingMsgUserEmail = null;
+}
+
+export async function confirmSendMessage() {
+  const body = document.getElementById('adminMsgBody')?.value?.trim();
+  if (!body) { showToast('Bitte Nachricht eingeben.', 'error'); return; }
+
+  const subject = document.getElementById('adminMsgSubject')?.value?.trim() || '';
+  btnLoading('adminSendMsgBtn', true);
+
+  try {
+    const { data, error } = await sb.functions.invoke('send-user-email', {
+      body: {
+        to: _pendingMsgUserEmail,
+        targetUserId: _pendingMsgUserId,
+        subject: subject || undefined,
+        message: body,
+      },
+    });
+    if (error) throw new Error(error.message || 'Fehler');
+    if (data?.error) throw new Error(data.error);
+
+    closeSendMessageModal();
+    const emailInfo = data?.emailSent ? 'E-Mail gesendet' : 'Benachrichtigung gespeichert (kein E-Mail-Service)';
+    showToast(emailInfo + '.');
+  } catch (e) {
+    console.error('Send message error:', e);
+    showToast('Fehler beim Senden: ' + e.message, 'error');
+    btnLoading('adminSendMsgBtn', false);
+  }
 }
 
 // ══════════════════════════════════════

@@ -79,6 +79,9 @@ import {
   renderPublicContact, submitPublicContact,
 } from './public.js';
 import {
+  loadNotificationCount, renderNotifications, markNotificationRead,
+} from './notifications.js';
+import {
   openDeleteAnswersModal,
   closeDeleteAnswersModal,
   onDeleteConfirmInput,
@@ -100,7 +103,10 @@ import {
   saveQuestion, editQuestion, deleteQuestion, resetQuestionForm,
   onQuestionTypeChange, addOptionRow, updateQuestionExerciseSelect,
   renderAdminCourses, manageInvites, createInvite,
-  toggleAdmin, addOnboardElement, saveOnboarding, previewOnboarding,
+  toggleAdmin, showUserProgress,
+  openAdminDeleteUserModal, closeAdminDeleteUserModal, confirmAdminDeleteUser,
+  openSendMessageModal, closeSendMessageModal, confirmSendMessage,
+  addOnboardElement, saveOnboarding, previewOnboarding,
   onboardElements, renderOnboardElements,
   handleImageFileSelect, removeCourseImage, removeChapterImage, initImageUploadZones,
   saveLoginBg, removeLoginBgImage,
@@ -187,7 +193,12 @@ Object.assign(window, {
   saveQuestion, editQuestion, deleteQuestion, resetQuestionForm,
   onQuestionTypeChange, addOptionRow, updateQuestionExerciseSelect,
   renderAdminCourses, manageInvites, createInvite,
-  toggleAdmin, addOnboardElement, saveOnboarding, previewOnboarding,
+  toggleAdmin, showUserProgress,
+  openAdminDeleteUserModal, closeAdminDeleteUserModal, confirmAdminDeleteUser,
+  openSendMessageModal, closeSendMessageModal, confirmSendMessage,
+  // Notifications
+  renderNotifications, markNotificationRead,
+  addOnboardElement, saveOnboarding, previewOnboarding,
   handleImageFileSelect, removeCourseImage, removeChapterImage,
   saveLoginBg, removeLoginBgImage,
   saveTypography, previewTypography,

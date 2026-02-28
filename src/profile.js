@@ -29,20 +29,28 @@ export async function renderProfile() {
   // ── 1. Meine Kurse ──
   const coursesHtml = renderMyCourses();
 
-  // ── 2. Meine Abrechnungen ──
+  // ── 2. Nachrichten ──
+  const notificationsHtml = `
+    <div class="profile-section">
+      <h3>Nachrichten</h3>
+      <div id="profileNotifications"></div>
+    </div>`;
+
+  // ── 3. Meine Abrechnungen ──
   const billingHtml = renderBilling();
 
-  // ── 3. Meine Angaben ──
+  // ── 4. Meine Angaben ──
   const detailsHtml = renderMyDetails(user, profile);
 
-  // ── 4. Einstellungen ──
+  // ── 5. Einstellungen ──
   const settingsHtml = renderSettings();
 
-  // ── 5. Gefahrenbereich ──
+  // ── 6. Gefahrenbereich ──
   const dangerHtml = renderDangerZone();
 
   container.innerHTML = `
     ${coursesHtml}
+    ${notificationsHtml}
     ${billingHtml}
     ${detailsHtml}
     ${settingsHtml}
@@ -58,6 +66,9 @@ export async function renderProfile() {
       </button>
     </div>
   `;
+
+  // Lazy-load notifications into the container
+  import('./notifications.js').then(m => m.renderNotifications('profileNotifications'));
 }
 
 // ══════════════════════════════════════

@@ -352,6 +352,9 @@ export async function postLogin() {
   await loadCourseAccess();
   await loadUserAnswers();
 
+  // Load notification count (non-blocking)
+  import('./notifications.js').then(m => m.loadNotificationCount()).catch(() => {});
+
   // Payment Link: Pending Käufe von Squarespace dem User zuweisen
   try {
     const session = await sb.auth.getSession();

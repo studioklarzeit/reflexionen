@@ -524,6 +524,28 @@ textarea:focus { background: rgba(255,255,255,0.15); }
 .lock-icon svg { width: 48px; height: 48px; }
 .lock-text { font-family: var(--font-heading); font-size: 1.2rem; color: var(--text-primary); margin-bottom: 28px; }
 .lock-btn { min-width: 200px; }
+/* Notification Badge */
+.notification-badge { display: none; position: absolute; top: 2px; right: 2px; min-width: 16px; height: 16px; padding: 0 4px; background: var(--accent-rose, #c75050); color: #fff; font-size: 10px; font-weight: 600; border-radius: 99px; align-items: center; justify-content: center; line-height: 16px; text-align: center; pointer-events: none; }
+.bottom-sheet-link { position: relative; }
+/* Admin User Progress */
+.user-detail-row td { padding: 0 !important; border-bottom: 1px solid var(--border-light); }
+.user-detail-content { padding: 16px 20px; background: var(--beige, #f5f0eb); display: flex; flex-wrap: wrap; gap: 12px; }
+.user-progress-course { background: var(--card, #fff); border: 1px solid var(--border-light); border-radius: 8px; padding: 14px 16px; min-width: 220px; flex: 1; }
+.user-progress-course-name { font-family: var(--font-heading); font-size: 14px; font-weight: 500; margin-bottom: 10px; color: var(--text); }
+.user-progress-stats { display: flex; flex-direction: column; gap: 6px; }
+.user-progress-stat { display: flex; align-items: center; gap: 8px; }
+.user-progress-label { font-size: 11px; color: var(--text-muted); min-width: 48px; }
+.user-progress-bar { flex: 1; height: 5px; background: var(--border-light); border-radius: 3px; overflow: hidden; }
+.user-progress-bar-fill { height: 100%; background: var(--accent-olive, #7a8a5a); border-radius: 3px; transition: width 0.3s ease; }
+.user-progress-value { font-size: 11px; color: var(--text-muted); min-width: 36px; text-align: right; }
+.user-progress-access-type { display: inline-block; margin-top: 8px; font-size: 10px; color: var(--text-light); background: var(--border-light); padding: 2px 8px; border-radius: 99px; }
+/* Notification Items (Profile) */
+.notification-item { padding: 14px 16px; border: 1px solid var(--border-light); border-radius: 8px; margin-bottom: 8px; background: var(--card, #fff); }
+.notification-unread { border-left: 3px solid var(--accent-warm); }
+.notification-header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+.notification-subject { font-size: 14px; color: var(--text); }
+.notification-date { font-size: 11px; color: var(--text-light); white-space: nowrap; }
+.notification-message { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0; }
 body.dark .auth-card { background: rgba(42,40,38,0.88); border-color: rgba(58,54,50,0.5); }
 body.dark .auth-input { background: rgba(0,0,0,0.3); }
 body.dark .auth-input:focus { background: rgba(0,0,0,0.45); }
