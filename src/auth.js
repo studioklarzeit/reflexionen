@@ -363,27 +363,23 @@ export async function postLogin() {
   // Load notification count (non-blocking)
   import('./notifications.js').then(m => m.loadNotificationCount()).catch(() => {});
 
-  // Payment Link: Pending Käufe von Squarespace dem User zuweisen
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session) {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/claim-purchases`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-          'apikey': SUPABASE_KEY,
-        },
-      });
-      const respData = await res.json().catch(() => ({}));
-      if (respData?.claimed > 0) {
-        await loadCourseAccess();
-        console.log(`Claimed ${respData.claimed} pending purchase(s)`);
+  // Payment Link: Pending Käufe von Squarespace dem User zuweisen (non-blocking)
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (!session) return;
+    fetch(`${SUPABASE_URL}/functions/v1/claim-purchases`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_KEY,
+      },
+    }).then(r => r.json().catch(() => ({}))).then(d => {
+      if (d?.claimed > 0) {
+        loadCourseAccess();
+        console.log(`Claimed ${d.claimed} pending purchase(s)`);
       }
-    }
-  } catch (e) {
-    console.error('claim-purchases error:', e);
-  }
+    }).catch(e => console.error('claim-purchases error:', e));
+  });
 
   if (state.pendingInvite) {
     await redeemInvite(state.pendingInvite);
