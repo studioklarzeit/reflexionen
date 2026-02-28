@@ -2822,7 +2822,7 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
 }
 
 /* ═══ CHAPTER PLAYER ═══ */
-.chapter-player { max-width: 760px; }
+.chapter-player { max-width: 900px; }
 
 /* ── Hero Image ── */
 .chapter-detail-hero {
