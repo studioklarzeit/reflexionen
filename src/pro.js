@@ -30,7 +30,7 @@ export async function renderPro() {
   if (!hasPro) {
     const proCourse = getProCourse();
     const salesLink = proCourse?.sales_slug
-      ? `<button class="btn btn-primary" data-action="navigateTo" data-args='["salesDetail",{"slug":"${esc(proCourse.sales_slug)}"}]'>Monatsreflektionen entdecken</button>`
+      ? `<button class="btn btn-primary" data-action="navigateTo" data-args='["salesDetail",{"slug":"${esc(proCourse.sales_slug)}"}]'>Reflektionen entdecken</button>`
       : '';
 
     container.innerHTML = `
@@ -38,8 +38,8 @@ export async function renderPro() {
         <div class="pro-locked-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         </div>
-        <h3>Monatsreflektionen</h3>
-        <p>Mit den Monatsreflektionen erhältst du monatliche Impulse und kannst Fragen einreichen, die persönlich beantwortet werden.</p>
+        <h3>Reflektionen</h3>
+        <p>Mit den Reflektionen erhältst du monatliche Impulse und kannst Fragen einreichen, die persönlich beantwortet werden.</p>
         ${salesLink}
       </div>
     `;
@@ -74,7 +74,7 @@ export async function renderPro() {
         </span>
         <h3 class="contact-card-title">Frage einreichen</h3>
       </div>
-      <p class="contact-card-desc">Stelle deine Frage — sie wird in der nächsten Monatsreflektion persönlich beantwortet.</p>
+      <p class="contact-card-desc">Stelle deine Frage — sie wird in der nächsten Reflektion persönlich beantwortet.</p>
       <div class="contact-form">
         <textarea class="form-textarea contact-message" id="proQuestionInput" placeholder="Deine Frage …" rows="4" maxlength="2000"></textarea>
         <div class="contact-form-footer">

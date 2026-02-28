@@ -200,12 +200,12 @@ export async function renderChapterPlayer() {
 
   const prog = state.chapterProgress[chapter.id];
 
-  // Breadcrumb — Pro course links back to Monatsreflektionen page
+  // Breadcrumb — Pro course links back to Reflektionen page
   const isProCourse = course.name?.toLowerCase().includes('monatsreflektion');
   const bcEl = document.getElementById('chapterPlayerBreadcrumb');
   if (bcEl) {
     bcEl.innerHTML = isProCourse
-      ? `<button class="breadcrumb-link" data-action="navigateTo" data-args='["pro"]'>Monatsreflektionen</button>
+      ? `<button class="breadcrumb-link" data-action="navigateTo" data-args='["pro"]'>Reflektionen</button>
          <span class="breadcrumb-sep">›</span>
          <span>${esc(chapter.name)}</span>`
       : `<button class="breadcrumb-link" data-action="navigateTo" data-args='["courses"]'>Kurse</button>

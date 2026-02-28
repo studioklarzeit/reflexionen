@@ -37,11 +37,11 @@
     <a class="header-logo" data-action="navigateTo" data-args='["courses"]'>Studio Klarzeit</a>
     <nav class="header-links">
       <a class="header-link" data-action="navigateTo" data-args='["courses"]'>Kurse</a>
-      <a class="header-link" data-action="navigateTo" data-args='["tools"]'>Tools</a>
-      <a class="header-link" data-action="navigateTo" data-args='["meditation"]'>Meditation</a>
-      <a class="header-link" data-action="navigateTo" data-args='["profile"]'>Profil</a>
+      <a class="header-link" data-action="navigateTo" data-args='["tools"]'>Impulse</a>
+      <a class="header-link" id="headerProLink" style="display:none;" data-action="navigateTo" data-args='["pro"]'>Reflektionen</a>
+      <a class="header-link" data-action="navigateTo" data-args='["meditation"]'>Meditationen</a>
       <a class="header-link" data-action="navigateTo" data-args='["contact"]'>Kontakt</a>
-      <a class="header-link" id="headerProLink" style="display:none;" data-action="navigateTo" data-args='["pro"]'>Monatsreflektionen</a>
+      <a class="header-link" data-action="navigateTo" data-args='["profile"]'>Profil</a>
       <a class="header-link" id="headerAdminLink" style="display:none;" data-action="navigateTo" data-args='["admin"]'>Admin</a>
     </nav>
   </div>
@@ -54,7 +54,7 @@
   <div class="bottom-sheet-body">
     <button class="bottom-sheet-link" data-action="mobileMenuNav" data-args='["profile"]'><span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Profil<span class="notification-badge" style="display:none;"></span></button>
     <button class="bottom-sheet-link" data-action="mobileMenuNav" data-args='["contact"]'><span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>Kontakt</button>
-    <button class="bottom-sheet-link" id="mobileProLink" style="display:none;" data-action="mobileMenuNav" data-args='["pro"]'><span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>Monatsreflektionen</button>
+    <button class="bottom-sheet-link" id="mobileProLink" style="display:none;" data-action="mobileMenuNav" data-args='["pro"]'><span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>Reflektionen</button>
     <button class="bottom-sheet-link" id="mobileAdminLink" style="display:none;" data-action="mobileMenuNav" data-args='["admin"]'><span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Verwaltung</button>
     <div class="bottom-sheet-divider"></div>
     <button class="bottom-sheet-toggle" data-action="toggleDarkAndLabel">
@@ -106,11 +106,11 @@
   </button>
   <button class="tab-btn" data-tab="tools" data-action="navigateTo" data-args='["tools"]'>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-    <span class="tab-label">Tools</span>
+    <span class="tab-label">Impulse</span>
   </button>
   <button class="tab-btn" data-tab="meditation" data-action="navigateTo" data-args='["meditation"]'>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-    <span class="tab-label">Meditation</span>
+    <span class="tab-label">Meditationen</span>
   </button>
   <button class="tab-btn" data-tab="menu" data-action="openMobileMenu" aria-label="Menü" style="position:relative;">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -220,7 +220,7 @@
   </div>
 
   <div class="view" id="viewImpulse">
-    <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Tools</button> <span class="breadcrumb-sep">›</span> <span>Impuls der Woche</span></div>
+    <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Impulse</button> <span class="breadcrumb-sep">›</span> <span>Impuls der Woche</span></div>
     <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Impuls der Woche</h1><p class="page-intro">— Jede Woche ein neuer Gedanke, der dich begleitet.</p></div>
     <div id="impulseViewContent"></div>
   </div>
@@ -236,31 +236,31 @@
   </div>
 
   <div class="view" id="viewJournal">
-    <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Tools</button> <span class="breadcrumb-sep">›</span> <span>Muster-Tagebuch</span></div>
+    <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Impulse</button> <span class="breadcrumb-sep">›</span> <span>Muster-Tagebuch</span></div>
     <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Muster-Tagebuch</h1><p class="page-intro">— Halte fest, was dir heute aufgefallen ist.</p></div>
     <div id="journalContent"></div>
   </div>
 
   <div class="view" id="viewFriendView">
-    <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Tools</button> <span class="breadcrumb-sep">›</span> <span>Freundinnen-Blick</span></div>
+    <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Impulse</button> <span class="breadcrumb-sep">›</span> <span>Freundinnen-Blick</span></div>
     <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Freundinnen-Blick</h1><p class="page-intro">— Was würdest du einer Freundin über deinen Tag sagen?</p></div>
     <div id="friendViewContent"></div>
   </div>
 
   <div class="view" id="viewCheckin">
-    <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Tools</button> <span class="breadcrumb-sep">›</span> <span>Stimmungs-Check-In</span></div>
+    <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Impulse</button> <span class="breadcrumb-sep">›</span> <span>Stimmungs-Check-In</span></div>
     <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Stimmungs-Check-In</h1><p class="page-intro">— Kursspezifisch. Nicht «wie geht es dir von 1–10».</p></div>
     <div id="checkinContent"></div>
   </div>
 
   <div class="view" id="viewBodycheck">
-    <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Tools</button> <span class="breadcrumb-sep">›</span> <span>Körper-Check-In</span></div>
+    <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Impulse</button> <span class="breadcrumb-sep">›</span> <span>Körper-Check-In</span></div>
     <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Körper-Check-In</h1><p class="page-intro">— Wo spürst du gerade Spannung, Schwere oder Unbehagen?</p></div>
     <div id="bodyCheckContent"></div>
   </div>
 
   <div class="view" id="viewEnergy">
-    <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Tools</button> <span class="breadcrumb-sep">›</span> <span>Energie-Bilanz</span></div>
+    <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Impulse</button> <span class="breadcrumb-sep">›</span> <span>Energie-Bilanz</span></div>
     <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Energie-Bilanz</h1><p class="page-intro">— Was hat heute Energie gegeben? Was hat Energie gekostet?</p></div>
     <div id="energyContent"></div>
   </div>
@@ -360,7 +360,7 @@
       <div class="admin-nav-headers">
         <button class="admin-nav-label active" data-action="toggleAdminGroup" data-args='["Kurse"]'>Kurse</button>
         <button class="admin-nav-label" data-action="toggleAdminGroup" data-args='["Einstellungen"]'>Einstellungen</button>
-        <button class="admin-nav-label" data-action="toggleAdminGroup" data-args='["Tools"]'>Tools</button>
+        <button class="admin-nav-label" data-action="toggleAdminGroup" data-args='["Tools"]'>Impulse</button>
         <button class="admin-nav-label" data-action="toggleAdminGroup" data-args='["Website"]'>Website</button>
       </div>
       <div class="admin-nav-pills-area open" id="adminPillsKurse">
