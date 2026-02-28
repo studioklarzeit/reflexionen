@@ -925,14 +925,14 @@ window.executeTreeBulkImport = async function() {
     }
 
     await loadAllData();
-    import('./admin-tree.js').then(m => m.renderCourseTree());
+    window.renderCourseTree?.();
     openTreeBulkUpload(); // close
     showToast('Import erfolgreich!');
   } catch (e) {
     console.error('Bulk import error:', e);
     showToast('Import fehlgeschlagen: ' + trDataErr(e, 'import'), 'error');
     await loadAllData();
-    import('./admin-tree.js').then(m => m.renderCourseTree());
+    window.renderCourseTree?.();
   } finally {
     btnLoading('treeBulkImportBtn', false);
   }

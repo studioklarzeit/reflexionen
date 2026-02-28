@@ -2,6 +2,7 @@ import { sb } from './config.js';
 import { state } from './state.js';
 import { esc, showToast, trDataErr } from './utils.js';
 import { loadAllData } from './data.js';
+import { openEditPanel, openCreatePanel } from './admin-tree-crud.js';
 
 // ── Tree State ──
 let expandedNodes = new Set();
@@ -210,16 +211,14 @@ export function editTreeNode(id, type) {
   selectedNodeId = id;
   selectedNodeType = type;
   renderCourseTree();
-  // Open side panel via tree-crud
-  import('./admin-tree-crud.js').then(m => m.openEditPanel(id, type));
+  openEditPanel(id, type);
 }
 
 export function addChildNode(parentId, parentType) {
   // Expand parent first
   expandedNodes.add(parentType + '-' + parentId);
   renderCourseTree();
-  // Open create form in side panel
-  import('./admin-tree-crud.js').then(m => m.openCreatePanel(parentId, parentType));
+  openCreatePanel(parentId, parentType);
 }
 
 export function closeTreeEditPanel() {

@@ -57,7 +57,7 @@ export function switchAdminTab(tab) {
     }
   }
 
-  if (tab === 'courseTree') { import('./admin-tree.js').then(m => m.renderCourseTree()); }
+  if (tab === 'courseTree') { window.renderCourseTree?.(); }
   if (tab === 'courses') { populateParentCourseSelect(); renderAdminCourses(); }
   if (tab === 'chapters') { populateCourseSelects(); renderAdminChapters(); }
   if (tab === 'exercises') { populateCourseSelects(); renderAdminExercises(); }
