@@ -363,7 +363,6 @@
     <div class="grid-list image-grid" id="chaptersList"></div>
     <div class="actions" style="margin-top:24px;">
       <button class="btn btn-secondary" data-action="exportCoursePDF"><span class="btn-text">↓ Ganzen Kurs als PDF</span></button>
-      <button class="btn btn-ghost" data-action="exportCoursePDF" data-args='[true]' style="font-size:13px;">↓ Nur beantwortete</button>
     </div>
   </div>
 
@@ -374,7 +373,6 @@
     <div class="grid-list" id="exercisesList"></div>
     <div class="actions" style="margin-top:24px;">
       <button class="btn btn-secondary" data-action="exportChapterPDF"><span class="btn-text">↓ Kapitel als PDF</span></button>
-      <button class="btn btn-ghost" data-action="exportChapterPDF" data-args='[true]' style="font-size:13px;">↓ Nur beantwortete</button>
     </div>
   </div>
 
@@ -392,14 +390,13 @@
       <button class="btn btn-primary" id="saveQuestionsBtn" data-action="saveQuestions"><span class="btn-text">Antworten speichern</span></button>
       <button class="btn btn-secondary" data-action="showQuestionSummary"><span class="btn-text">Zusammenfassung</span></button>
       <button class="btn btn-secondary" data-action="exportPDF"><span class="btn-text">↓ Als PDF</span></button>
-      <button class="btn btn-ghost" data-action="exportPDF" data-args='[true]' style="font-size:13px;">↓ Nur beantwortete</button>
     </div>
-    <div class="next-chapter-bar" id="nextExerciseBar">
-      <div>
-        <div class="next-chapter-info">Nächste Übung</div>
-        <div class="next-chapter-name" id="nextExerciseName"></div>
+    <div class="list-card next-exercise-card" id="nextExerciseBar" style="display:none;" data-action="goToNextExercise">
+      <div class="list-card-content">
+        <div class="list-card-eyebrow" id="nextExerciseEyebrow">Nächste Übung</div>
+        <div class="list-card-title" id="nextExerciseName"></div>
       </div>
-      <button class="btn btn-primary btn-sm" id="goNextExerciseBtn" data-action="goToNextExercise"><span class="btn-text">Weiter →</span></button>
+      <span class="list-card-arrow">→</span>
     </div>
   </div>
 
@@ -1001,13 +998,11 @@
 
   <!-- ═══ MONATSREFLEKTIONEN ═══ -->
   <div class="view" id="viewPro">
-    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Monatsreflektionen</h1><p class="page-intro">— Monatliche Impulse und persönliche Begleitung.</p></div>
     <div id="proContent"></div>
   </div>
 
   <!-- ═══ KONTAKT ═══ -->
   <div class="view" id="viewContact">
-    <div class="page-title-section"><span class="eyebrow">Studio Klarzeit</span><h1 class="page-title">Kontakt</h1><p class="page-intro">— Fragen, Ideen oder einfach Hallo sagen.</p></div>
     <div id="contactContent"></div>
   </div>
 

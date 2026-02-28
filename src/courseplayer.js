@@ -268,18 +268,14 @@ export async function renderChapterPlayer() {
       ${renderChapterContentSection(chapter)}
 
       ${hasExercises ? `
-        <div class="chapter-exercise-link">
+        <div class="chapter-exercise-link" data-action="navigateTo" data-args='["exercises",{"courseId":"${course.id}","chapterId":"${chapter.id}"}]'>
           <div class="chapter-exercise-link-inner">
-            <div class="chapter-exercise-link-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-            </div>
-            <div class="chapter-exercise-link-text">
-              <h4>Zur Übung</h4>
+            <div class="chapter-exercise-link-content">
+              <div class="chapter-exercise-link-eyebrow">Reflexion</div>
+              <h4>Zu den Übungen</h4>
               <p>Wende das Gelernte an mit den Reflexionsfragen zu diesem Kapitel.</p>
             </div>
-            <button class="btn btn-primary btn-sm" data-action="navigateTo" data-args='["exercises",{"courseId":"${course.id}","chapterId":"${chapter.id}"}]'>
-              Übung starten
-            </button>
+            <span class="chapter-exercise-link-arrow">→</span>
           </div>
         </div>
       ` : ''}
@@ -497,7 +493,7 @@ export async function markChapterCompleteAndNext(chapterId) {
   } else {
     const course = state.cacheData.courses.find(c => c.id === chapter.course_id);
     const isProCourse = course?.name?.toLowerCase().includes('monatsreflektion');
-    showToast('Kurs abgeschlossen! 🎉');
+    showToast('Kurs abgeschlossen.');
     if (isProCourse) {
       navigateTo('pro');
     } else {

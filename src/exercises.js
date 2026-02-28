@@ -174,8 +174,7 @@ export function renderQuestionsView() {
     let body = '';
 
     if (type === 'text') {
-      body = `<textarea id="answer-${q.id}" placeholder="${esc(q.placeholder || 'Deine Antwort …')}" data-input="handleInput" data-args='["${q.id}"]' data-el rows="4">${esc(ans)}</textarea>` +
-        `<div class="char-count ${ans.length ? 'has-text' : ''}" id="chars-${q.id}">${ans.length} Zeichen</div>`;
+      body = `<textarea id="answer-${q.id}" placeholder="${esc(q.placeholder || 'Deine Antwort …')}" data-input="handleInput" data-args='["${q.id}"]' data-el rows="4">${esc(ans)}</textarea>`;
     } else if (type === 'choice' || type === 'multichoice') {
       const inputType = type === 'choice' ? 'radio' : 'checkbox';
       const selected = ans ? ans.split('|||') : [];
@@ -236,10 +235,6 @@ function renderContentBlock(block) {
 // ── INPUT HANDLERS ──
 
 export function handleInput(id, el) {
-  const l = el.value.length;
-  const ce = document.getElementById('chars-' + id);
-  ce.textContent = l + ' Zeichen';
-  ce.classList.toggle('has-text', l > 0);
   document.getElementById('card-' + id).classList.toggle('completed', el.value.trim().length > 0);
   state.cacheAnswers[id] = el.value;
   updateQuestionProgress();
@@ -801,11 +796,16 @@ function updateNextExerciseBar() {
   const bar = document.getElementById('nextExerciseBar');
   const saveNext = document.getElementById('saveNextBtn');
   if (next) {
+    const exercises = state.cacheData.exercises.filter((ex) => ex.chapter_id === state.currentChapterId);
+    const idx = exercises.findIndex((ex) => ex.id === next.id);
+    const exNum = idx >= 0 ? String(idx + 1).padStart(2, '0') : '';
+    const questions = state.cacheData.questions.filter((q) => q.exercise_id === next.id);
+    document.getElementById('nextExerciseEyebrow').textContent = `Nächste Übung${exNum ? ' · Übung ' + exNum : ''}${questions.length ? ' · ' + questions.length + ' Fragen' : ''}`;
     document.getElementById('nextExerciseName').textContent = next.name;
-    bar.classList.add('visible');
+    bar.style.display = '';
     saveNext.style.display = 'inline-flex';
   } else {
-    bar.classList.remove('visible');
+    bar.style.display = 'none';
     saveNext.style.display = 'none';
   }
 }

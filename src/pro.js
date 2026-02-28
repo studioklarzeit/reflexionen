@@ -66,26 +66,26 @@ export async function renderPro() {
   const chaptersHtml = proCourse ? renderProChapters(proCourse) : '';
 
   container.innerHTML = `
-    <div class="pro-form-section">
-      <div class="pro-form-card">
-        <div class="pro-form-header">
-          <span class="pro-form-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          </span>
-          <h3 class="pro-form-title">Frage einreichen</h3>
-        </div>
-        <p class="pro-form-desc">Stelle deine Frage — sie wird in der nächsten Monatsreflektion persönlich beantwortet.</p>
-        <textarea class="form-textarea" id="proQuestionInput" placeholder="Deine Frage …" rows="4" maxlength="2000"></textarea>
-        <div class="pro-form-footer">
-          <span class="pro-char-count" id="proCharCount"></span>
+    <div class="contact-card" id="contactCard-proQuestion">
+      <div class="contact-card-header">
+        <span class="contact-card-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </span>
+        <h3 class="contact-card-title">Frage einreichen</h3>
+      </div>
+      <p class="contact-card-desc">Stelle deine Frage — sie wird in der nächsten Monatsreflektion persönlich beantwortet.</p>
+      <div class="contact-form">
+        <textarea class="form-textarea contact-message" id="proQuestionInput" placeholder="Deine Frage …" rows="4" maxlength="2000"></textarea>
+        <div class="contact-form-footer">
+          <span></span>
           <button class="btn btn-primary btn-sm" id="proSubmitBtn" data-action="submitProQuestion">
             <span class="btn-text">Absenden</span>
           </button>
         </div>
-        <div class="pro-success" id="proSuccess" style="display:none;">
-          <span class="contact-success-icon">✓</span>
-          <span class="contact-success-text">Danke — deine Frage ist eingegangen.</span>
-        </div>
+      </div>
+      <div class="contact-success" id="proSuccess" style="display:none;">
+        <span class="contact-success-icon">✓</span>
+        <span class="contact-success-text">Danke — deine Frage ist eingegangen.</span>
       </div>
     </div>
 
@@ -94,15 +94,6 @@ export async function renderPro() {
     ${renderQuestionHistory(questions)}
   `;
 
-  // Char count
-  const input = document.getElementById('proQuestionInput');
-  const counter = document.getElementById('proCharCount');
-  if (input && counter) {
-    input.addEventListener('input', () => {
-      const len = input.value.length;
-      counter.textContent = len > 0 ? `${len}/2000` : '';
-    });
-  }
 }
 
 function renderProChapters(course) {

@@ -313,5 +313,5 @@ export function navigateTo(view, params) {
     history.pushState({ view, params }, '', pushPath);
   }
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: 'instant' });
 }
