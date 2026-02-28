@@ -1760,8 +1760,7 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
 }
 /* ═══ MEDITATION ═══ */
 
-/* Overview: Grid */
-.meditation-grid { grid-template-columns: repeat(2, 1fr) !important; }
+/* Overview: Grid — uses shared .image-grid (3 cols desktop, 2 tablet, 1 mobile) */
 
 .meditation-quote {
   font-family: var(--font-heading);
@@ -1941,7 +1940,6 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
 }
 
 @media (max-width: 600px) {
-  .meditation-grid { grid-template-columns: 1fr !important; }
   .med-detail-body { padding: 24px 0 0; }
   .med-detail-play { width: 68px; height: 68px; }
   .med-detail-play svg { width: 30px; height: 30px; }
