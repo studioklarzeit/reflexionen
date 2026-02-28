@@ -30,12 +30,16 @@ window.addEventListener('beforeunload', () => {
 let _appUnlocked = false;
 let _lastHidden = 0;
 
+function isMobileDevice() {
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && window.innerWidth <= 1024;
+}
+
 function supportsPasskey() {
   return !!(window.PublicKeyCredential && navigator.credentials);
 }
 
 function hasPasskeyRegistered() {
-  return supportsPasskey() && !!localStorage.getItem('klarzeit_passkey_id');
+  return isMobileDevice() && supportsPasskey() && !!localStorage.getItem('klarzeit_passkey_id');
 }
 
 function showLockScreen() {
@@ -114,7 +118,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 export async function offerPasskeySetup() {
-  if (!supportsPasskey()) return;
+  if (!isMobileDevice() || !supportsPasskey()) return;
   if (typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function') {
     const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
     if (!available) return;
@@ -198,7 +202,7 @@ export function initAuthUI() {
     const saved = localStorage.getItem('klarzeit_remember');
     document.getElementById('rememberMe').checked = saved === '1';
   }
-  if (passkeyBtn && supportsPasskey() && localStorage.getItem('klarzeit_passkey_id')) {
+  if (passkeyBtn && isMobileDevice() && supportsPasskey() && localStorage.getItem('klarzeit_passkey_id')) {
     passkeyBtn.style.display = authMode === 'login' ? 'flex' : 'none';
   } else if (passkeyBtn) {
     passkeyBtn.style.display = 'none';
