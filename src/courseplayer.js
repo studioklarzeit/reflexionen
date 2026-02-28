@@ -283,7 +283,7 @@ export async function renderChapterPlayer() {
       <div class="chapter-nav-buttons">
         ${getPrevChapter(chapter) ? `<button class="btn btn-ghost btn-sm" data-action="openChapterPlayer" data-args='["${getPrevChapter(chapter).id}"]'>← Vorheriges Kapitel</button>` : '<span></span>'}
         <button class="btn btn-primary btn-sm" data-action="markChapterCompleteAndNext" data-args='["${chapter.id}"]'>
-          ${getNextChapter(chapter) ? 'Kapitel abschliessen →' : 'Kurs abschliessen ✓'}
+          ${getNextChapter(chapter) ? 'Nächstes Kapitel →' : 'Kurs abschliessen'}
         </button>
       </div>
     </div>
