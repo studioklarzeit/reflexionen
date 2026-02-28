@@ -511,6 +511,11 @@ textarea:focus { background: rgba(255,255,255,0.15); }
 .auth-toggle { background: none; border: none; font-family: var(--font-body); font-size: var(--font-size-p3); font-style: var(--font-style-p3); color: var(--font-color-p3); cursor: pointer; text-decoration: underline; }
 .auth-link { background: none; border: none; font-family: var(--font-body); font-size: var(--font-size-p3); font-style: var(--font-style-p3); color: var(--font-color-p3); cursor: pointer; text-decoration: underline; padding: 0; margin-top: 12px; display: inline-block; }
 .auth-link:hover { color: var(--text-muted); }
+.remember-me { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; cursor: pointer; font-family: var(--font-body); font-size: var(--font-size-p3); color: var(--font-color-p3); user-select: none; }
+.remember-me input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-warm); cursor: pointer; margin: 0; }
+#passkeyBtn .btn-icon { font-size: 16px; margin-right: 6px; }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--text-light); font-size: 12px; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-light); }
 body.dark .auth-card { background: rgba(42,40,38,0.88); border-color: rgba(58,54,50,0.5); }
 body.dark .auth-input { background: rgba(0,0,0,0.3); }
 body.dark .auth-input:focus { background: rgba(0,0,0,0.45); }

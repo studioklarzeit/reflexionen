@@ -80,6 +80,7 @@ export function navigateTo(view, params) {
         break;
       case 'auth':
         document.getElementById('viewAuth').classList.add('active');
+        import('./auth.js').then(m => m.initAuthUI());
         break;
       case 'resetPassword':
         document.getElementById('viewResetPassword').classList.add('active');

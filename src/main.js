@@ -12,6 +12,7 @@ import {
   handleAuth, handleLogout, handleResetPassword,
   toggleAuthMode, handleForgotPassword, togglePasswordVisibility,
   postLogin, setupHeader, getAuthMode,
+  loginWithPasskey, initAuthUI,
 } from './auth.js';
 import { dismissOnboarding } from './onboarding.js';
 import {
@@ -161,6 +162,7 @@ Object.assign(window, {
   // Auth
   handleAuth, handleLogout, handleResetPassword,
   toggleAuthMode, handleForgotPassword, togglePasswordVisibility,
+  loginWithPasskey, initAuthUI,
   // Dark mode
   toggleDarkMode, updateMobileDarkLabel, updateDockDarkIcon,
   // Onboarding

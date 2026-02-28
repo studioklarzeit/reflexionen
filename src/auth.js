@@ -12,6 +12,117 @@ let authMode = 'register';
 
 export function getAuthMode() { return authMode; }
 
+// ── REMEMBER ME ──
+
+function isRememberMe() {
+  return document.getElementById('rememberMe')?.checked !== false;
+}
+
+// If user unchecked "Eingeloggt bleiben", clear session on tab/browser close
+window.addEventListener('beforeunload', () => {
+  if (localStorage.getItem('klarzeit_remember') === '0') {
+    sb.auth.signOut();
+  }
+});
+
+// ── PASSKEY / FACE ID ──
+
+function supportsPasskey() {
+  return !!(window.PublicKeyCredential && navigator.credentials);
+}
+
+export async function offerPasskeySetup() {
+  if (!supportsPasskey()) return;
+  if (typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function') {
+    const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+    if (!available) return;
+  }
+  if (localStorage.getItem('klarzeit_passkey_id')) return;
+  try {
+    await registerPasskey();
+  } catch (e) {
+    console.log('Passkey setup skipped:', e.message);
+  }
+}
+
+async function registerPasskey() {
+  const user = state.currentUser;
+  if (!user) return;
+  const challenge = crypto.getRandomValues(new Uint8Array(32));
+  const credential = await navigator.credentials.create({
+    publicKey: {
+      challenge,
+      rp: { name: 'Studio Klarzeit', id: location.hostname },
+      user: {
+        id: new TextEncoder().encode(user.id),
+        name: user.email,
+        displayName: 'Studio Klarzeit',
+      },
+      pubKeyCredParams: [
+        { alg: -7, type: 'public-key' },
+        { alg: -257, type: 'public-key' },
+      ],
+      authenticatorSelection: {
+        authenticatorAttachment: 'platform',
+        userVerification: 'required',
+        residentKey: 'preferred',
+      },
+      timeout: 60000,
+    },
+  });
+  const rawId = new Uint8Array(credential.rawId);
+  localStorage.setItem('klarzeit_passkey_id', btoa(String.fromCharCode(...rawId)));
+  localStorage.setItem('klarzeit_passkey_email', user.email);
+}
+
+export async function loginWithPasskey() {
+  const credIdB64 = localStorage.getItem('klarzeit_passkey_id');
+  if (!credIdB64) { showToast('Kein Passkey gespeichert.', 'error'); return; }
+  btnLoading('passkeyBtn', true);
+  try {
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+    const credId = Uint8Array.from(atob(credIdB64), c => c.charCodeAt(0));
+    await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        allowCredentials: [{ id: credId, type: 'public-key', transports: ['internal'] }],
+        userVerification: 'required',
+        timeout: 60000,
+      },
+    });
+    // Biometric succeeded → use existing Supabase session
+    const { data: { session } } = await sb.auth.getSession();
+    if (session && session.user) {
+      state.currentUser = session.user;
+      navigateTo('loading');
+      document.getElementById('loadingText').textContent = 'Daten werden geladen …';
+      await postLogin();
+      showToast('Willkommen zurück!');
+    } else {
+      showToast('Sitzung abgelaufen. Bitte mit Passwort anmelden.', 'error');
+      btnLoading('passkeyBtn', false);
+    }
+  } catch (e) {
+    console.log('Passkey login cancelled:', e.message);
+    btnLoading('passkeyBtn', false);
+  }
+}
+
+export function initAuthUI() {
+  const rememberWrap = document.getElementById('rememberMeWrap');
+  const passkeyBtn = document.getElementById('passkeyBtn');
+  if (rememberWrap) {
+    rememberWrap.style.display = authMode === 'login' ? 'flex' : 'none';
+    const saved = localStorage.getItem('klarzeit_remember');
+    if (saved !== null) document.getElementById('rememberMe').checked = saved !== '0';
+  }
+  if (passkeyBtn && supportsPasskey() && localStorage.getItem('klarzeit_passkey_id')) {
+    passkeyBtn.style.display = authMode === 'login' ? 'flex' : 'none';
+  } else if (passkeyBtn) {
+    passkeyBtn.style.display = 'none';
+  }
+}
+
 export function toggleAuthMode() {
   document.getElementById('authError').classList.remove('visible');
   document.getElementById('authSuccess').classList.remove('visible');
@@ -56,6 +167,7 @@ export function toggleAuthMode() {
     pw.placeholder = 'Dein Passwort';
     fl.style.display = 'inline-block';
   }
+  initAuthUI();
 }
 
 export function handleForgotPassword() {
@@ -69,6 +181,7 @@ export function handleForgotPassword() {
   document.getElementById('passwordConfirm').closest('.password-wrap').style.display = 'none';
   document.getElementById('passwordInput').closest('.password-wrap').style.display = 'none';
   document.getElementById('forgotPasswordLink').style.display = 'none';
+  initAuthUI();
 }
 
 function showAuthError(m) {
@@ -135,11 +248,15 @@ export async function handleAuth() {
     } else {
       const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
       if (error) throw error;
+      // Save remember-me preference
+      localStorage.setItem('klarzeit_remember', isRememberMe() ? '1' : '0');
       state.currentUser = data.user;
       navigateTo('loading');
       document.getElementById('loadingText').textContent = 'Daten werden geladen …';
       await postLogin();
       showToast('Willkommen zurück!');
+      // Offer passkey setup (non-blocking)
+      offerPasskeySetup();
     }
   } catch (e) {
     showAuthError(trAuthErr(e));
@@ -238,6 +355,7 @@ export async function handleResetPassword() {
 }
 
 export async function handleLogout() {
+  localStorage.removeItem('klarzeit_remember');
   try { await sb.auth.signOut(); } catch (_) { /* ignore */ }
   state.currentUser = null;
   state.isAdmin = false;
