@@ -222,39 +222,23 @@ export async function renderImpulseView() {
   `;
 }
 
-// ── IMPULSE SPLASH PAGE ──
+// ── GET CURRENT IMPULSE TEXT (for loading splash) ──
 
-export async function renderImpulseSplash() {
-  const container = document.getElementById('viewImpulseSplash');
-  if (!container) return;
-
+export async function getCurrentImpulseText() {
   const impulses = await loadImpulses();
   const phase = getUserPhase();
   const available = impulses.filter(imp => imp.phase <= phase);
-
-  if (!available.length) { navigateTo('courses'); return; }
-
+  if (!available.length) return null;
   const week = getWeekNumber();
   const impulse = available[week % available.length];
   currentImpulseText = impulse.text;
+  return impulse.text;
+}
 
-  container.innerHTML = `
-    <div class="impulse-splash">
-      <div class="impulse-splash-content">
-        <div class="impulse-splash-logo">Studio Klarzeit</div>
-        <div class="impulse-splash-quote">«${esc(impulse.text)}»</div>
-        <div class="impulse-splash-divider"></div>
-        <div class="impulse-splash-label">Impuls der Woche</div>
-      </div>
-      <div class="impulse-splash-footer">
-        <button class="impulse-splash-btn" data-action="dismissImpulse">
-          <span>Weiter</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </button>
-        <button class="impulse-splash-mute" data-action="dismissImpulse30">Impuls für 30 Tage nicht anzeigen</button>
-      </div>
-    </div>
-  `;
+// ── IMPULSE SPLASH PAGE (legacy stub — loading splash handles this now) ──
+
+export async function renderImpulseSplash() {
+  // No longer used — loading splash shows the impulse
 }
 
 export function dismissImpulse() {

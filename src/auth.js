@@ -357,10 +357,15 @@ export async function handleAuth() {
 }
 
 export async function postLogin() {
+  window.setLoadProgress?.(30);
   await loadAllData();
+  window.setLoadProgress?.(55);
   await loadAdminStatus();
+  window.setLoadProgress?.(65);
   await loadCourseAccess();
+  window.setLoadProgress?.(80);
   await loadUserAnswers();
+  window.setLoadProgress?.(90);
 
   // Load notification count (non-blocking)
   import('./notifications.js').then(m => m.loadNotificationCount()).catch(() => {});
@@ -389,6 +394,7 @@ export async function postLogin() {
   }
 
   setupHeader();
+  window.setLoadProgress?.(95);
 
   // Check for pending purchase (user was redirected to login during checkout)
   const { checkPendingPurchase } = await import('./sales.js');
@@ -414,7 +420,7 @@ export async function postLogin() {
     navigateTo('onboarding');
   } else {
     const { isImpulseMuted } = await import('./weeklyimpulse.js');
-    navigateTo(isImpulseMuted() ? 'courses' : 'impulseSplash');
+    window.finishLoading?.(!isImpulseMuted());
   }
 }
 

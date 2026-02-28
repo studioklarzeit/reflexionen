@@ -1932,67 +1932,100 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
 /* ═══ IMPULSE SPLASH PAGE ═══ */
 #viewImpulse { padding: 0 !important; }
 #viewImpulse.active { animation: none; opacity: 1; transform: none; }
-#viewImpulseSplash { padding: 0 !important; }
-#viewImpulseSplash.active { animation: none; opacity: 1; transform: none; }
-.impulse-splash {
-  position: fixed; inset: 0; z-index: 50;
+/* ═══ LOADING SPLASH (Impuls der Woche + Ladebar) ═══ */
+#viewLoading { padding: 0 !important; }
+#viewLoading.active { animation: none; opacity: 1; transform: none; }
+.loading-splash {
+  position: fixed; inset: 0; z-index: 250;
   background: #F5F0EB;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   text-align: center;
-  animation: impulseFadeIn 1.2s ease both;
 }
-@keyframes impulseFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-.impulse-splash-content {
+.loading-splash-content {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   padding: 60px 36px 40px;
   max-width: 640px;
 }
-.impulse-splash-logo {
+.loading-splash-logo {
   font-family: 'Marcellus', serif;
   font-size: 13px; letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #8C7B6B;
   margin-bottom: 48px;
-  animation: impulseSlideUp 0.9s ease 0.4s both;
+  animation: loadSlideUp 0.9s ease 0.3s both;
 }
-.impulse-splash-quote {
+.loading-splash-quote {
   font-family: 'Marcellus', serif;
   font-size: clamp(1.6rem, 5.5vw, 2.6rem);
   line-height: 1.5; font-weight: 400;
   color: #3B3937;
   letter-spacing: -0.01em;
   max-width: 520px;
-  animation: impulseSlideUp 0.9s ease 0.6s both;
+  opacity: 0;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  transform: translateY(16px);
 }
-.impulse-splash-divider {
+.loading-splash-quote.visible {
+  opacity: 1; transform: translateY(0);
+}
+.loading-splash-divider {
   width: 56px; height: 1px;
   background: #C9A96E;
-  margin: 40px 0; opacity: 0.5;
-  animation: impulseSlideUp 0.9s ease 0.8s both;
+  margin: 40px 0; opacity: 0;
+  transition: opacity 0.6s ease 0.2s;
 }
-.impulse-splash-label {
+.loading-splash-divider.visible { opacity: 0.5; }
+.loading-splash-label {
   font-family: 'PT Serif', Georgia, serif;
   font-size: 10px; letter-spacing: 0.15em;
   text-transform: uppercase;
   color: #A89888;
   font-style: italic;
-  animation: impulseSlideUp 0.9s ease 1s both;
+  opacity: 0;
+  transition: opacity 0.6s ease 0.3s;
 }
-@keyframes impulseSlideUp {
+.loading-splash-label.visible { opacity: 1; }
+@keyframes loadSlideUp {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.impulse-splash-footer {
+.loading-splash-footer {
   padding: 28px 32px 48px; width: 100%;
   display: flex; flex-direction: column; align-items: center;
-  animation: impulseSlideUp 0.9s ease 1.4s both;
+  animation: loadSlideUp 0.7s ease 0.6s both;
 }
-.impulse-splash-btn {
+
+/* Ladebar */
+.loading-bar-wrap {
+  width: 220px; height: 38px; position: relative;
+  border: 1px solid #D5CEC7; border-radius: 32px;
+  overflow: hidden;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.loading-bar {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #D5CEC7 0%, #C9A96E 50%, #8C7B6B 100%);
+  border-radius: 32px;
+  transition: width 0.5s ease;
+}
+.loading-bar-text {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'PT Serif', Georgia, serif;
+  font-size: 12px; color: #8C7B6B;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+.loading-bar-wrap.done {
+  opacity: 0; transform: scale(0.92);
+  pointer-events: none;
+}
+
+/* Weiter-Button (erscheint nach Ladung) */
+.loading-done-btn {
   display: inline-flex; align-items: center; gap: 10px;
   background: none; border: 1px solid #D5CEC7;
   border-radius: 32px; padding: 13px 32px;
@@ -2000,13 +2033,16 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
   font-size: 14px; color: #8C7B6B;
   cursor: pointer; transition: all 0.3s;
   letter-spacing: 0.04em;
+  animation: loadSlideUp 0.5s ease both;
 }
-.impulse-splash-btn:hover {
+.loading-done-btn:hover {
   border-color: #8C7B6B; color: #3B3937;
   background: rgba(255,255,255,0.5);
 }
-.impulse-splash-btn svg { transition: transform 0.3s; }
-.impulse-splash-btn:hover svg { transform: translateX(4px); }
+.loading-done-btn svg { transition: transform 0.3s; }
+.loading-done-btn:hover svg { transform: translateX(4px); }
+
+/* Mute-Button */
 .impulse-splash-mute {
   margin-top: 20px;
   background: none; border: none; cursor: pointer;
@@ -2017,6 +2053,13 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
   letter-spacing: 0.02em;
 }
 .impulse-splash-mute:hover { opacity: 1; }
+
+@media (max-width: 768px) {
+  .loading-splash-content { padding: 40px 24px 24px; }
+  .loading-splash-logo { margin-bottom: 32px; }
+  .loading-splash-divider { margin: 28px 0; }
+  .loading-splash-footer { padding: 16px 24px 32px; }
+}
 
 /* ═══ COURSE PREVIEW (Reinhören) ═══ */
 .preview-page { max-width: 760px; margin: 0 auto; padding: 32px 24px 80px; }

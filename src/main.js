@@ -53,6 +53,7 @@ import {
   renderWeeklyImpulse, renderImpulseView, clearWeeklyImpulseCache,
   exportImpulsePDF, shareImpulse,
   dismissImpulse, dismissImpulse30,
+  getCurrentImpulseText, isImpulseMuted,
 } from './weeklyimpulse.js';
 import {
   renderContact, submitContactForm,
@@ -254,6 +255,7 @@ Object.assign(window, {
   renderPro, submitProQuestion,
   // Weekly Impulse
   exportImpulsePDF, shareImpulse, dismissImpulse, dismissImpulse30, renderImpulseView,
+  dismissLoading, dismissLoading30,
   // Bulk Upload
   toggleBulkUpload, updateBulkChapterSelect, downloadBulkTemplate,
   handleBulkFileSelect, executeBulkImport, clearBulkUpload,
@@ -309,6 +311,56 @@ window.__clearCheckinCache = clearCheckinCache;
 window.__clearWeeklyImpulseCache = clearWeeklyImpulseCache;
 window.__clearMeditationCache = clearMeditationCache;
 
+// ── LOADING PROGRESS ──
+
+function setLoadProgress(pct) {
+  const bar = document.getElementById('loadingBar');
+  const txt = document.getElementById('loadingBarText');
+  if (bar) bar.style.width = Math.min(pct, 100) + '%';
+  if (txt) txt.textContent = Math.round(pct) + ' %';
+}
+window.setLoadProgress = setLoadProgress;
+
+function showImpulseOnSplash(text) {
+  if (!text) return;
+  const q = document.getElementById('loadingSplashQuote');
+  const d = document.getElementById('loadingSplashDivider');
+  const l = document.getElementById('loadingSplashLabel');
+  if (q) { q.textContent = '\u00AB' + text + '\u00BB'; q.classList.add('visible'); }
+  if (d) { d.style.display = ''; d.classList.add('visible'); }
+  if (l) { l.style.display = ''; l.classList.add('visible'); }
+}
+
+function finishLoading(showImpulse) {
+  setLoadProgress(100);
+  if (!showImpulse) {
+    setTimeout(() => navigateTo('courses'), 300);
+    return;
+  }
+  const barWrap = document.getElementById('loadingBarWrap');
+  const doneBtn = document.getElementById('loadingDoneBtn');
+  const muteBtn = document.getElementById('loadingMuteBtn');
+  if (barWrap) barWrap.classList.add('done');
+  setTimeout(() => {
+    if (barWrap) barWrap.style.display = 'none';
+    if (doneBtn) doneBtn.style.display = '';
+    if (muteBtn) muteBtn.style.display = '';
+  }, 500);
+}
+window.finishLoading = finishLoading;
+
+function dismissLoading() {
+  navigateTo('courses');
+}
+
+function dismissLoading30() {
+  const key = 'klarzeit_impulse_muted_' + (state.currentUser?.id || '');
+  localStorage.setItem(key, String(Date.now() + 30 * 24 * 60 * 60 * 1000));
+  navigateTo('courses');
+}
+window.dismissLoading = dismissLoading;
+window.dismissLoading30 = dismissLoading30;
+
 // ── INIT ──
 
 async function init() {
@@ -321,7 +373,7 @@ async function init() {
   window.addEventListener('offline', updateOnlineStatus);
   updateOnlineStatus();
   navigateTo('loading');
-  document.getElementById('loadingText').textContent = 'Verbindung wird hergestellt …';
+  setLoadProgress(5);
 
   // Load login background image
   try {
@@ -334,6 +386,7 @@ async function init() {
   // Load typography settings
   await loadAndApplyTypography();
   await loadAndApplyColors();
+  setLoadProgress(15);
 
   // Load SEO settings & initialize tracking (non-blocking)
   import('./seo.js').then(async (seo) => {
@@ -371,12 +424,16 @@ async function init() {
 
     if (session && session.user) {
       // ── LOGGED IN → App ──
-      // Face ID lock check (non-blocking for users without passkey)
       await checkBiometricLock();
       state.currentUser = session.user;
-      document.getElementById('loadingText').textContent = 'Daten werden geladen …';
+      setLoadProgress(20);
+
+      // Show impulse text on loading splash (non-blocking)
+      getCurrentImpulseText().then(text => showImpulseOnSplash(text)).catch(() => {});
+
       try {
         await loadOnboardingData();
+        setLoadProgress(25);
         await postLogin();
         initImageUploadZones();
         updateDockEmail();
