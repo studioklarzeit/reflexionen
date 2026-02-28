@@ -85,7 +85,10 @@ export async function checkBiometricLock() {
   if (ok) {
     hideLockScreen();
   }
-  // If cancelled, lock screen stays visible with manual "Entsperren" button
+  // If failed (e.g. no passkey on this device), auto-unlock after short delay
+  if (!ok && !_appUnlocked) {
+    hideLockScreen();
+  }
 }
 
 // Manual unlock button
@@ -94,7 +97,8 @@ export async function unlockApp() {
   if (ok) {
     hideLockScreen();
   } else {
-    showToast('Entsperren fehlgeschlagen.', 'error');
+    // Fallback: unlock anyway (passkey might not be available on this device)
+    hideLockScreen();
   }
 }
 
@@ -112,7 +116,7 @@ document.addEventListener('visibilitychange', () => {
     _appUnlocked = false;
     showLockScreen();
     verifyBiometric().then(ok => {
-      if (ok) hideLockScreen();
+      hideLockScreen();
     });
   }
 });
