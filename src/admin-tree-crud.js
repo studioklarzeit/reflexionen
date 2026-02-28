@@ -57,7 +57,7 @@ export function openEditPanel(id, type) {
   const layout = document.querySelector('.tree-layout');
   if (!panel || !body) return;
 
-  panel.style.display = '';
+  panel.style.display = 'block';
   layout?.classList.add('has-edit-panel');
 
   const labels = { course: 'Kurs', chapter: 'Kapitel', exercise: 'Übung', question: 'Frage', content: 'Inhaltsblock' };
@@ -80,7 +80,7 @@ export function openCreatePanel(parentId, parentType) {
   const layout = document.querySelector('.tree-layout');
   if (!panel || !body) return;
 
-  panel.style.display = '';
+  panel.style.display = 'block';
   layout?.classList.add('has-edit-panel');
 
   if (parentType === 'course') {
@@ -228,7 +228,7 @@ export function openNewCoursePanel() {
   const layout = document.querySelector('.tree-layout');
   if (!panel || !body) return;
 
-  panel.style.display = '';
+  panel.style.display = 'block';
   layout?.classList.add('has-edit-panel');
   title.textContent = 'Neuen Kurs erstellen';
 
