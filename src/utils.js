@@ -48,12 +48,48 @@ export function btnLoading(id, on) {
   b.disabled = on;
 }
 
+// Toast queue: prevents overlap, errors stay longer
+const _toastQueue = [];
+let _toastActive = false;
+
 export function showToast(msg, type) {
+  _toastQueue.push({ msg, type });
+  if (!_toastActive) _processToast();
+}
+
+function _processToast() {
+  if (!_toastQueue.length) { _toastActive = false; return; }
+  _toastActive = true;
+  const { msg, type } = _toastQueue.shift();
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show' + (type === 'error' ? ' error' : '');
+  const dur = type === 'error' ? 6000 : 4000;
   clearTimeout(window._tt);
-  window._tt = setTimeout(() => { t.className = 'toast'; }, 4000);
+  window._tt = setTimeout(() => {
+    t.className = 'toast';
+    setTimeout(() => _processToast(), 300);
+  }, dur);
+}
+
+// Custom confirm dialog (replaces native confirm())
+export function showConfirm(title, message, okLabel = 'Löschen', cancelLabel = 'Abbrechen') {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.className = 'confirm-overlay';
+    overlay.innerHTML = `<div class="confirm-dialog">
+      <h3>${esc(title)}</h3>
+      <p>${esc(message)}</p>
+      <div class="confirm-dialog-actions">
+        <button class="confirm-cancel">${esc(cancelLabel)}</button>
+        <button class="confirm-ok">${esc(okLabel)}</button>
+      </div>
+    </div>`;
+    overlay.querySelector('.confirm-cancel').onclick = () => { overlay.remove(); resolve(false); };
+    overlay.querySelector('.confirm-ok').onclick = () => { overlay.remove(); resolve(true); };
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) { overlay.remove(); resolve(false); } });
+    document.body.appendChild(overlay);
+  });
 }
 
 export function esc(s) {

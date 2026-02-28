@@ -8,6 +8,7 @@ let currentAudio = null;
 let progressInterval = null;
 let _onChMeta = null;
 let _onChEnded = null;
+let _onChError = null;
 
 function formatTime(sec) {
   if (!sec || !isFinite(sec)) return '0:00';
@@ -309,8 +310,13 @@ export async function renderChapterPlayer() {
       clearInterval(progressInterval);
       saveChapterProgress(chapter.id, Math.round(currentAudio.duration), false);
     };
+    _onChError = () => {
+      showToast('Audio konnte nicht geladen werden', 'error');
+      stopChapterAudio();
+    };
     currentAudio.addEventListener('loadedmetadata', _onChMeta);
     currentAudio.addEventListener('ended', _onChEnded);
+    currentAudio.addEventListener('error', _onChError);
 
     // MediaSession: lock-screen artwork + controls
     if ('mediaSession' in navigator) {
@@ -430,9 +436,11 @@ function updateAudioProgress() {
 
 export function seekChapterAudio(event) {
   if (!currentAudio || !isFinite(currentAudio.duration)) return;
-  const wrap = event.currentTarget;
+  const wrap = event.currentTarget || event.target.closest('[data-action="seekChapterAudio"]');
+  if (!wrap) return;
   const rect = wrap.getBoundingClientRect();
-  const pct = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+  const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
   currentAudio.currentTime = pct * currentAudio.duration;
   updateAudioProgress();
 }
@@ -441,8 +449,9 @@ export function stopChapterAudio() {
   if (currentAudio) {
     if (_onChMeta) { currentAudio.removeEventListener('loadedmetadata', _onChMeta); _onChMeta = null; }
     if (_onChEnded) { currentAudio.removeEventListener('ended', _onChEnded); _onChEnded = null; }
+    if (_onChError) { currentAudio.removeEventListener('error', _onChError); _onChError = null; }
     currentAudio.pause();
-    currentAudio.src = '';
+    // Don't set src='' — it triggers an error event on some browsers
     currentAudio = null;
   }
   clearInterval(progressInterval);

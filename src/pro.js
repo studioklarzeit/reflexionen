@@ -3,48 +3,23 @@
 import { sb } from './config.js';
 import { state } from './state.js';
 import { esc, showToast, imgTransform } from './utils.js';
-import { canAccessCourse } from './data.js';
 
 let chapterProgressCache = {};
 
-// Check if user has an active Pro membership
+// Reflektionen is free for all logged-in users
 export function isProMember() {
-  if (state.isAdmin) return true;
-  const proCourse = getProCourse();
-  if (!proCourse) return false;
-  return canAccessCourse(proCourse);
+  return !!state.currentUser;
 }
 
 export function getProCourse() {
   return state.cacheData.courses.find(c =>
-    c.name?.toLowerCase().includes('monatsreflektion')
+    c.name?.toLowerCase().includes('reflektion')
   ) || null;
 }
 
 export async function renderPro() {
   const container = document.getElementById('proContent');
   if (!container) return;
-
-  const hasPro = isProMember();
-
-  if (!hasPro) {
-    const proCourse = getProCourse();
-    const salesLink = proCourse?.sales_slug
-      ? `<button class="btn btn-primary" data-action="navigateTo" data-args='["salesDetail",{"slug":"${esc(proCourse.sales_slug)}"}]'>Reflektionen entdecken</button>`
-      : '';
-
-    container.innerHTML = `
-      <div class="pro-locked">
-        <div class="pro-locked-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        </div>
-        <h3>Reflektionen</h3>
-        <p>Mit den Reflektionen erhältst du monatliche Impulse und kannst Fragen einreichen, die persönlich beantwortet werden.</p>
-        ${salesLink}
-      </div>
-    `;
-    return;
-  }
 
   const proCourse = getProCourse();
 

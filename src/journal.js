@@ -1,6 +1,6 @@
 import { sb } from './config.js';
 import { state } from './state.js';
-import { esc, showToast, trDataErr } from './utils.js';
+import { esc, showToast, showConfirm, trDataErr } from './utils.js';
 
 // ── DEFAULT IMPULSES ──
 
@@ -113,6 +113,7 @@ export async function renderJournal() {
         <span class="journal-counter"><span id="journalCharCount">0</span> / 300</span>
         <button class="btn btn-primary btn-sm" id="journalSaveBtn" data-action="saveJournalEntry"><span class="btn-text">Speichern</span></button>
       </div>
+      <div class="save-hint">Nicht vergessen zu speichern</div>
     </div>
     <div class="journal-entries" id="journalEntries">
       ${entriesHtml}
@@ -178,6 +179,7 @@ export async function saveJournalEntry() {
     if (error) throw error;
 
     textarea.value = '';
+    window._journalUnsaved = false;
     document.getElementById('journalCharCount').textContent = '0';
     showToast('Eintrag gespeichert.');
     await renderJournal();
@@ -257,7 +259,8 @@ export function cancelJournalEdit(entryId, originalText) {
 // ── DELETE ENTRY ──
 
 export async function deleteJournalEntry(entryId) {
-  if (!confirm('Eintrag wirklich löschen?')) return;
+  const ok = await showConfirm('Eintrag löschen', 'Möchtest du diesen Eintrag wirklich löschen?');
+  if (!ok) return;
 
   try {
     const { error } = await sb
@@ -287,4 +290,19 @@ export function updateJournalCounter() {
   const textarea = document.getElementById('journalTextarea');
   const counter = document.getElementById('journalCharCount');
   if (textarea && counter) counter.textContent = textarea.value.length;
+
+  // Unsaved warning: warn before leaving if journal has unsaved text
+  if (textarea && textarea.value.trim()) {
+    window._journalUnsaved = true;
+  } else {
+    window._journalUnsaved = false;
+  }
 }
+
+// Warn before page close if journal has unsaved content
+window.addEventListener('beforeunload', (e) => {
+  if (window._journalUnsaved) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});

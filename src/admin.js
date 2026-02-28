@@ -971,7 +971,6 @@ export async function renderAdminUsers() {
       `<td><div class="actions-cell">` +
         `<button class="icon-btn" data-action="showUserProgress" data-args='["${p.id}"]' title="Fortschritt">📊</button>` +
         `<button class="icon-btn" data-action="openSendMessageModal" data-args='["${p.id}",${emailJson}]' title="Nachricht">✉</button>` +
-        `<button class="icon-btn" data-action="toggleAdmin" data-args='["${p.id}",${!p.is_admin}]'>${p.is_admin ? '↓ User' : '↑ Admin'}</button>` +
         (!p.is_admin ? `<button class="icon-btn delete" data-action="openAdminDeleteUserModal" data-args='["${p.id}",${emailJson}]' title="Löschen">✕</button>` : '') +
       `</div></td></tr>` +
       `<tr id="userDetail-${p.id}" class="user-detail-row" style="display:none;"><td colspan="4"><div id="userDetailContent-${p.id}" class="user-detail-content"></div></td></tr>`;
@@ -981,15 +980,6 @@ export async function renderAdminUsers() {
     `<p style="font-size:12px;font-style:italic;color:var(--text-light);margin-top:8px;">${profiles.length} User insgesamt</p>`;
 }
 
-export async function toggleAdmin(userId, makeAdmin) {
-  if (!confirm(makeAdmin ? 'User zum Admin machen?' : 'Admin-Rechte entziehen?')) return;
-  try {
-    const { error } = await sb.from('profiles').update({ is_admin: makeAdmin }).eq('id', userId);
-    if (error) throw error;
-    renderAdminUsers();
-    showToast(makeAdmin ? 'Admin-Rechte vergeben.' : 'Admin-Rechte entzogen.');
-  } catch (e) { showToast(trDataErr(e, 'save'), 'error'); }
-}
 
 // ── USER PROGRESS ──
 

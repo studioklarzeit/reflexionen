@@ -190,11 +190,19 @@ export async function openMeditationDetail(id) {
   // Start audio — fetch as blob to avoid opaque load errors
   currentMeditationId = id;
 
+  // Show loading spinner while fetching audio
+  const playBtn = document.getElementById('meditationPlayBtn');
+  if (playBtn) { playBtn.style.position = 'relative'; playBtn.insertAdjacentHTML('beforeend', '<div class="audio-loading-overlay" id="medAudioLoading"></div>'); }
+
   try {
     const resp = await fetch(m.audio_url);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const blob = await resp.blob();
     const blobUrl = URL.createObjectURL(blob);
+
+    // Remove loading spinner
+    const loadingEl = document.getElementById('medAudioLoading');
+    if (loadingEl) loadingEl.remove();
 
     currentAudio = new Audio(blobUrl);
 
@@ -241,6 +249,8 @@ export async function openMeditationDetail(id) {
     }
   } catch (e) {
     console.error('Meditation audio error:', e, 'URL:', m.audio_url);
+    const loadEl = document.getElementById('medAudioLoading');
+    if (loadEl) loadEl.remove();
     showToast('Audio konnte nicht geladen werden.', 'error');
   }
 }
@@ -302,9 +312,11 @@ function startProgressUpdate() {
 
 export function seekMeditation(event) {
   if (!currentAudio || !isFinite(currentAudio.duration)) return;
-  const wrap = event.currentTarget;
+  const wrap = event.currentTarget || event.target.closest('[data-action="seekMeditation"]');
+  if (!wrap) return;
   const rect = wrap.getBoundingClientRect();
-  const pct = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+  const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
   currentAudio.currentTime = pct * currentAudio.duration;
 }
 

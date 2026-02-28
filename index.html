@@ -44,6 +44,7 @@
       <a class="header-link" data-action="navigateTo" data-args='["contact"]'>Kontakt</a>
       <a class="header-link" data-action="navigateTo" data-args='["profile"]'>Profil</a>
       <a class="header-link" id="headerAdminLink" style="display:none;" data-action="navigateTo" data-args='["admin"]'>Admin</a>
+      <button class="darkmode-toggle" data-action="toggleDarkMode" title="Dark Mode" id="headerDarkToggle">◑</button>
     </nav>
   </div>
 </header>
@@ -113,6 +114,10 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
     <span class="tab-label">Meditationen</span>
   </button>
+  <button class="tab-btn" data-tab="pro" data-action="navigateTo" data-args='["pro"]'>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    <span class="tab-label">Reflexion</span>
+  </button>
   <button class="tab-btn" data-tab="menu" data-action="openMobileMenu" aria-label="Menü" style="position:relative;">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     <span class="tab-label">Menü</span>
@@ -132,6 +137,12 @@
       <span class="btn-text">Entsperren</span>
     </button>
   </div>
+</div>
+
+<!-- Mobile Back-Bar (shown dynamically in sub-views) -->
+<div class="mobile-back-bar" id="mobileBackBar" style="display:none;">
+  <button data-action="goBack" aria-label="Zurück">‹</button>
+  <span class="back-title" id="backTitle"></span>
 </div>
 
 <div class="container">
@@ -164,29 +175,29 @@
       <div class="auth-card">
         <div class="auth-card-logo">Studio Klarzeit</div>
         <div class="auth-card-line"></div>
-        <div class="state-title" id="authTitle">Willkommen</div>
-        <div class="state-text" id="authSubtitle">Erstelle dein persönliches Konto für die Übungsplattform.</div>
+        <div class="state-title" id="authTitle">Einloggen</div>
+        <div class="state-text" id="authSubtitle">Gib deine E-Mail und dein Passwort ein.</div>
         <div class="auth-box" style="margin-top:28px;">
           <input type="email" id="emailInput" class="auth-input" placeholder="deine@email.ch" autocomplete="email">
           <div class="password-wrap">
-            <input type="password" id="passwordInput" class="auth-input" placeholder="Passwort wählen" autocomplete="new-password">
+            <input type="password" id="passwordInput" class="auth-input" placeholder="Dein Passwort" autocomplete="current-password">
             <button type="button" class="pw-toggle" data-action="togglePasswordVisibility" data-args='["passwordInput"]' data-el tabindex="-1" aria-label="Passwort anzeigen"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
-          <div class="password-wrap">
+          <div class="password-wrap" style="display:none;">
             <input type="password" id="passwordConfirm" class="auth-input" placeholder="Passwort wiederholen" autocomplete="new-password">
             <button type="button" class="pw-toggle" data-action="togglePasswordVisibility" data-args='["passwordConfirm"]' data-el tabindex="-1" aria-label="Passwort anzeigen"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
-          <label class="remember-me" id="rememberMeWrap" style="display:none;">
+          <label class="remember-me" id="rememberMeWrap" style="display:flex;">
             <input type="checkbox" id="rememberMe">
             <span>Eingeloggt bleiben</span>
           </label>
           <div id="authError" class="auth-error"></div>
           <div id="authSuccess" class="auth-success"></div>
           <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-bottom:10px;display:none;" id="passkeyBtn" data-action="loginWithPasskey"><span class="btn-icon">&#128274;</span><span class="btn-text">Mit Face ID anmelden</span></button>
-          <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:14px;" id="authBtn" data-action="handleAuth"><span class="btn-text">Konto erstellen &amp; starten</span></button>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:14px;" id="authBtn" data-action="handleAuth"><span class="btn-text">Einloggen</span></button>
           <div style="text-align:center;">
-            <button class="auth-toggle" data-action="toggleAuthMode"><span id="authToggleText">Bereits registriert? Hier einloggen</span></button><br>
-            <button class="auth-link" id="forgotPasswordLink" style="display:none;" data-action="handleForgotPassword">Passwort vergessen?</button>
+            <button class="auth-toggle" data-action="toggleAuthMode"><span id="authToggleText">Noch kein Konto? Hier registrieren</span></button><br>
+            <button class="auth-link" id="forgotPasswordLink" style="display:inline-block;" data-action="handleForgotPassword">Passwort vergessen?</button>
           </div>
         </div>
       </div>

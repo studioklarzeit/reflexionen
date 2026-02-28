@@ -303,8 +303,10 @@ function buildPatternHtml(entries, questions, range) {
           <div class="checkin-grid-row">
             ${week.map(day => {
               if (day.isFuture) return '<div class="checkin-grid-cell"></div>';
-              if (day.color) return `<div class="checkin-grid-cell"><div class="checkin-grid-dot" style="background:${day.color};" title="${day.dateStr}"></div></div>`;
-              return `<div class="checkin-grid-cell"><div class="checkin-grid-dot checkin-grid-empty" title="${day.dateStr}"></div></div>`;
+              const parts = day.dateStr.split('-');
+              const niceDate = `${parts[2]}.${parts[1]}.${parts[0]}`;
+              if (day.color) return `<div class="checkin-grid-cell"><div class="checkin-grid-dot" style="background:${day.color};" title="${niceDate}" data-action="showDotTooltip" data-args='["${niceDate}"]'></div></div>`;
+              return `<div class="checkin-grid-cell"><div class="checkin-grid-dot checkin-grid-empty" title="${niceDate}" data-action="showDotTooltip" data-args='["${niceDate}"]'></div></div>`;
             }).join('')}
           </div>`;
         }).join('')}
@@ -390,4 +392,9 @@ export async function redoCheckin() {
       .eq('entry_date', todayStr());
   } catch (e) { /* ignore */ }
   await renderCheckin();
+}
+
+// Show date tooltip on mobile (title doesn't work on touch)
+export function showDotTooltip(dateStr) {
+  showToast(dateStr);
 }

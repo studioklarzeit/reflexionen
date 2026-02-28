@@ -227,6 +227,10 @@ export async function handlePurchase(courseId, paymentType) {
     return;
   }
 
+  // Disable purchase button to prevent double-clicks
+  const btn = document.querySelector('[data-action="handlePurchase"]');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
+
   showToast('Weiterleitung zu Stripe...');
 
   try {
@@ -243,6 +247,7 @@ export async function handlePurchase(courseId, paymentType) {
   } catch (e) {
     console.error('Purchase error:', e);
     showToast('Fehler beim Erstellen der Checkout-Session. Bitte versuche es erneut.', 'error');
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.style.cursor = ''; }
   }
 }
 

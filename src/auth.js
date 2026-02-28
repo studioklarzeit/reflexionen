@@ -7,7 +7,7 @@ import { updateMobileDarkLabel } from './mobile.js';
 
 // ── AUTH MODE ──
 
-let authMode = 'register';
+let authMode = 'login';
 
 export function getAuthMode() { return authMode; }
 
@@ -186,8 +186,16 @@ export async function loginWithPasskey() {
     if (session && session.user) {
       state.currentUser = session.user;
       navigateTo('loading');
-      document.getElementById('loadingText').textContent = 'Daten werden geladen …';
-      await postLogin();
+      window.setLoadProgress?.(20);
+      try {
+        await postLogin();
+      } catch (loadErr) {
+        console.error('Post-login load error:', loadErr);
+        setupHeader();
+        showToast('Daten konnten nicht vollständig geladen werden.', 'error');
+        navigateTo('courses');
+        return;
+      }
       showToast('Willkommen zurück!');
     } else {
       showToast('Sitzung abgelaufen. Bitte mit Passwort anmelden.', 'error');
@@ -334,8 +342,17 @@ export async function handleAuth() {
         return;
       }
       state.currentUser = data.user;
-      await postLogin();
-      showToast('Willkommen! Dein Konto wurde erstellt.');
+      navigateTo('loading');
+      window.setLoadProgress?.(20);
+      try {
+        await postLogin();
+        showToast('Willkommen! Dein Konto wurde erstellt.');
+      } catch (loadErr) {
+        console.error('Post-login load error:', loadErr);
+        setupHeader();
+        showToast('Daten konnten nicht vollständig geladen werden.', 'error');
+        navigateTo('courses');
+      }
     } else {
       const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
       if (error) throw error;
@@ -343,11 +360,18 @@ export async function handleAuth() {
       localStorage.setItem('klarzeit_remember', isRememberMe() ? '1' : '0');
       state.currentUser = data.user;
       navigateTo('loading');
-      document.getElementById('loadingText').textContent = 'Daten werden geladen …';
-      await postLogin();
-      showToast('Willkommen zurück!');
-      // Offer passkey setup (non-blocking)
-      offerPasskeySetup();
+      window.setLoadProgress?.(20);
+      try {
+        await postLogin();
+        showToast('Willkommen zurück!');
+        // Offer passkey setup (non-blocking)
+        offerPasskeySetup();
+      } catch (loadErr) {
+        console.error('Post-login load error:', loadErr);
+        setupHeader();
+        showToast('Daten konnten nicht vollständig geladen werden.', 'error');
+        navigateTo('courses');
+      }
     }
   } catch (e) {
     showAuthError(trAuthErr(e));
@@ -357,7 +381,9 @@ export async function handleAuth() {
 
 export async function postLogin() {
   window.setLoadProgress?.(30);
-  await Promise.all([
+
+  // Use Promise.allSettled so one failing query doesn't block everything
+  const results = await Promise.allSettled([
     loadCoreData(),
     loadAdminStatus(),
     loadCourseAccess(),
@@ -365,6 +391,15 @@ export async function postLogin() {
     loadChapterProgress(),
     loadToolImages(),
   ]);
+
+  // Log any failures but continue
+  results.forEach((r, i) => {
+    if (r.status === 'rejected') {
+      const names = ['loadCoreData', 'loadAdminStatus', 'loadCourseAccess', 'loadUserAnswers', 'loadChapterProgress', 'loadToolImages'];
+      console.error(`${names[i]} failed:`, r.reason);
+    }
+  });
+
   window.setLoadProgress?.(90);
 
   // Load notification count (non-blocking)
@@ -452,7 +487,16 @@ export async function handleResetPassword() {
     showToast('Passwort erfolgreich geändert!');
     const { data: { user } } = await sb.auth.getUser();
     state.currentUser = user;
-    await postLogin();
+    navigateTo('loading');
+    window.setLoadProgress?.(20);
+    try {
+      await postLogin();
+    } catch (loadErr) {
+      console.error('Post-login load error:', loadErr);
+      setupHeader();
+      showToast('Daten konnten nicht vollständig geladen werden.', 'error');
+      navigateTo('courses');
+    }
   } catch (e) {
     err.textContent = trAuthErr(e);
     err.classList.add('visible');

@@ -6,7 +6,7 @@ import { sb } from './config.js';
 import { state } from './state.js';
 import { showToast, trDataErr, sanitizeCssUrl } from './utils.js';
 import { initDarkMode, toggleDarkMode } from './darkmode.js';
-import { navigateTo } from './navigation.js';
+import { navigateTo, goBack } from './navigation.js';
 import { loadOnboardingData } from './onboarding.js';
 import { loadAndApplyTypography, loadAndApplyColors } from './theme.js';
 import {
@@ -37,7 +37,7 @@ import {
 } from './friendview.js';
 import {
   renderCheckin, onCheckinSelect, saveCheckin, redoCheckin,
-  clearCheckinCache, switchCheckinRange,
+  clearCheckinCache, switchCheckinRange, showDotTooltip,
 } from './checkin.js';
 import {
   renderBodyCheck, toggleBodyZone, toggleBodyFeeling,
@@ -57,7 +57,7 @@ import {
   getCurrentImpulseText, isImpulseMuted,
 } from './weeklyimpulse.js';
 import {
-  renderContact, submitContactForm,
+  renderContact, submitContactForm, updateContactCounter,
 } from './contact.js';
 import {
   renderPro, submitProQuestion,
@@ -128,7 +128,7 @@ function updateDockEmail() {}
 // ── Expose functions on window + action registry (events.js allowlist) ──
 const _appActions = {
   // Navigation
-  navigateTo,
+  navigateTo, goBack,
   // Auth
   handleAuth, handleLogout, handleResetPassword,
   toggleAuthMode, handleForgotPassword, togglePasswordVisibility,
@@ -162,7 +162,7 @@ const _appActions = {
   resetQuestionForm: _la('resetQuestionForm'), onQuestionTypeChange: _la('onQuestionTypeChange'),
   addOptionRow: _la('addOptionRow'), updateQuestionExerciseSelect: _la('updateQuestionExerciseSelect'),
   renderAdminCourses: _la('renderAdminCourses'), manageInvites: _la('manageInvites'), createInvite: _la('createInvite'),
-  toggleAdmin: _la('toggleAdmin'), showUserProgress: _la('showUserProgress'),
+  showUserProgress: _la('showUserProgress'),
   openAdminDeleteUserModal: _la('openAdminDeleteUserModal'), closeAdminDeleteUserModal: _la('closeAdminDeleteUserModal'),
   confirmAdminDeleteUser: _la('confirmAdminDeleteUser'),
   openSendMessageModal: _la('openSendMessageModal'), closeSendMessageModal: _la('closeSendMessageModal'),
@@ -203,7 +203,7 @@ const _appActions = {
   saveFriendEdit, cancelFriendEdit, deleteFriendEntry,
   updateFriendCounter,
   // Check-In
-  renderCheckin, onCheckinSelect, saveCheckin, redoCheckin, switchCheckinRange,
+  renderCheckin, onCheckinSelect, saveCheckin, redoCheckin, switchCheckinRange, showDotTooltip,
   // Body Check-In
   renderBodyCheck, toggleBodyZone, toggleBodyFeeling, saveBodyCheck, deleteBodyEntry,
   // Energy Balance
@@ -212,7 +212,7 @@ const _appActions = {
   renderMeditation, openMeditationDetail, closeMeditationDetail,
   togglePlayPause, seekMeditation, stopMeditation,
   // Contact
-  renderContact, submitContactForm,
+  renderContact, submitContactForm, updateContactCounter,
   // Pro
   renderPro, submitProQuestion,
   // Weekly Impulse

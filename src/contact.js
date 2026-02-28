@@ -121,9 +121,9 @@ function renderFormCard(form) {
       <p class="contact-card-desc">${esc(form.description)}</p>
       <div class="contact-form">
         ${subjectField}
-        <textarea class="form-textarea contact-message" id="contact-msg-${form.type}" placeholder="${esc(form.placeholder)}" rows="4" maxlength="2000"></textarea>
+        <textarea class="form-textarea contact-message" id="contact-msg-${form.type}" placeholder="${esc(form.placeholder)}" rows="4" maxlength="2000" data-input="updateContactCounter" data-el="${form.type}"></textarea>
         <div class="contact-form-footer">
-          <span class="contact-char-count" id="contact-count-${form.type}"></span>
+          <span class="contact-char-count" id="contact-count-${form.type}">0 / 2000</span>
           <button class="btn btn-primary btn-sm" id="contact-btn-${form.type}" data-action="submitContactForm" data-args='["${form.type}"]'>
             <span class="btn-text">Absenden</span>
           </button>
@@ -202,4 +202,11 @@ async function refreshHistory() {
       if (grid) grid.insertAdjacentHTML('afterend', html);
     }
   } catch (e) { /* ignore */ }
+}
+
+// Character counter for contact textareas
+export function updateContactCounter(type) {
+  const textarea = document.getElementById(`contact-msg-${type}`);
+  const counter = document.getElementById(`contact-count-${type}`);
+  if (textarea && counter) counter.textContent = `${textarea.value.length} / 2000`;
 }

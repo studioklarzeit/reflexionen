@@ -317,6 +317,58 @@ export function navigateTo(view, params) {
 
   window.scrollTo({ top: 0, behavior: 'instant' });
 
+  // Mobile back-bar: show on sub-views with parent navigation
+  updateMobileBackBar(view, params);
+
   // Observe lazy background images after view switch
   setTimeout(() => window.observeLazyBgs?.(), 200);
+}
+
+// ── Mobile Back-Bar Logic ──
+const BACK_BAR_CONFIG = {
+  chapters:      { parent: 'courses', title: 'Kurse' },
+  exercises:     { parent: 'chapters', title: 'Kapitel' },
+  questions:     { parent: 'exercises', title: 'Übungen' },
+  coursePlayer:   { parent: 'courses', title: 'Kurse' },
+  chapterPlayer:  { parent: 'coursePlayer', title: 'Kurs' },
+  journal:       { parent: 'tools', title: 'Impulse' },
+  friendView:    { parent: 'tools', title: 'Impulse' },
+  checkin:       { parent: 'tools', title: 'Impulse' },
+  bodycheck:     { parent: 'tools', title: 'Impulse' },
+  energy:        { parent: 'tools', title: 'Impulse' },
+  impulse:       { parent: 'tools', title: 'Impulse' },
+};
+
+function updateMobileBackBar(view, params) {
+  const bar = document.getElementById('mobileBackBar');
+  const titleEl = document.getElementById('backTitle');
+  if (!bar || !titleEl) return;
+
+  const config = BACK_BAR_CONFIG[view];
+  if (config) {
+    bar.style.display = '';
+    titleEl.textContent = config.title;
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+export function goBack() {
+  const config = BACK_BAR_CONFIG[state.currentView];
+  if (!config) return;
+
+  const params = {};
+  // Pass the right params when navigating back
+  if (config.parent === 'chapters' && state.currentCourseId) {
+    params.courseId = state.currentCourseId;
+  }
+  if (config.parent === 'exercises' && state.currentCourseId && state.currentChapterId) {
+    params.courseId = state.currentCourseId;
+    params.chapterId = state.currentChapterId;
+  }
+  if (config.parent === 'coursePlayer' && state.currentCourseId) {
+    params.courseId = state.currentCourseId;
+  }
+
+  navigateTo(config.parent, params);
 }
