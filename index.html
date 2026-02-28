@@ -232,50 +232,7 @@
 
   <div class="view" id="viewTools">
     <div class="meditation-quote">Kleine Rituale für den Alltag, die dich begleiten.</div>
-    <div class="grid-list image-grid" id="toolsList">
-      <div class="image-card" data-action="navigateTo" data-args='["journal"]'>
-        <div class="card-image card-image-placeholder"><span><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><line x1="8" y1="7" x2="15" y2="7"/><line x1="8" y1="11" x2="13" y2="11"/></svg></span></div>
-        <div class="image-card-body">
-          <div class="image-card-title">Muster-Tagebuch</div>
-          <div class="image-card-desc">Halte fest, was dir heute aufgefallen ist. Ein Satz reicht.</div>
-        </div>
-      </div>
-      <div class="image-card" data-action="navigateTo" data-args='["friendView"]'>
-        <div class="card-image card-image-placeholder"><span><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span></div>
-        <div class="image-card-body">
-          <div class="image-card-title">Freundinnen-Blick</div>
-          <div class="image-card-desc">Was würdest du einer Freundin über deinen Tag sagen?</div>
-        </div>
-      </div>
-      <div class="image-card" data-action="navigateTo" data-args='["checkin"]'>
-        <div class="card-image card-image-placeholder"><span><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span></div>
-        <div class="image-card-body">
-          <div class="image-card-title">Stimmungs-Check-In</div>
-          <div class="image-card-desc">3 kurze Fragen. Unter 30 Sekunden. Muster erkennen.</div>
-        </div>
-      </div>
-      <div class="image-card" data-action="navigateTo" data-args='["bodycheck"]'>
-        <div class="card-image card-image-placeholder"><span><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><path d="M12 8v4"/><path d="M8 12l4 4 4-4"/><path d="M9 22v-5l3-3 3 3v5"/></svg></span></div>
-        <div class="image-card-body">
-          <div class="image-card-title">Körper-Check-In</div>
-          <div class="image-card-desc">Wo spürst du gerade Spannung? Tippe auf deinen Körper.</div>
-        </div>
-      </div>
-      <div class="image-card" data-action="navigateTo" data-args='["energy"]'>
-        <div class="card-image card-image-placeholder"><span><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 7l-5-5-5 5"/><path d="M7 17l5 5 5-5"/></svg></span></div>
-        <div class="image-card-body">
-          <div class="image-card-title">Energie-Bilanz</div>
-          <div class="image-card-desc">Was hat heute Energie gegeben? Was hat Energie gekostet?</div>
-        </div>
-      </div>
-      <div class="image-card" data-action="navigateTo" data-args='["impulse"]'>
-        <div class="card-image card-image-placeholder"><span><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span></div>
-        <div class="image-card-body">
-          <div class="image-card-title">Impuls der Woche</div>
-          <div class="image-card-desc">Jede Woche ein neuer Gedanke, der dich durch den Alltag begleitet.</div>
-        </div>
-      </div>
-    </div>
+    <div class="grid-list image-grid" id="toolsList"></div>
   </div>
 
   <div class="view" id="viewJournal">
@@ -422,6 +379,7 @@
         <button class="nav-pill" data-action="switchAdminTab" data-args='["meditation"]'>Meditation</button>
         <button class="nav-pill" data-action="switchAdminTab" data-args='["messages"]'>Nachrichten</button>
         <button class="nav-pill" data-action="switchAdminTab" data-args='["proQuestions"]'>Pro-Fragen</button>
+        <button class="nav-pill" data-action="switchAdminTab" data-args='["toolImages"]'>Tool-Bilder</button>
       </div>
       <div class="admin-nav-pills-area" id="adminPillsWebsite">
         <button class="nav-pill" data-action="switchAdminTab" data-args='["pages"]'>Seiten</button>
@@ -837,6 +795,11 @@
         <p style="font-size:var(--font-size-p2);font-style:italic;color:var(--text-muted);margin-bottom:24px;">Eingereichte Fragen von Pro-Mitgliedern.</p>
         <div id="adminProQuestionsList"></div>
       </div>
+    </div>
+
+    <!-- Tool Images Tab -->
+    <div class="admin-tab" id="adminTabToolImages" style="display:none;">
+      <!-- Content rendered dynamically by loadToolImagesEditor() -->
     </div>
 
     <!-- Pages (CMS) Tab -->

@@ -11,7 +11,7 @@ const TAB_GROUPS = {
   courseTree: 'Kurse',
   courses: 'Kurse', chapters: 'Kurse', exercises: 'Kurse',
   users: 'Einstellungen', onboarding: 'Einstellungen', typography: 'Einstellungen', colors: 'Einstellungen',
-  journal: 'Tools', checkin: 'Tools', weeklyImpulse: 'Tools', meditation: 'Tools', messages: 'Tools',
+  journal: 'Tools', checkin: 'Tools', weeklyImpulse: 'Tools', meditation: 'Tools', messages: 'Tools', toolImages: 'Tools',
   pages: 'Website', blog: 'Website', seoTracking: 'Website',
 };
 
@@ -40,7 +40,7 @@ export function switchAdminTab(tab) {
   document.querySelectorAll('#adminPills .nav-pill').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.admin-tab').forEach(t => { t.style.display = 'none'; });
 
-  const tabs = ['courseTree', 'users', 'onboarding', 'typography', 'colors', 'journal', 'checkin', 'weeklyImpulse', 'meditation', 'messages', 'proQuestions', 'pages', 'blog', 'seoTracking'];
+  const tabs = ['courseTree', 'users', 'onboarding', 'typography', 'colors', 'journal', 'checkin', 'weeklyImpulse', 'meditation', 'messages', 'proQuestions', 'toolImages', 'pages', 'blog', 'seoTracking'];
   const idx = tabs.indexOf(tab);
   const pills = document.querySelectorAll('#adminPills .nav-pill');
   if (pills[idx]) pills[idx].classList.add('active');
@@ -71,6 +71,7 @@ export function switchAdminTab(tab) {
   if (tab === 'meditation') loadMeditationEditor();
   if (tab === 'messages') loadAdminMessages();
   if (tab === 'proQuestions') loadAdminProQuestions();
+  if (tab === 'toolImages') loadToolImagesEditor();
   if (tab === 'pages') { import('./pagebuilder.js').then(m => { m.loadPageEditor(); m.initPageDragDrop(); }); }
   if (tab === 'blog') { import('./pagebuilder.js').then(m => { m.loadBlogEditor(); m.initPageDragDrop(); }); }
   if (tab === 'seoTracking') { import('./seo.js').then(m => m.loadSeoEditor()); }
@@ -2031,6 +2032,124 @@ export function removeLoginBgImage() {
   document.getElementById('loginBgUrl').value = '';
   document.getElementById('loginBgInput').value = '';
   updateImagePreview('loginBgPreview', null);
+}
+
+// ══════════════════════════════════════
+// TOOL IMAGES
+// ══════════════════════════════════════
+
+const TOOL_DEFS = [
+  { key: 'journal', label: 'Muster-Tagebuch' },
+  { key: 'friendView', label: 'Freundinnen-Blick' },
+  { key: 'checkin', label: 'Stimmungs-Check-In' },
+  { key: 'bodycheck', label: 'Körper-Check-In' },
+  { key: 'energy', label: 'Energie-Bilanz' },
+  { key: 'impulse', label: 'Impuls der Woche' },
+];
+
+export async function loadToolImagesEditor() {
+  const container = document.getElementById('adminTabToolImages');
+  if (!container) return;
+
+  let images = {};
+  try {
+    const { data } = await sb.from('settings').select('value').eq('key', 'tool_images').single();
+    if (data?.value) images = JSON.parse(data.value);
+  } catch (_) { /* no tool images yet */ }
+
+  container.innerHTML = `
+    <div class="admin-form">
+      <h3>Tool-Titelbilder</h3>
+      <p style="font-size:var(--font-size-p2);font-style:italic;color:var(--text-muted);margin-bottom:24px;">Lade für jedes Tool ein Titelbild hoch. Ohne Bild wird ein Platzhalter angezeigt.</p>
+      <div class="tool-images-grid">
+        ${TOOL_DEFS.map(t => {
+          const url = images[t.key] || '';
+          return `
+            <div class="tool-image-item">
+              <label class="form-label">${esc(t.label)}</label>
+              <input type="hidden" id="toolImg_${t.key}" value="${esc(url)}">
+              <div class="image-upload-zone${url ? ' has-image' : ''}" id="toolImgPreview_${t.key}" data-action="triggerClickOn" data-args='["toolImgInput_${t.key}"]'>
+                ${url ? `<img src="${esc(url)}" alt="Vorschau"><button class="image-remove-btn" data-action="removeToolImage" data-args='["${t.key}"]' data-stop title="Bild entfernen">✕</button>` : '<span class="image-upload-label">Bild hierher ziehen oder klicken</span>'}
+              </div>
+              <input type="file" id="toolImgInput_${t.key}" accept="image/*" style="display:none;" data-change="handleToolImageSelect" data-args='["${t.key}"]'>
+            </div>`;
+        }).join('')}
+      </div>
+      <div style="margin-top:24px;"><button class="btn btn-primary" id="saveToolImagesBtn" data-action="saveToolImages">Speichern</button></div>
+    </div>`;
+}
+
+export async function handleToolImageSelect(toolKey) {
+  const fileInput = document.getElementById(`toolImgInput_${toolKey}`);
+  const file = fileInput?.files[0];
+  if (!file) return;
+
+  // Show local preview
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const el = document.getElementById(`toolImgPreview_${toolKey}`);
+    el.innerHTML = `<img src="${e.target.result}" alt="Vorschau"><button class="image-remove-btn" data-action="removeToolImage" data-args='["${toolKey}"]' data-stop title="Bild entfernen">✕</button>`;
+    el.classList.add('has-image');
+  };
+  reader.readAsDataURL(file);
+}
+
+export function removeToolImage(toolKey) {
+  document.getElementById(`toolImg_${toolKey}`).value = '';
+  const input = document.getElementById(`toolImgInput_${toolKey}`);
+  if (input) input.value = '';
+  const el = document.getElementById(`toolImgPreview_${toolKey}`);
+  el.innerHTML = '<span class="image-upload-label">Bild hierher ziehen oder klicken</span>';
+  el.classList.remove('has-image');
+}
+
+export async function saveToolImages() {
+  btnLoading('saveToolImagesBtn', true);
+  try {
+    // Load current saved images
+    let saved = {};
+    try {
+      const { data } = await sb.from('settings').select('value').eq('key', 'tool_images').single();
+      if (data?.value) saved = JSON.parse(data.value);
+    } catch (_) {}
+
+    const images = { ...saved };
+
+    for (const t of TOOL_DEFS) {
+      const fileInput = document.getElementById(`toolImgInput_${t.key}`);
+      const hiddenUrl = document.getElementById(`toolImg_${t.key}`).value;
+
+      if (fileInput?.files.length) {
+        // Delete old image if exists
+        if (saved[t.key]) await deleteImage(saved[t.key]);
+        // Upload new
+        const url = await uploadImage(fileInput.files[0], 'tools');
+        images[t.key] = url;
+        document.getElementById(`toolImg_${t.key}`).value = url;
+        fileInput.value = '';
+      } else if (!hiddenUrl && saved[t.key]) {
+        // Image was removed
+        await deleteImage(saved[t.key]);
+        delete images[t.key];
+      } else if (hiddenUrl) {
+        images[t.key] = hiddenUrl;
+      } else {
+        delete images[t.key];
+      }
+    }
+
+    const { error } = await sb.from('settings').upsert(
+      { key: 'tool_images', value: JSON.stringify(images) },
+      { onConflict: 'key' }
+    );
+    if (error) throw error;
+
+    // Update state for immediate effect
+    state.toolImages = images;
+
+    showToast('Tool-Bilder gespeichert.');
+  } catch (e) { console.error(e); showToast(trDataErr(e, 'save'), 'error'); }
+  finally { btnLoading('saveToolImagesBtn', false); }
 }
 
 // ══════════════════════════════════════

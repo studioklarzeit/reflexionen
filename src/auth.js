@@ -2,7 +2,7 @@ import { sb, SUPABASE_URL, SUPABASE_KEY } from './config.js';
 import { state } from './state.js';
 import { btnLoading, showToast, trAuthErr } from './utils.js';
 import { navigateTo } from './navigation.js';
-import { loadCoreData, loadAdminStatus, loadCourseAccess, loadUserAnswers, loadChapterProgress, resetLazyFlags } from './data.js';
+import { loadCoreData, loadAdminStatus, loadCourseAccess, loadUserAnswers, loadChapterProgress, loadToolImages, resetLazyFlags } from './data.js';
 import { redeemInvite } from './admin.js';
 import { updateMobileDarkLabel } from './mobile.js';
 
@@ -364,6 +364,7 @@ export async function postLogin() {
     loadCourseAccess(),
     loadUserAnswers(),
     loadChapterProgress(),
+    loadToolImages(),
   ]);
   window.setLoadProgress?.(90);
 
@@ -464,6 +465,7 @@ export async function handleLogout() {
   state.cacheAnswers = {};
   state.cacheAccess = [];
   state.chapterProgress = {};
+  state.toolImages = {};
   state.cacheData = { courses: [], chapters: [], exercises: [] };
   resetLazyFlags();
   navigateTo('auth');

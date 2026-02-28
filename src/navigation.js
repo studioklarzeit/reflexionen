@@ -4,6 +4,7 @@ import { renderChaptersList } from './chapters.js';
 import { renderExercisesList, renderQuestionsView } from './exercises.js';
 import { switchAdminTab } from './admin.js';
 import { renderOnboarding } from './onboarding.js';
+import { renderTools } from './tools.js';
 
 // ── Header scroll listener (shared for public + app header) ──
 let _scrollListenerAttached = false;
@@ -188,6 +189,7 @@ export function navigateTo(view, params) {
       }
       case 'tools': {
         document.getElementById('viewTools').classList.add('active');
+        renderTools();
         break;
       }
       case 'friendView': {

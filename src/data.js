@@ -48,6 +48,13 @@ export async function loadAllData() {
   await loadCoreData();
 }
 
+export async function loadToolImages() {
+  try {
+    const { data } = await sb.from('settings').select('value').eq('key', 'tool_images').single();
+    state.toolImages = data?.value ? JSON.parse(data.value) : {};
+  } catch (_) { state.toolImages = {}; }
+}
+
 export async function loadChapterProgress() {
   if (!state.currentUser) return;
   const { data } = await sb

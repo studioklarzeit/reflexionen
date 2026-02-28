@@ -14,6 +14,7 @@ export const state = {
   cacheAccess: [],
   cacheAccessFull: [],
   chapterProgress: {},  // keyed by chapter_id
+  toolImages: {},       // keyed by tool key (journal, friendView, etc.)
   pendingInvite: null,
   pendingStripeSuccess: null,
 };
