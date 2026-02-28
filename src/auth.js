@@ -463,10 +463,12 @@ export async function handleLogout() {
   state.currentUser = null;
   state.isAdmin = false;
   state.cacheAnswers = {};
+  state.cacheAnswerDates = {};
   state.cacheAccess = [];
+  state.cacheAccessFull = [];
   state.chapterProgress = {};
   state.toolImages = {};
-  state.cacheData = { courses: [], chapters: [], exercises: [] };
+  state.cacheData = { courses: [], chapters: [], exercises: [], questions: [] };
   resetLazyFlags();
   navigateTo('auth');
 }

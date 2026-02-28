@@ -500,8 +500,13 @@ sb.auth.onAuthStateChange(async (event, session) => {
   } else if (event === 'SIGNED_OUT') {
     state.currentUser = null;
     state.isAdmin = false;
+    state.cacheData = { courses: [], chapters: [], exercises: [], questions: [] };
     state.cacheAnswers = {};
+    state.cacheAnswerDates = {};
     state.cacheAccess = [];
+    state.cacheAccessFull = [];
+    state.chapterProgress = {};
+    state.toolImages = {};
     if (state.currentView !== 'auth') navigateTo('auth');
   } else if (event === 'TOKEN_REFRESHED' && session?.user) {
     state.currentUser = session.user;
