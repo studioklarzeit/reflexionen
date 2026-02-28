@@ -1,6 +1,6 @@
 import { sb } from './config.js';
 import { state } from './state.js';
-import { esc, showToast, trDataErr } from './utils.js';
+import { esc, showToast, trDataErr, sanitizeColor } from './utils.js';
 
 // ── DEFAULT QUESTIONS ──
 
@@ -64,7 +64,7 @@ export function clearCheckinCache() { cachedQuestions = null; }
 const FALLBACK_COLORS = ['#4caf50', '#f0c431', '#ef8c2f', '#e05555'];
 
 function getOptionColor(question, index) {
-  return question?.options?.[index]?.color || FALLBACK_COLORS[index] || '#999';
+  return sanitizeColor(question?.options?.[index]?.color) || FALLBACK_COLORS[index] || '#999';
 }
 
 function avgColor(q1Idx, q2Idx, questions) {
@@ -135,7 +135,7 @@ function renderCheckinForm(questions) {
       <div class="checkin-options ${isMulti ? 'checkin-options-multi' : ''}">`;
 
     q.options.forEach((opt, oi) => {
-      const colorDot = opt.color ? `<span class="checkin-dot" style="background:${opt.color};"></span>` : '';
+      const colorDot = opt.color ? `<span class="checkin-dot" style="background:${sanitizeColor(opt.color)};"></span>` : '';
       const inputType = isMulti ? 'checkbox' : 'radio';
       html += `
         <label class="checkin-option" data-q="${qi}" data-o="${oi}">

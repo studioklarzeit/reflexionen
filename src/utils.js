@@ -69,6 +69,25 @@ export function imgTransform(url, width, quality = 80) {
     + `?width=${width}&quality=${quality}&resize=contain`;
 }
 
+// ── SANITIZATION ──
+
+/** Validate CSS color value — only allow safe patterns */
+export function sanitizeColor(c) {
+  if (!c) return '#999';
+  if (/^#[0-9a-fA-F]{3,8}$/.test(c)) return c;
+  if (/^[a-zA-Z]{1,20}$/.test(c)) return c; // named colors
+  if (/^var\(--[a-zA-Z0-9-]+\)$/.test(c)) return c;
+  if (/^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(,\s*[\d.]+\s*)?\)$/.test(c)) return c;
+  return '#999';
+}
+
+/** Sanitize a URL for use in CSS url() — strip injection characters */
+export function sanitizeCssUrl(url) {
+  if (!url) return '';
+  if (!/^https?:\/\//.test(url) && !/^data:image\//.test(url)) return '';
+  return url.replace(/['"`()\\]/g, '');
+}
+
 // ── SAVE STATUS INDICATORS ──
 
 export function showSaving() {

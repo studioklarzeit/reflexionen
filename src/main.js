@@ -4,7 +4,7 @@ import './styles/main.css';
 // ── Modules ──
 import { sb } from './config.js';
 import { state } from './state.js';
-import { showToast, trDataErr } from './utils.js';
+import { showToast, trDataErr, sanitizeCssUrl } from './utils.js';
 import { initDarkMode, toggleDarkMode } from './darkmode.js';
 import { navigateTo } from './navigation.js';
 import { loadOnboardingData } from './onboarding.js';
@@ -24,7 +24,7 @@ import {
 } from './exercises.js';
 import { openMobileMenu, closeMobileMenu, updateMobileDarkLabel, initBottomSheetGestures } from './mobile.js';
 import { registerServiceWorker, updateOnlineStatus } from './sw.js';
-import { initEventDelegation } from './events.js';
+import { initEventDelegation, registerActions } from './events.js';
 import {
   renderJournal, saveJournalEntry, editJournalEntry,
   saveJournalEdit, cancelJournalEdit, deleteJournalEntry,
@@ -125,8 +125,8 @@ function updateDockDarkIcon() {}
 // ── Dock user email helper (legacy) ──
 function updateDockEmail() {}
 
-// ── Expose functions on window for inline onclick handlers ──
-Object.assign(window, {
+// ── Expose functions on window + action registry (events.js allowlist) ──
+const _appActions = {
   // Navigation
   navigateTo,
   // Auth
@@ -272,7 +272,9 @@ Object.assign(window, {
   renderPublicContact, submitPublicContact,
   // Utils
   showToast,
-});
+};
+Object.assign(window, _appActions);
+registerActions(_appActions);
 
 // Expose onboardElements + renderOnboardElements (lazy — admin only)
 let _adminMod = null;
@@ -287,12 +289,25 @@ window.__clearCheckinCache = clearCheckinCache;
 window.__clearWeeklyImpulseCache = clearWeeklyImpulseCache;
 window.__clearMeditationCache = clearMeditationCache;
 
+// Register extra window functions in action registry
+registerActions({
+  togglePublicMobileNav,
+  __pubNav: window.__pubNav,
+  observeLazyBgs,
+  setLoadProgress,
+  finishLoading,
+  dismissLoading,
+  dismissLoading30,
+  renderOnboardElements: window.renderOnboardElements,
+});
+
 // ── LAZY BACKGROUND IMAGES ──
 
 const bgObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) {
-      e.target.style.backgroundImage = `url('${e.target.dataset.bg}')`;
+      const bgUrl = sanitizeCssUrl(e.target.dataset.bg);
+      if (bgUrl) e.target.style.backgroundImage = `url('${bgUrl}')`;
       e.target.classList.add('bg-loaded');
       bgObserver.unobserve(e.target);
     }
@@ -375,7 +390,8 @@ async function init() {
   // Load settings in parallel (login bg, typography, colors)
   await Promise.all([
     sb.from('settings').select('value').eq('key', 'login_bg').single().then(({ data }) => {
-      if (data?.value) document.getElementById('authBg').style.backgroundImage = `url(${data.value})`;
+      const bgUrl = sanitizeCssUrl(data?.value);
+      if (bgUrl) document.getElementById('authBg').style.backgroundImage = `url('${bgUrl}')`;
     }).catch(() => {}),
     loadAndApplyTypography(),
     loadAndApplyColors(),
@@ -448,9 +464,11 @@ async function init() {
         return;
       }
 
-      // 404.html fallback: recover original path
+      // 404.html fallback: recover original path (validate to prevent URL spoofing)
       const fallbackPath = urlParams.get('__path');
-      if (fallbackPath) history.replaceState(null, '', fallbackPath);
+      if (fallbackPath && /^\/[a-zA-Z0-9\/_-]*$/.test(fallbackPath)) {
+        history.replaceState(null, '', fallbackPath);
+      }
 
       const pathname = (fallbackPath || location.pathname).replace(/\/+$/, '') || '/';
 
@@ -531,7 +549,7 @@ document.addEventListener('keydown', (e) => {
 // ── IFRAME HEIGHT REPORTING ──
 
 function sendHeight() {
-  window.parent.postMessage({ type: 'klarzeit_height', height: document.body.scrollHeight }, '*');
+  window.parent.postMessage({ type: 'klarzeit_height', height: document.body.scrollHeight }, location.origin);
 }
 new ResizeObserver(() => sendHeight()).observe(document.body);
 

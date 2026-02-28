@@ -17,6 +17,15 @@
 //   data-stop              — e.stopPropagation()
 //   data-prevent           — e.preventDefault()
 
+// ── Action Registry (allowlist — only registered functions can be dispatched) ──
+const _actions = new Map();
+
+export function registerActions(obj) {
+  for (const [k, v] of Object.entries(obj)) {
+    if (typeof v === 'function') _actions.set(k, v);
+  }
+}
+
 export function initEventDelegation() {
   document.addEventListener('click', (e) => {
     const el = e.target.closest('[data-action]');
@@ -58,10 +67,11 @@ function dispatch(el, event, type) {
   const actionStr = el.getAttribute(attr);
   if (!actionStr) return;
 
-  const actions = actionStr.split('|');
-  for (const name of actions) {
-    const fn = window[name.trim()];
-    if (!fn) { console.warn(`[events] Unknown action: ${name}`); continue; }
+  const actionNames = actionStr.split('|');
+  for (const name of actionNames) {
+    const key = name.trim();
+    const fn = _actions.get(key);
+    if (!fn) { console.warn(`[events] Unknown action: ${key}`); continue; }
 
     const args = buildArgs(el, event);
     fn(...args);
@@ -89,52 +99,21 @@ function buildArgs(el, event) {
 }
 
 // ── Utility-Aktionen für ehemals inline JS ──
+// These are registered both on window (for direct calls) and in the action registry (for data-action dispatch)
 
-// this.parentElement.remove()
-window.removeParent = (el) => el?.parentElement?.remove();
-
-// this.parentElement.classList.toggle('open')
-window.toggleParentClass = (cls, el) => el?.parentElement?.classList.toggle(cls);
-
-// document.getElementById('x').click()
-window.triggerClickOn = (id) => document.getElementById(id)?.click();
-
-// navigator.clipboard.writeText(text) + Toast
-window.copyAndToast = (text) => {
-  navigator.clipboard.writeText(text);
-  window.showToast?.('Link kopiert!');
+const _utilActions = {
+  removeParent: (el) => el?.parentElement?.remove(),
+  toggleParentClass: (cls, el) => el?.parentElement?.classList.toggle(cls),
+  triggerClickOn: (id) => document.getElementById(id)?.click(),
+  copyAndToast: (text) => { navigator.clipboard.writeText(text); window.showToast?.('Link kopiert!'); },
+  mobileMenuNav: (route) => { window.closeMobileMenu?.(); window.navigateTo?.(route); },
+  pubMobileNav: (route) => { window.navigateTo?.(route); window.togglePublicMobileNav?.(); },
+  toggleDarkAndLabel: () => { window.toggleDarkMode?.(); window.updateMobileDarkLabel?.(); },
+  removeOnboardElement: (index) => { window.onboardElements?.splice(index, 1); window.renderOnboardElements?.(); },
+  toggleFaqOpen: (el) => el?.parentElement?.classList.toggle('open'),
+  updateOnboardField: (index, field, value) => { if (window.onboardElements?.[index]) window.onboardElements[index][field] = value; },
 };
 
-// Chained: closeMobileMenu + navigateTo
-window.mobileMenuNav = (route) => {
-  window.closeMobileMenu?.();
-  window.navigateTo?.(route);
-};
-
-// Chained: navigateTo + togglePublicMobileNav
-window.pubMobileNav = (route) => {
-  window.navigateTo?.(route);
-  window.togglePublicMobileNav?.();
-};
-
-// Chained: toggleDarkMode + updateMobileDarkLabel
-window.toggleDarkAndLabel = () => {
-  window.toggleDarkMode?.();
-  window.updateMobileDarkLabel?.();
-};
-
-// onboardElements splice + re-render
-window.removeOnboardElement = (index) => {
-  window.onboardElements?.splice(index, 1);
-  window.renderOnboardElements?.();
-};
-
-// For public.js FAQ accordion
-window.toggleFaqOpen = (el) => el?.parentElement?.classList.toggle('open');
-
-// For admin onboarding inline assignments
-window.updateOnboardField = (index, field, value) => {
-  if (window.onboardElements?.[index]) {
-    window.onboardElements[index][field] = value;
-  }
-};
+// Register utility actions in both window and action registry
+Object.assign(window, _utilActions);
+registerActions(_utilActions);

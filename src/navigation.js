@@ -159,6 +159,7 @@ export function navigateTo(view, params) {
         renderQuestionsView();
         break;
       case 'admin':
+        if (!state.isAdmin) { navigateTo('courses'); break; }
         document.getElementById('viewAdmin').classList.add('active');
         import('./admin.js').then(m => m.switchAdminTab('courses'));
         break;

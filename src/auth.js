@@ -389,9 +389,12 @@ export async function postLogin() {
   });
 
   if (state.pendingInvite) {
-    const { redeemInvite } = await import('./admin.js');
-    await redeemInvite(state.pendingInvite);
+    const token = state.pendingInvite;
     state.pendingInvite = null;
+    if (confirm('Du hast einen Einladungslink erhalten. Möchtest du diesen jetzt einlösen?')) {
+      const { redeemInvite } = await import('./admin.js');
+      await redeemInvite(token);
+    }
   }
 
   setupHeader();

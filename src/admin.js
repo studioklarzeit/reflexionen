@@ -1,6 +1,6 @@
 import { sb, SUPABASE_URL, SUPABASE_KEY } from './config.js';
 import { state } from './state.js';
-import { esc, btnLoading, showToast, trDataErr } from './utils.js';
+import { esc, btnLoading, showToast, trDataErr, sanitizeCssUrl } from './utils.js';
 import { loadAllData, loadCourseAccess } from './data.js';
 import { uploadImage, deleteImage } from './upload.js';
 import { renderBulkUpload } from './bulkupload.js';
@@ -1870,7 +1870,8 @@ export async function saveLoginBg() {
     document.getElementById('loginBgUrl').value = url;
     // Update auth bg immediately
     const authBg = document.getElementById('authBg');
-    if (authBg && url) authBg.style.backgroundImage = `url(${url})`;
+    const safeBgUrl = sanitizeCssUrl(url);
+    if (authBg && safeBgUrl) authBg.style.backgroundImage = `url('${safeBgUrl}')`;
     showToast('Login-Hintergrund gespeichert.');
   } catch (e) { console.error(e); showToast(trDataErr(e, 'save'), 'error'); }
   finally { btnLoading('saveLoginBgBtn', false); }
