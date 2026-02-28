@@ -13,6 +13,7 @@ import {
   toggleAuthMode, handleForgotPassword, togglePasswordVisibility,
   postLogin, setupHeader, getAuthMode,
   loginWithPasskey, initAuthUI,
+  checkBiometricLock, unlockApp,
 } from './auth.js';
 import { dismissOnboarding } from './onboarding.js';
 import {
@@ -163,6 +164,7 @@ Object.assign(window, {
   handleAuth, handleLogout, handleResetPassword,
   toggleAuthMode, handleForgotPassword, togglePasswordVisibility,
   loginWithPasskey, initAuthUI,
+  unlockApp,
   // Dark mode
   toggleDarkMode, updateMobileDarkLabel, updateDockDarkIcon,
   // Onboarding
@@ -332,6 +334,8 @@ async function init() {
 
     if (session && session.user) {
       // ── LOGGED IN → App ──
+      // Face ID lock check (non-blocking for users without passkey)
+      await checkBiometricLock();
       state.currentUser = session.user;
       document.getElementById('loadingText').textContent = 'Daten werden geladen …';
       try {

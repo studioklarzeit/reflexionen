@@ -27,9 +27,91 @@ window.addEventListener('beforeunload', () => {
 
 // ── PASSKEY / FACE ID ──
 
+let _appUnlocked = false;
+let _lastHidden = 0;
+
 function supportsPasskey() {
   return !!(window.PublicKeyCredential && navigator.credentials);
 }
+
+function hasPasskeyRegistered() {
+  return supportsPasskey() && !!localStorage.getItem('klarzeit_passkey_id');
+}
+
+function showLockScreen() {
+  const el = document.getElementById('lockScreen');
+  if (el) el.classList.add('visible');
+}
+
+function hideLockScreen() {
+  const el = document.getElementById('lockScreen');
+  if (el) el.classList.remove('visible');
+  _appUnlocked = true;
+}
+
+async function verifyBiometric() {
+  const credIdB64 = localStorage.getItem('klarzeit_passkey_id');
+  if (!credIdB64) return false;
+  try {
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+    const credId = Uint8Array.from(atob(credIdB64), c => c.charCodeAt(0));
+    await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        allowCredentials: [{ id: credId, type: 'public-key', transports: ['internal'] }],
+        userVerification: 'required',
+        timeout: 60000,
+      },
+    });
+    return true;
+  } catch (e) {
+    console.log('Biometric verification cancelled:', e.message);
+    return false;
+  }
+}
+
+// Called on app start: if user has session + passkey → lock until Face ID
+export async function checkBiometricLock() {
+  if (!hasPasskeyRegistered()) { _appUnlocked = true; return; }
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { _appUnlocked = true; return; }
+  // Show lock screen and auto-trigger Face ID
+  showLockScreen();
+  const ok = await verifyBiometric();
+  if (ok) {
+    hideLockScreen();
+  }
+  // If cancelled, lock screen stays visible with manual "Entsperren" button
+}
+
+// Manual unlock button
+export async function unlockApp() {
+  const ok = await verifyBiometric();
+  if (ok) {
+    hideLockScreen();
+  } else {
+    showToast('Entsperren fehlgeschlagen.', 'error');
+  }
+}
+
+// Visibility change: re-lock when app comes back from background
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    _lastHidden = Date.now();
+  }
+  if (document.visibilityState === 'visible') {
+    // Only lock if was hidden for at least 3 seconds (avoid brief tab switches)
+    const elapsed = Date.now() - _lastHidden;
+    if (elapsed < 3000) return;
+    if (!state.currentUser) return;
+    if (!hasPasskeyRegistered()) return;
+    _appUnlocked = false;
+    showLockScreen();
+    verifyBiometric().then(ok => {
+      if (ok) hideLockScreen();
+    });
+  }
+});
 
 export async function offerPasskeySetup() {
   if (!supportsPasskey()) return;
