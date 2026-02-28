@@ -114,7 +114,7 @@ export function initAuthUI() {
   if (rememberWrap) {
     rememberWrap.style.display = authMode === 'login' ? 'flex' : 'none';
     const saved = localStorage.getItem('klarzeit_remember');
-    if (saved !== null) document.getElementById('rememberMe').checked = saved !== '0';
+    document.getElementById('rememberMe').checked = saved === '1';
   }
   if (passkeyBtn && supportsPasskey() && localStorage.getItem('klarzeit_passkey_id')) {
     passkeyBtn.style.display = authMode === 'login' ? 'flex' : 'none';
