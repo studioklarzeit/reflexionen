@@ -2029,7 +2029,7 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
 /* Weiter-Button (erscheint nach Ladung) */
 .loading-done-btn {
   position: absolute;
-  top: 28px; left: 50%; transform: translateX(-50%);
+  top: 9px; left: 50%; transform: translateX(-50%);
   display: inline-flex; align-items: center; gap: 10px;
   background: none; border: 1px solid #D5CEC7;
   border-radius: 32px; padding: 13px 32px;
@@ -2054,7 +2054,7 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
 /* Mute-Button */
 .impulse-splash-mute {
   position: absolute;
-  top: 80px; left: 50%; transform: translateX(-50%);
+  top: 61px; left: 50%; transform: translateX(-50%);
   background: none; border: none; cursor: pointer;
   white-space: nowrap;
   font-family: 'PT Serif', Georgia, serif;
