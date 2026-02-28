@@ -77,21 +77,46 @@ body.dark .toast.error { background: #5a2820; }
 html { scroll-behavior: smooth; }
 body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: var(--body-line-height); min-height: 100vh; transition: background 0.3s, color 0.3s; }
 
-header { padding: 28px 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-light); background: var(--card); position: sticky; top: 0; z-index: 100; transition: background 0.3s; }
-.logo { font-family: var(--font-heading); font-size: var(--font-size-h4); color: var(--text); cursor: pointer; letter-spacing: -0.02em; }
-.logo .logo-sub { font-weight: 300; opacity: 0.5; font-size: 0.85em; }
-.header-left { display: flex; flex-direction: column; cursor: pointer; min-width: 0; }
-.header-greeting { font-family: var(--font-heading); font-size: var(--font-size-h4); color: var(--text); letter-spacing: -0.02em; line-height: 1.2; }
-.header-subtitle { font-family: var(--font-body); font-size: 12px; font-style: italic; color: var(--text-light); line-height: 1.3; display: none; }
-.header-nav { display: flex; align-items: center; gap: 32px; }
-.header-nav-link { font-size: 15px; color: var(--text); cursor: pointer; border: none; background: none; font-family: var(--font-heading); font-weight: 400; font-style: normal; transition: color 0.2s; padding: 0; }
-.header-nav-link:hover { color: var(--text-muted); }
-.header-icon-btn { display: flex; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; color: var(--text-muted); transition: color 0.2s; padding: 4px; border-radius: 6px; }
-.header-icon-btn:hover { color: var(--text); }
+/* ═══ APP HEADER (Desktop Top-Nav) ═══ */
+#mainHeader {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--card);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+#mainHeader.scrolled { border-bottom-color: var(--border-light); }
+.header-inner {
+  max-width: 1200px; margin: 0 auto;
+  padding: 28px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.header-logo {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-h4);
+  font-weight: 600; color: var(--text);
+  cursor: pointer; text-decoration: none;
+  letter-spacing: -0.02em;
+}
+.header-links {
+  display: flex; gap: 32px; align-items: center;
+}
+.header-link {
+  font-family: var(--font-heading);
+  font-size: 0.95rem; color: var(--text-muted);
+  text-decoration: none; cursor: pointer;
+  transition: color 0.2s; border: none; background: none; padding: 0;
+}
+.header-link:hover, .header-link.active { color: var(--text); }
+@media (max-width: 768px) {
+  #mainHeader { display: none !important; }
+}
+@media (min-width: 769px) {
+  .tab-bar { display: none !important; }
+}
+
+/* Legacy helpers kept for admin badge in bottom sheet */
 .admin-badge { font-size: 10px; background: var(--accent-dark); color: var(--card); padding: 3px 8px; border-radius: 3px; letter-spacing: 0.5px; text-transform: uppercase; font-family: var(--font-body); }
 .user-email-display { font-size: 12px; font-style: var(--font-style-p3); color: var(--font-color-p3); }
-.dark-toggle { background: none; border: 1px solid var(--border-light); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: var(--text-muted); }
-.dark-toggle:hover { border-color: var(--text-muted); color: var(--text); }
 
 .container { max-width: 900px; margin: 0 auto; padding: 48px 40px 100px; }
 .container:has(.image-grid) { max-width: 1100px; }
@@ -703,8 +728,6 @@ body.dark .auth-overlay { background: linear-gradient(160deg, rgba(0,0,0,0.3) 0%
 .image-card:nth-child(6) { animation-delay: 300ms; }
 
 @media (max-width: 700px) {
-  header { padding: 14px 16px; flex-wrap: wrap; gap: 8px; }
-  .header-nav { gap: 10px; }
   .container { padding: 24px 20px 100px; }
   /* Hide page title on mobile (greeting is in header) */
   #viewCourses .page-title-section,
@@ -789,10 +812,6 @@ body.dark .bottom-sheet { box-shadow: 0 -4px 40px rgba(0,0,0,0.4); }
 .bottom-sheet-divider { height: 1px; background: var(--border-light); margin: 6px 16px; }
 .bottom-sheet-footer { padding: 12px 20px 16px; display: flex; align-items: center; justify-content: space-between; }
 .bottom-sheet-email { font-size: 12px; font-style: var(--font-style-p3); color: var(--font-color-p3); }
-
-@media (max-width: 700px) {
-  #mainHeader { display: none !important; }
-}
 
 /* ── ONBOARDING ── */
 .onboarding-container { max-width: 640px; margin: 0 auto; padding: 20px 0; }

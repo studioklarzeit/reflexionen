@@ -66,24 +66,24 @@ export function esc(s) {
 export function showSaving() {
   const e = document.getElementById('saveStatus');
   const t = document.getElementById('saveStatusText');
-  e.className = 'save-status visible saving';
-  t.textContent = 'Speichert …';
+  if (e) e.className = 'save-status visible saving';
+  if (t) t.textContent = 'Speichert …';
 }
 
 export function showSaved() {
   const e = document.getElementById('saveStatus');
   const t = document.getElementById('saveStatusText');
-  e.className = 'save-status visible';
-  t.textContent = 'Gespeichert';
+  if (e) e.className = 'save-status visible';
+  if (t) t.textContent = 'Gespeichert';
   clearTimeout(window._sh);
-  window._sh = setTimeout(() => { e.classList.remove('visible'); }, 2500);
+  window._sh = setTimeout(() => { if (e) e.classList.remove('visible'); }, 2500);
 }
 
 export function showSaveErr() {
   const e = document.getElementById('saveStatus');
   const t = document.getElementById('saveStatusText');
-  e.className = 'save-status visible error';
-  t.textContent = 'Fehler';
+  if (e) e.className = 'save-status visible error';
+  if (t) t.textContent = 'Fehler';
   clearTimeout(window._sh);
-  window._sh = setTimeout(() => { e.className = 'save-status'; }, 5000);
+  window._sh = setTimeout(() => { if (e) e.className = 'save-status'; }, 5000);
 }

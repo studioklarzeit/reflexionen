@@ -470,36 +470,25 @@ export async function handleLogout() {
 export async function setupHeader() {
   if (!state.currentUser) return;
   document.getElementById('userEmailDisplay').textContent = state.currentUser.email;
-  document.getElementById('adminBadge').style.display = state.isAdmin ? 'inline' : 'none';
+
+  // Desktop top-nav: Admin + Pro links
+  const headerAdmin = document.getElementById('headerAdminLink');
+  if (headerAdmin) headerAdmin.style.display = state.isAdmin ? '' : 'none';
+
+  // Mobile bottom-sheet: Email, Admin badge, Admin link
   document.getElementById('mobileEmailDisplay').textContent = state.currentUser.email;
   document.getElementById('mobileAdminBadge').style.display = state.isAdmin ? 'inline' : 'none';
   document.getElementById('mobileAdminLink').style.display = state.isAdmin ? 'flex' : 'none';
-  // Pro link visibility
+
+  // Pro link visibility (desktop + mobile)
   import('./pro.js').then(({ isProMember }) => {
     const show = isProMember();
     const proMobile = document.getElementById('mobileProLink');
+    const proDesktop = document.getElementById('headerProLink');
     if (proMobile) proMobile.style.display = show ? 'flex' : 'none';
+    if (proDesktop) proDesktop.style.display = show ? '' : 'none';
   });
   updateMobileDarkLabel();
-
-  // Greeting: Vorname laden
-  try {
-    const { data: profile } = await sb.from('profiles')
-      .select('first_name')
-      .eq('id', state.currentUser.id)
-      .single();
-    const name = profile?.first_name?.trim();
-    const greetingEl = document.getElementById('headerGreeting');
-    const subtitleEl = document.getElementById('headerSubtitle');
-    if (greetingEl) {
-      greetingEl.textContent = name ? `Hallo, ${name}` : 'Studio Klarzeit';
-    }
-    if (subtitleEl) {
-      subtitleEl.textContent = name ? 'Schön, dass du da bist.' : '';
-    }
-  } catch (e) {
-    // Fallback: Logo-Text bleibt
-  }
 }
 
 export function togglePasswordVisibility(inputId, btn) {

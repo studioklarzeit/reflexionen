@@ -5,14 +5,17 @@ import { renderExercisesList, renderQuestionsView } from './exercises.js';
 import { switchAdminTab } from './admin.js';
 import { renderOnboarding } from './onboarding.js';
 
-// ── Public header scroll listener ──
+// ── Header scroll listener (shared for public + app header) ──
 let _scrollListenerAttached = false;
 function ensureScrollListener() {
   if (_scrollListenerAttached) return;
   _scrollListenerAttached = true;
   window.addEventListener('scroll', () => {
-    const hdr = document.getElementById('publicHeader');
-    if (hdr) hdr.classList.toggle('scrolled', window.scrollY > 10);
+    const scrolled = window.scrollY > 10;
+    const pub = document.getElementById('publicHeader');
+    const main = document.getElementById('mainHeader');
+    if (pub) pub.classList.toggle('scrolled', scrolled);
+    if (main) main.classList.toggle('scrolled', scrolled);
   }, { passive: true });
 }
 
@@ -34,33 +37,44 @@ export function navigateTo(view, params) {
   state.currentView = view;
   const isPublic = view.startsWith('public');
   const hide = (view === 'auth' || view === 'loading' || view === 'resetPassword' || view === 'onboarding' || view === 'salesOverview' || view === 'salesDetail' || isPublic);
-  document.getElementById('mainHeader').style.display = hide ? 'none' : 'flex';
+  document.getElementById('mainHeader').style.display = hide ? 'none' : '';
 
   // Public header/footer visibility + scroll listener
   const pubHeader = document.getElementById('publicHeader');
   const pubFooter = document.getElementById('publicFooter');
   if (pubHeader) pubHeader.style.display = isPublic ? 'block' : 'none';
   if (pubFooter) pubFooter.style.display = isPublic ? 'block' : 'none';
-  if (isPublic) ensureScrollListener();
+  if (!hide || isPublic) ensureScrollListener();
 
-  // Tab bar visibility & active state
+  // View → route mapping (shared for tab bar + header links)
+  const routeMap = {
+    courses: 'courses', coursePlayer: 'courses', chapterPlayer: 'courses', chapters: 'courses',
+    exercises: 'courses', questions: 'courses',
+    tools: 'tools', journal: 'tools', friendView: 'tools', checkin: 'tools',
+    bodycheck: 'tools', energy: 'tools', impulse: 'tools',
+    meditation: 'meditation',
+    profile: 'profile',
+    contact: 'contact',
+    pro: 'pro',
+    admin: 'admin',
+  };
+  const activeRoute = routeMap[view] || 'courses';
+
+  // Tab bar visibility & active state (mobile only, CSS hides on desktop)
   const tabBar = document.getElementById('tabBar');
   if (tabBar) {
     tabBar.style.display = hide ? 'none' : '';
     document.body.classList.toggle('has-dock', !hide);
-    // Map views to their parent tab
-    const tabMap = {
-      courses: 'courses', coursePlayer: 'courses', chapterPlayer: 'courses', chapters: 'courses',
-      exercises: 'courses', questions: 'courses',
-      tools: 'tools', journal: 'tools', friendView: 'tools', checkin: 'tools',
-      bodycheck: 'tools', energy: 'tools', impulse: 'tools',
-      meditation: 'meditation',
-    };
-    const activeTab = tabMap[view] || 'courses';
     tabBar.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.tab === activeTab);
+      btn.classList.toggle('active', btn.dataset.tab === activeRoute);
     });
   }
+
+  // Header links active state (desktop top-nav)
+  document.querySelectorAll('#mainHeader .header-link').forEach(link => {
+    const args = JSON.parse(link.dataset.args || '[]');
+    link.classList.toggle('active', args[0] === activeRoute);
+  });
 
   const delay = oldView && !hide ? 150 : 0;
 
