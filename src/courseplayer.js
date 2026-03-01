@@ -264,9 +264,19 @@ export async function renderChapterPlayer() {
       ${chapter.audio_url ? `
         <div class="chapter-audio-section">
           <div class="chapter-audio-player">
-            <button class="chapter-audio-play" id="chapterPlayBtn" data-action="toggleChapterAudio">
-              <svg id="chapterPlayIcon" viewBox="0 0 24 24" fill="currentColor" stroke="none" width="28" height="28"><polygon points="5,3 19,12 5,21"/></svg>
-            </button>
+            <div class="chapter-audio-controls">
+              <button class="chapter-audio-skip" data-action="skipChapterBack" aria-label="30 Sekunden zurück">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                <span class="skip-label">30</span>
+              </button>
+              <button class="chapter-audio-play" id="chapterPlayBtn" data-action="toggleChapterAudio">
+                <svg id="chapterPlayIcon" viewBox="0 0 24 24" fill="currentColor" stroke="none" width="28" height="28"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="chapter-audio-skip" data-action="skipChapterForward" aria-label="30 Sekunden vor">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                <span class="skip-label">30</span>
+              </button>
+            </div>
             <div class="chapter-audio-info">
               <div class="chapter-audio-time">
                 <span id="chapterCurrentTime">${resumeTime}</span> / <span id="chapterTotalTime">${dur || '--:--'}</span>
@@ -348,8 +358,8 @@ export async function renderChapterPlayer() {
       });
       navigator.mediaSession.setActionHandler('play', () => toggleChapterAudio());
       navigator.mediaSession.setActionHandler('pause', () => toggleChapterAudio());
-      navigator.mediaSession.setActionHandler('seekbackward', () => { currentAudio.currentTime = Math.max(0, currentAudio.currentTime - 15); updateAudioProgress(); });
-      navigator.mediaSession.setActionHandler('seekforward', () => { currentAudio.currentTime = Math.min(currentAudio.duration || 0, currentAudio.currentTime + 15); updateAudioProgress(); });
+      navigator.mediaSession.setActionHandler('seekbackward', () => { currentAudio.currentTime = Math.max(0, currentAudio.currentTime - 30); updateAudioProgress(); });
+      navigator.mediaSession.setActionHandler('seekforward', () => { currentAudio.currentTime = Math.min(currentAudio.duration || 0, currentAudio.currentTime + 30); updateAudioProgress(); });
     }
   }
 
@@ -505,6 +515,18 @@ function initSeekListeners() {
   if (!wrap) return;
   wrap.addEventListener('mousedown', _onSeekStart);
   wrap.addEventListener('touchstart', _onSeekStart, { passive: false });
+}
+
+export function skipChapterBack() {
+  if (!currentAudio) return;
+  currentAudio.currentTime = Math.max(0, currentAudio.currentTime - 30);
+  updateAudioProgress();
+}
+
+export function skipChapterForward() {
+  if (!currentAudio || !isFinite(currentAudio.duration)) return;
+  currentAudio.currentTime = Math.min(currentAudio.duration, currentAudio.currentTime + 30);
+  updateAudioProgress();
 }
 
 export function seekChapterAudio(event) {

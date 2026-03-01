@@ -168,9 +168,19 @@ export async function openMeditationDetail(id) {
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <div class="med-fullscreen-center">
-        <button class="med-fullscreen-play" id="meditationPlayBtn" data-action="togglePlayPause">
-          <svg id="meditationPlayIcon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21"/></svg>
-        </button>
+        <div class="med-fullscreen-controls">
+          <button class="med-skip-btn" data-action="skipMeditationBack" aria-label="30 Sekunden zurück">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            <span class="skip-label">30</span>
+          </button>
+          <button class="med-fullscreen-play" id="meditationPlayBtn" data-action="togglePlayPause">
+            <svg id="meditationPlayIcon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+          <button class="med-skip-btn" data-action="skipMeditationForward" aria-label="30 Sekunden vor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            <span class="skip-label">30</span>
+          </button>
+        </div>
         <h2 class="med-fullscreen-title">${esc(m.title)}</h2>
         ${m.description ? `<p class="med-fullscreen-desc">${esc(m.description)}</p>` : ''}
         ${dur ? `<div class="med-fullscreen-duration">${dur}</div>` : ''}
@@ -255,8 +265,8 @@ export async function openMeditationDetail(id) {
       });
       navigator.mediaSession.setActionHandler('play', () => { currentAudio.play(); isPlaying = true; updatePlayIcon(); });
       navigator.mediaSession.setActionHandler('pause', () => { currentAudio.pause(); isPlaying = false; updatePlayIcon(); });
-      navigator.mediaSession.setActionHandler('seekbackward', () => { currentAudio.currentTime = Math.max(0, currentAudio.currentTime - 15); });
-      navigator.mediaSession.setActionHandler('seekforward', () => { currentAudio.currentTime = Math.min(currentAudio.duration, currentAudio.currentTime + 15); });
+      navigator.mediaSession.setActionHandler('seekbackward', () => { currentAudio.currentTime = Math.max(0, currentAudio.currentTime - 30); updateMedProgress(); });
+      navigator.mediaSession.setActionHandler('seekforward', () => { currentAudio.currentTime = Math.min(currentAudio.duration, currentAudio.currentTime + 30); updateMedProgress(); });
     }
   } catch (e) {
     console.error('Meditation audio error:', e, 'URL:', m.audio_url);
@@ -372,6 +382,18 @@ function initMedSeekListeners() {
   if (!wrap) return;
   wrap.addEventListener('mousedown', _medSeekStart);
   wrap.addEventListener('touchstart', _medSeekStart, { passive: false });
+}
+
+export function skipMeditationBack() {
+  if (!currentAudio) return;
+  currentAudio.currentTime = Math.max(0, currentAudio.currentTime - 30);
+  updateMedProgress();
+}
+
+export function skipMeditationForward() {
+  if (!currentAudio || !isFinite(currentAudio.duration)) return;
+  currentAudio.currentTime = Math.min(currentAudio.duration, currentAudio.currentTime + 30);
+  updateMedProgress();
 }
 
 export function seekMeditation(event) {

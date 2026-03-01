@@ -1893,8 +1893,39 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
   color: rgba(255,255,255,0.6);
   letter-spacing: 0.05em;
 }
-.med-fullscreen-play {
+.med-fullscreen-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
   margin-bottom: 28px;
+}
+.med-skip-btn {
+  position: relative;
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.med-skip-btn:hover { background: rgba(255,255,255,0.2); color: #fff; border-color: rgba(255,255,255,0.4); }
+.med-skip-btn:active { transform: scale(0.92); }
+.med-skip-btn svg { width: 22px; height: 22px; }
+.med-skip-btn .skip-label {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 9px;
+  font-weight: 700;
+  color: inherit;
+  pointer-events: none;
+  margin-top: 1px;
+}
+.med-fullscreen-play {
   width: 88px; height: 88px;
   border-radius: 50%;
   border: 2px solid rgba(255,255,255,0.6);
@@ -1965,6 +1996,9 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
 
 @media (max-width: 600px) {
   .med-fullscreen-back { top: 14px; left: 14px; width: 40px; height: 40px; }
+  .med-fullscreen-controls { gap: 16px; }
+  .med-skip-btn { width: 42px; height: 42px; }
+  .med-skip-btn svg { width: 20px; height: 20px; }
   .med-fullscreen-play { width: 74px; height: 74px; }
   .med-fullscreen-play svg { width: 32px; height: 32px; }
   .med-fullscreen-bottom { padding: 0 20px 24px; }
@@ -3234,6 +3268,12 @@ body.dark .resume-bar {
   border-radius: 10px;
   flex-wrap: wrap;
 }
+.chapter-audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
 .chapter-audio-play {
   flex-shrink: 0;
   width: 48px; height: 48px;
@@ -3246,6 +3286,32 @@ body.dark .resume-bar {
   transition: all 0.2s;
 }
 .chapter-audio-play:hover { transform: scale(1.06); opacity: 0.9; }
+.chapter-audio-skip {
+  position: relative;
+  flex-shrink: 0;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.chapter-audio-skip:hover { color: var(--text); background: var(--bg); }
+.chapter-audio-skip:active { transform: scale(0.92); }
+.chapter-audio-skip svg { width: 22px; height: 22px; }
+.chapter-audio-skip .skip-label {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 8px;
+  font-weight: 700;
+  color: inherit;
+  pointer-events: none;
+  margin-top: 1px;
+}
 .chapter-audio-info { flex: 1; min-width: 80px; }
 .chapter-audio-time { font-size: 13px; color: var(--text-muted); }
 .chapter-audio-progress-wrap {

@@ -49,6 +49,7 @@ import {
 import {
   renderMeditation, openMeditationDetail, closeMeditationDetail,
   togglePlayPause, seekMeditation, stopMeditation, clearMeditationCache,
+  skipMeditationBack, skipMeditationForward,
 } from './meditation.js';
 import {
   renderWeeklyImpulse, renderImpulseView, clearWeeklyImpulseCache,
@@ -217,6 +218,7 @@ const _appActions = {
   // Meditation
   renderMeditation, openMeditationDetail, closeMeditationDetail,
   togglePlayPause, seekMeditation, stopMeditation,
+  skipMeditationBack, skipMeditationForward,
   // Contact
   renderContact, submitContactForm, updateContactCounter,
   // Pro
@@ -251,6 +253,8 @@ const _appActions = {
   openChapterPlayer: (...a) => import('./courseplayer.js').then(m => m.openChapterPlayer(...a)),
   toggleChapterAudio: (...a) => import('./courseplayer.js').then(m => m.toggleChapterAudio(...a)),
   seekChapterAudio: (...a) => import('./courseplayer.js').then(m => m.seekChapterAudio(...a)),
+  skipChapterBack: (...a) => import('./courseplayer.js').then(m => m.skipChapterBack(...a)),
+  skipChapterForward: (...a) => import('./courseplayer.js').then(m => m.skipChapterForward(...a)),
   markChapterCompleteAndNext: (...a) => import('./courseplayer.js').then(m => m.markChapterCompleteAndNext(...a)),
   // Sales (lazy loaded)
   handlePurchase: (...a) => import('./sales.js').then(m => m.handlePurchase(...a)),
