@@ -385,11 +385,11 @@ export function renderPrivacyPolicy() {
 
     <h2>1. Verantwortliche Stelle</h2>
     <p>
-      [Name / Firma]<br>
-      [Strasse, Hausnummer]<br>
-      [PLZ Ort]<br>
+      Studio Klarzeit / Praxis f\u00fcr Psychotherapie Graf GmbH<br>
+      Sternenriedplatz 2<br>
+      CH-6048 Horw, LU<br>
       Schweiz<br><br>
-      E-Mail: <a href="mailto:[datenschutz@example.com]">[datenschutz@example.com]</a>
+      E-Mail: <a href="mailto:info@studioklarzeit.ch">info@studioklarzeit.ch</a>
     </p>
 
     <h2>2. Welche Daten wir erheben</h2>
@@ -449,7 +449,7 @@ export function renderPrivacyPolicy() {
       <li><strong>Recht auf Datenherausgabe</strong> (Art. 28 nDSG) — Du kannst deine Daten in einem gaengigen elektronischen Format exportieren. Nutze dazu die Export-Funktion in deinem Profil.</li>
       <li><strong>Recht auf Widerruf der Einwilligung</strong> — Du kannst deine Einwilligung jederzeit in den Einstellungen widerrufen.</li>
     </ul>
-    <p>Fuer Anfragen wende dich an: <a href="mailto:[datenschutz@example.com]">[datenschutz@example.com]</a></p>
+    <p>Fuer Anfragen wende dich an: <a href="mailto:info@studioklarzeit.ch">info@studioklarzeit.ch</a></p>
 
     <h2>7. Cookies und Tracking</h2>
     <p>Studio Klarzeit verwendet folgende Cookies:</p>
@@ -472,7 +472,7 @@ export function renderPrivacyPolicy() {
 
     <h2>9. Kontakt</h2>
     <p>Bei Fragen zum Datenschutz erreichst du uns unter:<br>
-    <a href="mailto:[datenschutz@example.com]">[datenschutz@example.com]</a></p>
+    <a href="mailto:info@studioklarzeit.ch">info@studioklarzeit.ch</a></p>
 
     <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border-light);">
       <button class="btn btn-ghost btn-sm" data-action="navigateTo" data-args='["profile"]'>Zurueck zum Profil</button>
