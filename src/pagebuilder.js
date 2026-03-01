@@ -152,6 +152,13 @@ export async function editPage(id) {
   document.getElementById('pageMetaDescInput').value = page.meta_description || '';
   document.getElementById('pagePublishedInput').checked = !!page.is_published;
 
+  // Scroll to form and highlight
+  const formTitle = document.getElementById('pageFormTitle');
+  if (formTitle) {
+    formTitle.textContent = `Seite bearbeiten: ${page.title}`;
+    formTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   currentPageId = page.id;
   loadPageSections(page.id);
 }
@@ -186,6 +193,8 @@ export function resetPageForm() {
   if (m) m.value = '';
   const p = document.getElementById('pagePublishedInput');
   if (p) p.checked = false;
+  const t = document.getElementById('pageFormTitle');
+  if (t) t.textContent = 'Neue Seite erstellen';
   currentPageId = null;
 }
 
