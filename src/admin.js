@@ -1803,12 +1803,12 @@ export function loadPaletteList() {
 
 export function openPaletteImportModal() {
   const m = document.getElementById('paletteImportModal');
-  if (m) m.style.display = 'flex';
+  if (m) { m.style.display = ''; m.classList.add('active'); }
 }
 
 export function closePaletteImportModal() {
   const m = document.getElementById('paletteImportModal');
-  if (m) m.style.display = 'none';
+  if (m) { m.classList.remove('active'); }
 }
 
 export async function importPalette() {
