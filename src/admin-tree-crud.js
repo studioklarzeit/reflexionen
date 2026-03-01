@@ -133,6 +133,13 @@ function renderCourseEditForm(container, courseId) {
         <option value="both"${c.course_type === 'both' ? ' selected' : ''}>Beides</option>
       </select>
     </div>
+    <div class="form-group">
+      <label class="form-label">Farbpalette</label>
+      <select class="form-select" id="treeCoursePaletteSelect">
+        <option value="">— Globale Farben —</option>
+        ${(state.cacheData.palettes || []).map(p => `<option value="${p.id}"${p.id === c.color_palette_id ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}
+      </select>
+    </div>
     <div id="treeCourseSalesFields" style="display:${showSales ? '' : 'none'};">
       <h4 style="margin:20px 0 12px;font-family:var(--font-heading);font-size:var(--font-size-h5);">Verkaufsseite</h4>
       <div class="form-group"><label class="form-check"><input type="checkbox" id="treeCourseSalesPublished"${c.sales_published ? ' checked' : ''}><span>Veröffentlicht</span></label></div>
@@ -196,6 +203,7 @@ export async function treeSaveCourse() {
       price_subscription_amount: Math.round(parseFloat(document.getElementById('treeCoursePriceSubscription')?.value) * 100) || null,
       stripe_price_id_subscription: document.getElementById('treeCourseStripePriceSubscription')?.value.trim() || null,
       price_currency: 'chf',
+      color_palette_id: document.getElementById('treeCoursePaletteSelect')?.value || null,
     };
 
     if (editId) {
@@ -251,6 +259,13 @@ export function openNewCoursePanel() {
         <option value="exercise">Übungskurs</option>
         <option value="online">Online-Kurs</option>
         <option value="both">Beides</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Farbpalette</label>
+      <select class="form-select" id="treeCoursePaletteSelect">
+        <option value="">— Globale Farben —</option>
+        ${(state.cacheData.palettes || []).map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}
       </select>
     </div>
     <div id="treeCourseSalesFields" style="display:none;">

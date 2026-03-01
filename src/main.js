@@ -185,6 +185,8 @@ const _appActions = {
   addJournalImpulseRow: _la('addJournalImpulseRow'), removeJournalImpulseRow: _la('removeJournalImpulseRow'),
   updateJournalImpulse: _la('updateJournalImpulse'), saveJournalImpulses: _la('saveJournalImpulses'),
   saveColors: _la('saveColors'), previewColors: _la('previewColors'),
+  openPaletteImportModal: _la('openPaletteImportModal'), closePaletteImportModal: _la('closePaletteImportModal'),
+  importPalette: _la('importPalette'), deletePalette: _la('deletePalette'), applyPaletteToGlobal: _la('applyPaletteToGlobal'),
   addCheckinQuestion: _la('addCheckinQuestion'), removeCheckinQ: _la('removeCheckinQ'), updateCheckinQ: _la('updateCheckinQ'),
   addCheckinOption: _la('addCheckinOption'), removeCheckinOption: _la('removeCheckinOption'),
   updateCheckinOption: _la('updateCheckinOption'), saveCheckinQuestions: _la('saveCheckinQuestions'),

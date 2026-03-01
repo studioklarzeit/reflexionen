@@ -76,7 +76,8 @@ const COLOR_VAR_MAP = {
   bg: '--bg', beige: '--beige', card: '--card',
   border: '--border', borderLight: '--border-light',
   text: '--text', textMuted: '--text-muted', textLight: '--text-light',
-  accentWarm: '--accent-warm', accentCool: '--accent-cool',
+  line: '--line', accentDark: '--accent-dark',
+  accentWarm: '--accent-warm',
   accentOlive: '--accent-olive', accentRose: '--accent-rose',
   navBg: '--nav-bg', navText: '--nav-text', navActive: '--nav-active',
 };
@@ -141,6 +142,45 @@ export async function loadAndApplyColors() {
       injectDarkColorOverrides(colors);
     }
   } catch (e) { /* defaults */ }
+}
+
+// ── Course Palette Override ──
+
+export function applyCoursePalette(paletteColors) {
+  if (!paletteColors) return;
+  const id = 'klarzeit-course-palette';
+  let style = document.getElementById(id);
+  if (!style) {
+    style = document.createElement('style');
+    style.id = id;
+    document.head.appendChild(style);
+  }
+
+  const lines = [];
+  const l = paletteColors.light;
+  if (l) {
+    lines.push(':root {');
+    for (const [key, cssVar] of Object.entries(COLOR_VAR_MAP)) {
+      if (l[key]) lines.push(`  ${cssVar}: ${l[key]};`);
+    }
+    if (l.text) { const rgb = hexToRgb(l.text); lines.push(`  --shadow: rgba(${rgb},0.06);`, `  --shadow-lg: rgba(${rgb},0.12);`); }
+    lines.push('}');
+  }
+  const d = paletteColors.dark;
+  if (d) {
+    lines.push('body.dark {');
+    for (const [key, cssVar] of Object.entries(COLOR_VAR_MAP)) {
+      if (d[key]) lines.push(`  ${cssVar}: ${d[key]};`);
+    }
+    if (d.text) { const rgb = hexToRgb(d.text); lines.push(`  --shadow: rgba(${rgb},0.2);`, `  --shadow-lg: rgba(${rgb},0.3);`); }
+    lines.push('}');
+  }
+  style.textContent = lines.join('\n');
+}
+
+export function restoreGlobalColors() {
+  const el = document.getElementById('klarzeit-course-palette');
+  if (el) el.remove();
 }
 
 // Re-export TYPO_LEVELS for admin editor

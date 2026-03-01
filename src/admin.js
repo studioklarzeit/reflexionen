@@ -1752,6 +1752,7 @@ export async function loadColorEditor() {
       }
     }
   } catch (e) { /* defaults used */ }
+  loadPaletteList();
 }
 
 export async function saveColors() {
@@ -1771,6 +1772,108 @@ export async function saveColors() {
 }
 
 // hexToRgb, COLOR_VAR_MAP, applyColors, loadAndApplyColors, injectDarkColorOverrides → imported from theme.js
+
+// ── Palettes ──
+
+const PALETTE_KEYS = Object.keys(COLOR_VAR_MAP); // 16 keys
+
+export function loadPaletteList() {
+  const list = document.getElementById('paletteList');
+  if (!list) return;
+  const palettes = state.cacheData.palettes || [];
+  if (!palettes.length) {
+    list.innerHTML = '<p style="color:var(--text-muted);font-size:var(--font-size-p3);">Noch keine Paletten gespeichert.</p>';
+    return;
+  }
+  list.innerHTML = palettes.map(p => {
+    const lightColors = p.colors?.light || {};
+    const circles = ['bg','card','accentDark','accentWarm','accentOlive','accentRose','text','navBg']
+      .map(k => lightColors[k] ? `<span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:${esc(lightColors[k])};border:1px solid var(--border);"></span>` : '')
+      .join('');
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:10px;border:1px solid var(--border-light);margin-bottom:8px;">
+      <div style="flex:1;">
+        <div style="font-weight:600;margin-bottom:4px;">${esc(p.name)}</div>
+        <div style="display:flex;gap:4px;">${circles}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" data-action="applyPaletteToGlobal" data-args='["${p.id}"]' title="Als globale Farben übernehmen">Übernehmen</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--accent-rose);" data-action="deletePalette" data-args='["${p.id}"]' title="Löschen">✕</button>
+    </div>`;
+  }).join('');
+}
+
+export function openPaletteImportModal() {
+  const m = document.getElementById('paletteImportModal');
+  if (m) m.style.display = 'flex';
+}
+
+export function closePaletteImportModal() {
+  const m = document.getElementById('paletteImportModal');
+  if (m) m.style.display = 'none';
+}
+
+export async function importPalette() {
+  const nameEl = document.getElementById('paletteImportName');
+  const jsonEl = document.getElementById('paletteImportJson');
+  const name = nameEl?.value.trim();
+  const raw = jsonEl?.value.trim();
+
+  if (!name) { showToast('Bitte Name eingeben.', 'error'); return; }
+  if (!raw) { showToast('Bitte JSON einfügen.', 'error'); return; }
+
+  let colors;
+  try { colors = JSON.parse(raw); } catch { showToast('Ungültiges JSON.', 'error'); return; }
+
+  // Validate structure: must have light & dark with expected keys
+  for (const mode of ['light', 'dark']) {
+    if (!colors[mode] || typeof colors[mode] !== 'object') {
+      showToast(`JSON muss "${mode}" Objekt enthalten.`, 'error');
+      return;
+    }
+  }
+
+  btnLoading('paletteImportBtn', true);
+  try {
+    const { data, error } = await sb.from('color_palettes').insert({ name, colors }).select().single();
+    if (error) throw error;
+    state.cacheData.palettes.push(data);
+    state.cacheData.palettes.sort((a, b) => a.name.localeCompare(b.name));
+    loadPaletteList();
+    closePaletteImportModal();
+    nameEl.value = '';
+    jsonEl.value = '';
+    showToast('Palette importiert.');
+  } catch (e) { showToast(trDataErr(e, 'import'), 'error'); }
+  finally { btnLoading('paletteImportBtn', false); }
+}
+
+export async function deletePalette(id) {
+  if (!confirm('Palette wirklich löschen?')) return;
+  try {
+    const { error } = await sb.from('color_palettes').delete().eq('id', id);
+    if (error) throw error;
+    state.cacheData.palettes = state.cacheData.palettes.filter(p => p.id !== id);
+    loadPaletteList();
+    showToast('Palette gelöscht.');
+  } catch (e) { showToast(trDataErr(e, 'delete'), 'error'); }
+}
+
+export function applyPaletteToGlobal(id) {
+  const palette = state.cacheData.palettes.find(p => p.id === id);
+  if (!palette?.colors) return;
+  // Fill global color form fields with palette values
+  for (const mode of ['light', 'dark']) {
+    if (!palette.colors[mode]) continue;
+    for (const [key, inputId] of Object.entries(COLOR_FIELDS[mode])) {
+      const el = document.getElementById(inputId);
+      if (el && palette.colors[mode][key]) el.value = palette.colors[mode][key];
+    }
+  }
+  // Apply preview
+  const colors = readColorForm();
+  applyColors(colors);
+  injectDarkColorOverrides(colors);
+  showToast('Palette übernommen — bitte noch speichern.');
+}
 
 export function previewColors() {
   const colors = readColorForm();

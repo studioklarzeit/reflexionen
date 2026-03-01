@@ -8,7 +8,7 @@ export const state = {
   currentExerciseId: null,
   saveTimeout: null,
   isAdmin: false,
-  cacheData: { courses: [], chapters: [], exercises: [], questions: [] },
+  cacheData: { courses: [], chapters: [], exercises: [], questions: [], palettes: [] },
   cacheAnswers: {},   // keyed by question_id
   cacheAnswerDates: {}, // keyed by question_id → updated_at ISO string
   cacheAccess: [],

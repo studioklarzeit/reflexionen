@@ -695,6 +695,13 @@
           <button class="btn btn-primary btn-sm" id="saveColorsBtn" data-action="saveColors"><span class="btn-text">Speichern</span></button>
           <button class="btn btn-ghost btn-sm" data-action="previewColors">Vorschau</button>
         </div>
+
+        <div style="margin-top:40px;padding-top:24px;border-top:1px solid var(--border-light);">
+          <h4 style="margin-bottom:12px;">Gespeicherte Paletten</h4>
+          <p style="font-size:var(--font-size-p3);color:var(--text-muted);margin-bottom:16px;">Farbpaletten importieren und Kursen zuordnen.</p>
+          <div id="paletteList"></div>
+          <button class="btn btn-ghost btn-sm" style="margin-top:12px;" data-action="openPaletteImportModal">+ Neue Palette importieren</button>
+        </div>
       </div>
     </div>
 
@@ -1048,6 +1055,27 @@
     <div class="modal-actions">
       <button class="btn btn-secondary" data-action="closeDeleteAccountModal">Abbrechen</button>
       <button class="btn btn-danger" id="deleteAccountConfirmBtn" disabled data-action="confirmDeleteAccount">Account endgültig löschen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Palette importieren ═══ -->
+<div class="modal-overlay" id="paletteImportModal" style="display:none;">
+  <div class="modal">
+    <button class="modal-close" data-action="closePaletteImportModal" aria-label="Schließen">&times;</button>
+    <h2>Neue Farbpalette importieren</h2>
+    <p style="color:var(--text-muted);margin-bottom:16px;">Füge das JSON einer Farbpalette ein (light + dark Modus).</p>
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input class="form-input" id="paletteImportName" placeholder="z.B. Wald & Moos">
+    </div>
+    <div class="form-group">
+      <label class="form-label">JSON</label>
+      <textarea class="form-textarea" id="paletteImportJson" rows="10" placeholder='{"light":{...},"dark":{...}}' style="font-family:monospace;font-size:12px;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" data-action="closePaletteImportModal">Abbrechen</button>
+      <button class="btn btn-primary" id="paletteImportBtn" data-action="importPalette"><span class="btn-text">Importieren</span></button>
     </div>
   </div>
 </div>

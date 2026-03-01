@@ -6,6 +6,7 @@ import { renderOnboarding } from './onboarding.js';
 import { renderTools } from './tools.js';
 import { updateResumeBar } from './resumebar.js';
 import { updateInstallBanner } from './pwainstall.js';
+import { restoreGlobalColors } from './theme.js';
 
 // ── Header scroll listener (shared for public + app header) ──
 let _scrollListenerAttached = false;
@@ -21,8 +22,14 @@ function ensureScrollListener() {
   }, { passive: true });
 }
 
+const COURSE_VIEWS = ['coursePlayer','chapterPlayer','chapters','exercises','questions'];
+
 export function navigateTo(view, params) {
   params = params || {};
+
+  // Restore global colors when leaving course views
+  if (!COURSE_VIEWS.includes(view)) restoreGlobalColors();
+
   const oldView = document.querySelector('.view.active');
 
   if (oldView && state.currentView !== view) {

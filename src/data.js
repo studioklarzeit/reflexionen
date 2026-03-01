@@ -3,12 +3,13 @@ import { state } from './state.js';
 
 // Core data: loaded at login (5 parallel queries)
 export async function loadCoreData() {
-  const [cr, ch, ex, qu, md] = await Promise.all([
+  const [cr, ch, ex, qu, md, pl] = await Promise.all([
     sb.from('courses').select('*').order('sort_order'),
     sb.from('chapters').select('*').order('sort_order'),
     sb.from('exercises').select('*').order('sort_order'),
     sb.from('questions').select('*').order('sort_order'),
     sb.from('meditations').select('*').eq('is_active', true).order('sort_order'),
+    sb.from('color_palettes').select('*').order('name'),
   ]);
   // Log errors but don't throw — partial data is better than no data
   if (cr.error) console.error('courses query error:', cr.error.message);
@@ -21,6 +22,7 @@ export async function loadCoreData() {
     exercises: ex.data || [],
     questions: qu.data || [],
     meditations: (md && !md.error) ? (md.data || []) : [],
+    palettes: (pl && !pl.error) ? (pl.data || []) : [],
     contentBlocks: [],
     chapterContentBlocks: [],
   };

@@ -4,6 +4,7 @@ import { navigateTo } from './navigation.js';
 import { showToast, esc, imgTransform } from './utils.js';
 import { canAccessCourse, getChapterQuestions, ensureContentData } from './data.js';
 import { saveResumePoint } from './resumebar.js';
+import { applyCoursePalette, restoreGlobalColors } from './theme.js';
 
 let currentAudio = null;
 let progressInterval = null;
@@ -32,6 +33,13 @@ export async function renderCoursePlayer() {
     navigateTo('courses');
     return;
   }
+
+  // Apply course color palette (if assigned)
+  const palette = course.color_palette_id
+    ? (state.cacheData.palettes || []).find(p => p.id === course.color_palette_id)
+    : null;
+  if (palette) applyCoursePalette(palette.colors);
+  else restoreGlobalColors();
 
   const chapters = state.cacheData.chapters
     .filter(ch => ch.course_id === state.currentCourseId)
@@ -198,6 +206,13 @@ export async function renderChapterPlayer() {
 
   const course = state.cacheData.courses.find(c => c.id === state.currentCourseId);
   if (!course) return;
+
+  // Apply course color palette (if assigned)
+  const palette = course.color_palette_id
+    ? (state.cacheData.palettes || []).find(p => p.id === course.color_palette_id)
+    : null;
+  if (palette) applyCoursePalette(palette.colors);
+  else restoreGlobalColors();
 
   // Ensure content data is loaded (lazy)
   await ensureContentData();
