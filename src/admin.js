@@ -1817,13 +1817,42 @@ export async function importPalette() {
   const name = nameEl?.value.trim();
   const raw = jsonEl?.value.trim();
 
-  if (!name) { showToast('Bitte Name eingeben.', 'error'); return; }
   if (!raw) { showToast('Bitte JSON einfügen.', 'error'); return; }
 
-  let colors;
-  try { colors = JSON.parse(raw); } catch { showToast('Ungültiges JSON.', 'error'); return; }
+  let parsed;
+  try { parsed = JSON.parse(raw); } catch { showToast('Ungültiges JSON.', 'error'); return; }
 
-  // Validate structure: must have light & dark with expected keys
+  // Bulk import: JSON array of {name, colors} objects
+  if (Array.isArray(parsed)) {
+    const rows = [];
+    for (let i = 0; i < parsed.length; i++) {
+      const item = parsed[i];
+      if (!item.name || !item.colors?.light || !item.colors?.dark) {
+        showToast(`Palette #${i + 1} ungültig (name + colors.light/dark nötig).`, 'error');
+        return;
+      }
+      rows.push({ name: item.name, colors: item.colors });
+    }
+    btnLoading('paletteImportBtn', true);
+    try {
+      const { data, error } = await sb.from('color_palettes').insert(rows).select();
+      if (error) throw error;
+      state.cacheData.palettes.push(...(data || []));
+      state.cacheData.palettes.sort((a, b) => a.name.localeCompare(b.name));
+      loadPaletteList();
+      closePaletteImportModal();
+      nameEl.value = '';
+      jsonEl.value = '';
+      showToast(`${rows.length} Paletten importiert.`);
+    } catch (e) { showToast(trDataErr(e, 'import'), 'error'); }
+    finally { btnLoading('paletteImportBtn', false); }
+    return;
+  }
+
+  // Single import: {light:{...}, dark:{...}}
+  if (!name) { showToast('Bitte Name eingeben.', 'error'); return; }
+
+  const colors = parsed;
   for (const mode of ['light', 'dark']) {
     if (!colors[mode] || typeof colors[mode] !== 'object') {
       showToast(`JSON muss "${mode}" Objekt enthalten.`, 'error');

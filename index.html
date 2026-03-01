@@ -1063,15 +1063,15 @@
 <div class="modal-overlay" id="paletteImportModal">
   <div class="modal">
     <button class="modal-close" data-action="closePaletteImportModal" aria-label="Schließen">&times;</button>
-    <h2>Neue Farbpalette importieren</h2>
-    <p style="color:var(--text-muted);margin-bottom:16px;">Füge das JSON einer Farbpalette ein (light + dark Modus).</p>
+    <h2>Farbpaletten importieren</h2>
+    <p style="color:var(--text-muted);margin-bottom:16px;">Einzelne Palette: Name + JSON eingeben.<br>Bulk-Import: JSON-Array einfügen, Name-Feld leer lassen.</p>
     <div class="form-group">
-      <label class="form-label">Name</label>
+      <label class="form-label">Name <span style="font-weight:300;color:var(--text-light);">(leer bei Bulk)</span></label>
       <input class="form-input" id="paletteImportName" placeholder="z.B. Wald & Moos">
     </div>
     <div class="form-group">
       <label class="form-label">JSON</label>
-      <textarea class="form-textarea" id="paletteImportJson" rows="10" placeholder='{"light":{...},"dark":{...}}' style="font-family:monospace;font-size:12px;"></textarea>
+      <textarea class="form-textarea" id="paletteImportJson" rows="10" placeholder='[{"name":"...","colors":{"light":{...},"dark":{...}}}, ...]' style="font-family:monospace;font-size:12px;"></textarea>
     </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" data-action="closePaletteImportModal">Abbrechen</button>
