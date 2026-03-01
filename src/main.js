@@ -62,6 +62,9 @@ import {
 import {
   renderPro, submitProQuestion,
 } from './pro.js';
+import {
+  resumeLastActivity, dismissResumeBar,
+} from './resumebar.js';
 // Admin modules: lazy-loaded via dynamic import (code-splitting)
 const _la = fn => (...a) => import('./admin.js').then(m => m[fn](...a));
 const _lp = fn => (...a) => import('./pagebuilder.js').then(m => m[fn](...a));
@@ -215,6 +218,8 @@ const _appActions = {
   renderContact, submitContactForm, updateContactCounter,
   // Pro
   renderPro, submitProQuestion,
+  // Resume Bar
+  resumeLastActivity, dismissResumeBar,
   // Weekly Impulse
   exportImpulsePDF, shareImpulse, dismissImpulse, dismissImpulse30, renderImpulseView,
   dismissLoading, dismissLoading30,

@@ -3,6 +3,7 @@ import { state } from './state.js';
 import { navigateTo } from './navigation.js';
 import { showToast, esc, imgTransform } from './utils.js';
 import { canAccessCourse, getChapterQuestions, ensureContentData } from './data.js';
+import { saveResumePoint } from './resumebar.js';
 
 let currentAudio = null;
 let progressInterval = null;
@@ -200,6 +201,15 @@ export async function renderChapterPlayer() {
 
   // Ensure content data is loaded (lazy)
   await ensureContentData();
+
+  // Save resume point
+  saveResumePoint({
+    type: chapter.audio_url ? 'audio' : 'lesson',
+    title: chapter.name,
+    subtitle: course.name,
+    courseId: course.id,
+    chapterId: chapter.id,
+  });
 
   const prog = state.chapterProgress[chapter.id];
 

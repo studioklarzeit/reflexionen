@@ -2,6 +2,7 @@ import { sb } from './config.js';
 import { state } from './state.js';
 import { esc, btnLoading, showToast, showSaving, showSaved, showSaveErr, trDataErr, imgTransform } from './utils.js';
 import { getChapterQuestions, ensureContentData } from './data.js';
+import { saveResumePoint } from './resumebar.js';
 
 // ══════════════════════════════════════
 // EXERCISES LIST (Cards — intermediate view)
@@ -98,6 +99,16 @@ export async function renderQuestionsView() {
     import('./navigation.js').then((nav) => nav.navigateTo('courses'));
     return;
   }
+
+  // Save resume point
+  saveResumePoint({
+    type: 'exercise',
+    title: exercise.name,
+    subtitle: course.name,
+    courseId: course.id,
+    chapterId: chapter.id,
+    exerciseId: exercise.id,
+  });
 
   document.getElementById('questionsBreadcrumb').innerHTML =
     `<button class="breadcrumb-link" data-action="navigateTo" data-args='["courses"]'>Kurse</button>` +

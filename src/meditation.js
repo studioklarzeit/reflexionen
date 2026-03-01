@@ -1,6 +1,7 @@
 import { sb } from './config.js';
 import { state } from './state.js';
 import { esc, showToast, trDataErr, imgTransform } from './utils.js';
+import { saveResumePoint } from './resumebar.js';
 
 let cachedMeditations = null;
 let currentAudio = null;
@@ -186,6 +187,14 @@ export async function openMeditationDetail(id) {
     </div>
   `;
   document.body.appendChild(wrapper);
+
+  // Save resume point
+  saveResumePoint({
+    type: 'meditation',
+    title: m.title,
+    subtitle: 'Meditation',
+    meditationId: id,
+  });
 
   // Start audio — fetch as blob to avoid opaque load errors
   currentMeditationId = id;

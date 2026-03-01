@@ -4,6 +4,7 @@ import { renderChaptersList } from './chapters.js';
 import { renderExercisesList, renderQuestionsView } from './exercises.js';
 import { renderOnboarding } from './onboarding.js';
 import { renderTools } from './tools.js';
+import { updateResumeBar } from './resumebar.js';
 
 // ── Header scroll listener (shared for public + app header) ──
 let _scrollListenerAttached = false;
@@ -319,6 +320,9 @@ export function navigateTo(view, params) {
 
   // Mobile back-bar: show on sub-views with parent navigation
   updateMobileBackBar(view, params);
+
+  // Resume bar: show on home views if resume point exists
+  updateResumeBar(view);
 
   // Observe lazy background images after view switch
   setTimeout(() => window.observeLazyBgs?.(), 200);
