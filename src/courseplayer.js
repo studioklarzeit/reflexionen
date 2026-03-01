@@ -272,8 +272,9 @@ export async function renderChapterPlayer() {
                 <span id="chapterCurrentTime">${resumeTime}</span> / <span id="chapterTotalTime">${dur || '--:--'}</span>
               </div>
             </div>
-            <div class="chapter-audio-progress-wrap" data-action="seekChapterAudio" data-ev>
+            <div class="chapter-audio-progress-wrap" id="chapterProgressWrap">
               <div class="chapter-audio-progress-bar" id="chapterProgress" style="width:${resumePct}%"></div>
+              <div class="seek-thumb" id="chapterSeekThumb" style="left:${resumePct}%"></div>
             </div>
           </div>
         </div>
@@ -351,6 +352,9 @@ export async function renderChapterPlayer() {
       navigator.mediaSession.setActionHandler('seekforward', () => { currentAudio.currentTime = Math.min(currentAudio.duration || 0, currentAudio.currentTime + 15); updateAudioProgress(); });
     }
   }
+
+  // Init seek touch/click listeners
+  initSeekListeners();
 }
 
 function renderChapterContentSection(chapter) {
@@ -445,19 +449,66 @@ function updateAudioProgress() {
   const pct = (currentAudio.currentTime / currentAudio.duration) * 100;
   const bar = document.getElementById('chapterProgress');
   if (bar) bar.style.width = pct + '%';
+  const thumb = document.getElementById('chapterSeekThumb');
+  if (thumb) thumb.style.left = pct + '%';
   const ct = document.getElementById('chapterCurrentTime');
   if (ct) ct.textContent = formatTime(currentAudio.currentTime);
 }
 
-export function seekChapterAudio(event) {
-  if (!currentAudio || !isFinite(currentAudio.duration)) return;
-  const wrap = event.currentTarget || event.target.closest('[data-action="seekChapterAudio"]');
-  if (!wrap) return;
+// ── Seek: click + touch drag ──
+
+let _isSeeking = false;
+
+function _seekFromEvent(e) {
+  const wrap = document.getElementById('chapterProgressWrap');
+  if (!wrap || !currentAudio || !isFinite(currentAudio.duration)) return;
   const rect = wrap.getBoundingClientRect();
-  const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
   const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
   currentAudio.currentTime = pct * currentAudio.duration;
   updateAudioProgress();
+}
+
+function _onSeekStart(e) {
+  e.preventDefault();
+  _isSeeking = true;
+  const wrap = document.getElementById('chapterProgressWrap');
+  if (wrap) wrap.classList.add('seeking');
+  _seekFromEvent(e);
+  document.addEventListener('mousemove', _onSeekMove);
+  document.addEventListener('mouseup', _onSeekEnd);
+  document.addEventListener('touchmove', _onSeekMove, { passive: false });
+  document.addEventListener('touchend', _onSeekEnd);
+}
+
+function _onSeekMove(e) {
+  if (!_isSeeking) return;
+  e.preventDefault();
+  _seekFromEvent(e);
+}
+
+function _onSeekEnd() {
+  _isSeeking = false;
+  const wrap = document.getElementById('chapterProgressWrap');
+  if (wrap) wrap.classList.remove('seeking');
+  document.removeEventListener('mousemove', _onSeekMove);
+  document.removeEventListener('mouseup', _onSeekEnd);
+  document.removeEventListener('touchmove', _onSeekMove);
+  document.removeEventListener('touchend', _onSeekEnd);
+  // Save position after seeking
+  const chapterId = state.currentChapterId;
+  if (chapterId && currentAudio) saveChapterProgress(chapterId, Math.round(currentAudio.currentTime), false);
+}
+
+function initSeekListeners() {
+  const wrap = document.getElementById('chapterProgressWrap');
+  if (!wrap) return;
+  wrap.addEventListener('mousedown', _onSeekStart);
+  wrap.addEventListener('touchstart', _onSeekStart, { passive: false });
+}
+
+export function seekChapterAudio(event) {
+  _seekFromEvent(event);
 }
 
 export function stopChapterAudio() {

@@ -176,8 +176,9 @@ export async function openMeditationDetail(id) {
         ${dur ? `<div class="med-fullscreen-duration">${dur}</div>` : ''}
       </div>
       <div class="med-fullscreen-bottom">
-        <div class="med-fullscreen-progress-wrap" data-action="seekMeditation" data-ev>
+        <div class="med-fullscreen-progress-wrap" id="meditationProgressWrap">
           <div class="med-fullscreen-progress-bar" id="meditationProgress"></div>
+          <div class="seek-thumb med-seek-thumb" id="meditationSeekThumb" style="left:0%"></div>
         </div>
         <div class="med-fullscreen-time">
           <span id="meditationCurrentTime">0:00</span>
@@ -239,6 +240,7 @@ export async function openMeditationDetail(id) {
     isPlaying = true;
     updatePlayIcon();
     startProgressUpdate();
+    initMedSeekListeners();
 
     // MediaSession: lock-screen artwork + controls
     if ('mediaSession' in navigator) {
@@ -307,26 +309,73 @@ function updatePlayIcon() {
   }
 }
 
+function updateMedProgress() {
+  if (!currentAudio || !isFinite(currentAudio.duration)) return;
+  const pct = (currentAudio.currentTime / currentAudio.duration) * 100;
+  const bar = document.getElementById('meditationProgress');
+  if (bar) bar.style.width = pct + '%';
+  const thumb = document.getElementById('meditationSeekThumb');
+  if (thumb) thumb.style.left = pct + '%';
+  const ct = document.getElementById('meditationCurrentTime');
+  if (ct) ct.textContent = formatTime(currentAudio.currentTime);
+}
+
 function startProgressUpdate() {
   if (progressInterval) clearInterval(progressInterval);
-  progressInterval = setInterval(() => {
-    if (!currentAudio || !isFinite(currentAudio.duration)) return;
-    const pct = (currentAudio.currentTime / currentAudio.duration) * 100;
-    const bar = document.getElementById('meditationProgress');
-    if (bar) bar.style.width = pct + '%';
-    const ct = document.getElementById('meditationCurrentTime');
-    if (ct) ct.textContent = formatTime(currentAudio.currentTime);
-  }, 250);
+  progressInterval = setInterval(updateMedProgress, 250);
+}
+
+// ── Seek: click + touch drag ──
+
+let _medSeeking = false;
+
+function _medSeekFromEvent(e) {
+  const wrap = document.getElementById('meditationProgressWrap');
+  if (!wrap || !currentAudio || !isFinite(currentAudio.duration)) return;
+  const rect = wrap.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  currentAudio.currentTime = pct * currentAudio.duration;
+  updateMedProgress();
+}
+
+function _medSeekStart(e) {
+  e.preventDefault();
+  _medSeeking = true;
+  const wrap = document.getElementById('meditationProgressWrap');
+  if (wrap) wrap.classList.add('seeking');
+  _medSeekFromEvent(e);
+  document.addEventListener('mousemove', _medSeekMove);
+  document.addEventListener('mouseup', _medSeekEnd);
+  document.addEventListener('touchmove', _medSeekMove, { passive: false });
+  document.addEventListener('touchend', _medSeekEnd);
+}
+
+function _medSeekMove(e) {
+  if (!_medSeeking) return;
+  e.preventDefault();
+  _medSeekFromEvent(e);
+}
+
+function _medSeekEnd() {
+  _medSeeking = false;
+  const wrap = document.getElementById('meditationProgressWrap');
+  if (wrap) wrap.classList.remove('seeking');
+  document.removeEventListener('mousemove', _medSeekMove);
+  document.removeEventListener('mouseup', _medSeekEnd);
+  document.removeEventListener('touchmove', _medSeekMove);
+  document.removeEventListener('touchend', _medSeekEnd);
+}
+
+function initMedSeekListeners() {
+  const wrap = document.getElementById('meditationProgressWrap');
+  if (!wrap) return;
+  wrap.addEventListener('mousedown', _medSeekStart);
+  wrap.addEventListener('touchstart', _medSeekStart, { passive: false });
 }
 
 export function seekMeditation(event) {
-  if (!currentAudio || !isFinite(currentAudio.duration)) return;
-  const wrap = event.currentTarget || event.target.closest('[data-action="seekMeditation"]');
-  if (!wrap) return;
-  const rect = wrap.getBoundingClientRect();
-  const clientX = event.touches ? event.touches[0].clientX : event.clientX;
-  const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-  currentAudio.currentTime = pct * currentAudio.duration;
+  _medSeekFromEvent(event);
 }
 
 export function stopMeditation() {

@@ -1917,18 +1917,44 @@ body.dark .btn-danger:hover:not(:disabled) { background: #d09898; border-color: 
   padding: 0 32px 32px;
 }
 .med-fullscreen-progress-wrap {
-  width: 100%; height: 4px;
+  position: relative;
+  width: 100%; height: 6px;
   background: rgba(255,255,255,0.2);
-  border-radius: 2px;
+  border-radius: 3px;
   cursor: pointer;
   margin-bottom: 8px;
+  touch-action: none;
+}
+.med-fullscreen-progress-wrap::before {
+  content: '';
+  position: absolute;
+  top: -20px; bottom: -20px;
+  left: 0; right: 0;
 }
 .med-fullscreen-progress-bar {
   height: 100%;
   background: #fff;
-  border-radius: 2px;
+  border-radius: 3px;
+  pointer-events: none;
   width: 0%;
-  transition: width 0.3s linear;
+  transition: width 0.15s linear;
+}
+.med-seek-thumb {
+  position: absolute;
+  top: 50%;
+  width: 14px; height: 14px;
+  background: #fff;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.med-fullscreen-progress-wrap.seeking .med-seek-thumb,
+.med-fullscreen-progress-wrap:hover .med-seek-thumb {
+  opacity: 1;
 }
 .med-fullscreen-time {
   display: flex; justify-content: space-between;
@@ -3050,16 +3076,44 @@ body.dark .resume-bar {
 .chapter-audio-info { flex: 1; min-width: 80px; }
 .chapter-audio-time { font-size: 13px; color: var(--text-muted); }
 .chapter-audio-progress-wrap {
-  width: 100%; height: 4px;
+  position: relative;
+  width: 100%; height: 6px;
   background: var(--border-light);
-  border-radius: 2px;
+  border-radius: 3px;
   cursor: pointer;
-  margin-top: 2px;
+  margin-top: 4px;
+  touch-action: none;
+}
+/* Invisible expanded touch target (44px) */
+.chapter-audio-progress-wrap::before {
+  content: '';
+  position: absolute;
+  top: -20px; bottom: -20px;
+  left: 0; right: 0;
 }
 .chapter-audio-progress-bar {
   height: 100%; background: var(--accent-dark);
-  border-radius: 2px; width: 0%;
-  transition: width 0.3s linear;
+  border-radius: 3px; width: 0%;
+  transition: width 0.15s linear;
+  pointer-events: none;
+}
+/* Seek thumb indicator */
+.chapter-audio-progress-wrap .seek-thumb {
+  position: absolute;
+  top: 50%;
+  width: 14px; height: 14px;
+  background: var(--accent-dark);
+  border: 2px solid var(--card);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.chapter-audio-progress-wrap.seeking .seek-thumb,
+.chapter-audio-progress-wrap:hover .seek-thumb {
+  opacity: 1;
 }
 
 /* ── Text Content ── */
