@@ -232,6 +232,9 @@ export async function renderChapterPlayer() {
   if (!el) return;
 
   const dur = chapter.audio_duration_seconds ? formatTime(chapter.audio_duration_seconds) : '';
+  const resumePos = (prog?.audio_position_seconds && !prog.completed) ? prog.audio_position_seconds : 0;
+  const resumeTime = resumePos ? formatTime(resumePos) : '0:00';
+  const resumePct = (resumePos && chapter.audio_duration_seconds) ? (resumePos / chapter.audio_duration_seconds) * 100 : 0;
 
   // Check if chapter has linked exercises
   const exercises = state.cacheData.exercises.filter(ex => ex.chapter_id === chapter.id);
@@ -266,11 +269,11 @@ export async function renderChapterPlayer() {
             </button>
             <div class="chapter-audio-info">
               <div class="chapter-audio-time">
-                <span id="chapterCurrentTime">0:00</span> / <span id="chapterTotalTime">${dur || '--:--'}</span>
+                <span id="chapterCurrentTime">${resumeTime}</span> / <span id="chapterTotalTime">${dur || '--:--'}</span>
               </div>
             </div>
             <div class="chapter-audio-progress-wrap" data-action="seekChapterAudio" data-ev>
-              <div class="chapter-audio-progress-bar" id="chapterProgress"></div>
+              <div class="chapter-audio-progress-bar" id="chapterProgress" style="width:${resumePct}%"></div>
             </div>
           </div>
         </div>
@@ -314,6 +317,8 @@ export async function renderChapterPlayer() {
     _onChMeta = () => {
       const tt = document.getElementById('chapterTotalTime');
       if (tt) tt.textContent = formatTime(currentAudio.duration);
+      // Update display with actual position after metadata is loaded
+      updateAudioProgress();
     };
     _onChEnded = () => {
       updatePlayIcon(false);
