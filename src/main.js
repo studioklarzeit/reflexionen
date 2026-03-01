@@ -75,6 +75,7 @@ const _lp = fn => (...a) => import('./pagebuilder.js').then(m => m[fn](...a));
 const _lb = fn => (...a) => import('./bulkupload.js').then(m => m[fn](...a));
 const _lt = fn => (...a) => import('./admin-tree.js').then(m => m[fn](...a));
 const _lc = fn => (...a) => import('./admin-tree-crud.js').then(m => m[fn](...a));
+const _lcon = fn => (...a) => import('./consent.js').then(m => m[fn](...a));
 import {
   renderPublicPage, renderBlogList, renderBlogPost,
   renderPublicContact, submitPublicContact,
@@ -286,6 +287,14 @@ const _appActions = {
   // Public Website
   renderPublicPage, renderBlogList, renderBlogPost,
   renderPublicContact, submitPublicContact,
+  // Consent & Privacy
+  submitConsent: _lcon('submitConsent'),
+  toggleConsentCheckbox: _lcon('toggleConsentCheckbox'),
+  revokeHealthDataConsent: _lcon('revokeHealthDataConsent'),
+  reGrantConsent: _lcon('reGrantConsent'),
+  exportUserData: _lcon('exportUserData'),
+  acceptAllCookies: _lcon('acceptAllCookies'),
+  acceptNecessaryCookies: _lcon('acceptNecessaryCookies'),
   // Utils
   showToast,
 };
@@ -415,11 +424,17 @@ async function init() {
   ]);
   setLoadProgress(15);
 
-  // Load SEO settings & initialize tracking (non-blocking)
-  import('./seo.js').then(async (seo) => {
-    await seo.loadSeoSettings();
-    seo.initGA4();
-    seo.initMetaPixel();
+  // Cookie-Banner + Tracking (nur mit Cookie-Consent)
+  import('./consent.js').then(m => {
+    m.initCookieBanner();
+    const cc = m.getCookieConsent();
+    if (cc?.analytics || cc?.marketing) {
+      import('./seo.js').then(async (seo) => {
+        await seo.loadSeoSettings();
+        if (cc.analytics) seo.initGA4();
+        if (cc.marketing) seo.initMetaPixel();
+      });
+    }
   });
 
   const urlParams = new URLSearchParams(location.search);

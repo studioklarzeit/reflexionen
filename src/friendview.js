@@ -1,12 +1,14 @@
 import { sb } from './config.js';
 import { state } from './state.js';
 import { esc, showToast, trDataErr } from './utils.js';
+import { hasHealthDataConsent, renderConsentGate } from './consent.js';
 
 // ── RENDER FRIEND VIEW ──
 
 export async function renderFriendView() {
   const container = document.getElementById('friendViewContent');
   if (!container) return;
+  if (renderConsentGate(container)) return;
 
   // Load entries
   let entries = [];

@@ -1,6 +1,7 @@
 import { sb } from './config.js';
 import { state } from './state.js';
 import { esc, showToast, trDataErr } from './utils.js';
+import { hasHealthDataConsent, renderConsentGate } from './consent.js';
 
 // ── DATE HELPERS ──
 
@@ -19,6 +20,7 @@ let todayEntry = null;
 export async function renderEnergyBalance() {
   const container = document.getElementById('energyContent');
   if (!container) return;
+  if (renderConsentGate(container)) return;
 
   try {
     const { data, error } = await sb

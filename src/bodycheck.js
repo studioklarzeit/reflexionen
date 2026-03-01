@@ -1,6 +1,7 @@
 import { sb } from './config.js';
 import { state } from './state.js';
 import { esc, showToast, trDataErr } from './utils.js';
+import { hasHealthDataConsent, renderConsentGate } from './consent.js';
 
 // ── BODY ZONES ──
 
@@ -132,6 +133,7 @@ function bodySvg(selectedZones, isHeatmap, heatData) {
 export async function renderBodyCheck() {
   const container = document.getElementById('bodyCheckContent');
   if (!container) return;
+  if (renderConsentGate(container)) return;
 
   // Load entries
   let entries = [];

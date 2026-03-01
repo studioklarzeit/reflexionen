@@ -17,4 +17,5 @@ export const state = {
   toolImages: {},       // keyed by tool key (journal, friendView, etc.)
   pendingInvite: null,
   pendingStripeSuccess: null,
+  userConsent: null, // Aktueller user_consents-Eintrag oder null
 };

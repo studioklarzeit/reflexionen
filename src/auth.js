@@ -3,6 +3,7 @@ import { state } from './state.js';
 import { btnLoading, showToast, trAuthErr } from './utils.js';
 import { navigateTo } from './navigation.js';
 import { loadCoreData, loadAdminStatus, loadCourseAccess, loadUserAnswers, loadChapterProgress, loadToolImages, resetLazyFlags } from './data.js';
+import { loadUserConsent, needsConsentScreen, CURRENT_CONSENT_VERSION } from './consent.js';
 import { updateMobileDarkLabel } from './mobile.js';
 
 // ── AUTH MODE ──
@@ -390,12 +391,13 @@ export async function postLogin() {
     loadUserAnswers(),
     loadChapterProgress(),
     loadToolImages(),
+    loadUserConsent(),
   ]);
 
   // Log any failures but continue
   results.forEach((r, i) => {
     if (r.status === 'rejected') {
-      const names = ['loadCoreData', 'loadAdminStatus', 'loadCourseAccess', 'loadUserAnswers', 'loadChapterProgress', 'loadToolImages'];
+      const names = ['loadCoreData', 'loadAdminStatus', 'loadCourseAccess', 'loadUserAnswers', 'loadChapterProgress', 'loadToolImages', 'loadUserConsent'];
       console.error(`${names[i]} failed:`, r.reason);
     }
   });
@@ -454,6 +456,14 @@ export async function postLogin() {
     return;
   }
 
+  // ── Consent Gate ──
+  if (needsConsentScreen()) {
+    const isUpdate = !!(state.userConsent && state.userConsent.consent_version !== CURRENT_CONSENT_VERSION);
+    navigateTo('consent', { isUpdate });
+    return;
+  }
+
+  // ── Onboarding Gate ──
   const onboardKey = 'klarzeit_onboarded_' + state.currentUser.id;
   if (!localStorage.getItem(onboardKey)) {
     navigateTo('onboarding');

@@ -46,6 +46,10 @@ export async function renderProfile() {
   // ── 5. Einstellungen (inkl. PWA Install) ──
   const settingsHtml = renderSettings();
 
+  // ── 5b. Datenschutz & Einwilligung ──
+  const { renderConsentSection } = await import('./consent.js');
+  const consentHtml = renderConsentSection();
+
   // ── 6. Gefahrenbereich ──
   const dangerHtml = renderDangerZone();
 
@@ -55,6 +59,7 @@ export async function renderProfile() {
     ${billingHtml}
     ${detailsHtml}
     ${settingsHtml}
+    ${consentHtml}
 
     <div class="profile-danger-zone">
       ${dangerHtml}

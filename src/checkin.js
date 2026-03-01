@@ -1,6 +1,7 @@
 import { sb } from './config.js';
 import { state } from './state.js';
 import { esc, showToast, trDataErr, sanitizeColor } from './utils.js';
+import { hasHealthDataConsent, renderConsentGate } from './consent.js';
 
 // ── DEFAULT QUESTIONS ──
 
@@ -92,6 +93,7 @@ function formatDateShort(dateStr) {
 export async function renderCheckin() {
   const container = document.getElementById('checkinContent');
   if (!container) return;
+  if (renderConsentGate(container)) return;
 
   const questions = await loadQuestions();
 

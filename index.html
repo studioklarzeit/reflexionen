@@ -237,6 +237,17 @@
     </div>
   </div>
 
+  <div class="view" id="viewConsent">
+    <div class="onboarding-container" id="consentContent"></div>
+  </div>
+
+  <div class="view" id="viewPrivacyPolicy">
+    <div style="max-width:720px;margin:0 auto;padding:12px 16px 0;">
+      <button class="btn btn-ghost btn-sm" data-action="navigateTo" data-args='["profile"]'>&larr; Zurueck</button>
+    </div>
+    <div id="privacyPolicyContent" class="privacy-policy-wrap"></div>
+  </div>
+
   <div class="view" id="viewImpulse">
     <div class="breadcrumb"><button class="breadcrumb-link" data-action="navigateTo" data-args='["tools"]'>Impulse</button> <span class="breadcrumb-sep">›</span> <span>Impuls der Woche</span></div>
     <div class="meditation-quote">Jede Woche ein neuer Gedanke, der dich begleitet.</div>
@@ -1113,6 +1124,17 @@
 </footer>
 
 <div class="toast" id="toast"></div>
+
+<!-- Cookie Banner -->
+<div id="cookieBanner" class="cookie-banner" style="display:none;">
+  <div class="cookie-banner-inner">
+    <p>Wir verwenden Cookies fuer die Analyse unserer Website. Mehr dazu in der <a style="text-decoration:underline;cursor:pointer;" data-action="navigateTo" data-args='["publicDatenschutz"]'>Datenschutzerklaerung</a>.</p>
+    <div class="cookie-banner-actions">
+      <button class="btn btn-primary btn-sm" data-action="acceptAllCookies">Alle akzeptieren</button>
+      <button class="btn btn-ghost btn-sm" data-action="acceptNecessaryCookies">Nur notwendige</button>
+    </div>
+  </div>
+</div>
 
 <!-- Vite entry point -->
 <script type="module" src="/src/main.js"></script>

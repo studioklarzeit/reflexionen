@@ -1,6 +1,7 @@
 import { sb } from './config.js';
 import { state } from './state.js';
 import { esc, showToast, showConfirm, trDataErr } from './utils.js';
+import { hasHealthDataConsent, renderConsentGate } from './consent.js';
 
 // ── DEFAULT IMPULSES ──
 
@@ -82,6 +83,7 @@ function getLastOpenedCourseId() {
 export async function renderJournal() {
   const container = document.getElementById('journalContent');
   if (!container) return;
+  if (renderConsentGate(container)) return;
 
   const impulse = await getCurrentImpulse();
   const courseId = state.currentCourseId || getLastOpenedCourseId();

@@ -45,7 +45,7 @@ export function navigateTo(view, params) {
 
   state.currentView = view;
   const isPublic = view.startsWith('public');
-  const hide = (view === 'auth' || view === 'loading' || view === 'resetPassword' || view === 'onboarding' || view === 'salesOverview' || view === 'salesDetail' || isPublic);
+  const hide = (view === 'auth' || view === 'loading' || view === 'resetPassword' || view === 'onboarding' || view === 'consent' || view === 'privacyPolicy' || view === 'salesOverview' || view === 'salesDetail' || isPublic);
   document.getElementById('mainHeader').style.display = hide ? 'none' : '';
 
   // Public header/footer visibility + scroll listener
@@ -112,6 +112,18 @@ export function navigateTo(view, params) {
         document.getElementById('viewOnboarding').classList.add('active');
         renderOnboarding();
         break;
+      case 'consent': {
+        const { renderConsentScreen } = await import('./consent.js');
+        document.getElementById('viewConsent').classList.add('active');
+        renderConsentScreen(params?.isUpdate);
+        break;
+      }
+      case 'privacyPolicy': {
+        const { renderPrivacyPolicy } = await import('./consent.js');
+        document.getElementById('viewPrivacyPolicy').classList.add('active');
+        renderPrivacyPolicy();
+        break;
+      }
       case 'impulse':
         document.getElementById('viewImpulse').classList.add('active');
         import('./weeklyimpulse.js').then(m => m.renderImpulseView());

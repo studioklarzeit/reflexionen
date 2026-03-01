@@ -3,6 +3,7 @@ import { state } from './state.js';
 import { esc, btnLoading, showToast, showSaving, showSaved, showSaveErr, trDataErr, imgTransform } from './utils.js';
 import { getChapterQuestions, ensureContentData } from './data.js';
 import { saveResumePoint } from './resumebar.js';
+import { hasHealthDataConsent } from './consent.js';
 
 // ══════════════════════════════════════
 // EXERCISES LIST (Cards — intermediate view)
@@ -313,6 +314,10 @@ function updateQuestionProgress() {
 
 async function saveAnswersToSupabase() {
   if (!state.currentUser) return;
+  if (!hasHealthDataConsent()) {
+    showToast('Einwilligung erforderlich um Antworten zu speichern.', 'error');
+    return;
+  }
   const questions = state.cacheData.questions.filter((q) => q.exercise_id === state.currentExerciseId);
   const ups = [];
 
