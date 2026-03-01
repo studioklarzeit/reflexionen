@@ -65,6 +65,9 @@ import {
 import {
   resumeLastActivity, dismissResumeBar,
 } from './resumebar.js';
+import {
+  initPWAInstall, triggerInstall, dismissInstallBanner,
+} from './pwainstall.js';
 // Admin modules: lazy-loaded via dynamic import (code-splitting)
 const _la = fn => (...a) => import('./admin.js').then(m => m[fn](...a));
 const _lp = fn => (...a) => import('./pagebuilder.js').then(m => m[fn](...a));
@@ -220,6 +223,8 @@ const _appActions = {
   renderPro, submitProQuestion,
   // Resume Bar
   resumeLastActivity, dismissResumeBar,
+  // PWA Install
+  triggerInstall, dismissInstallBanner,
   // Weekly Impulse
   exportImpulsePDF, shareImpulse, dismissImpulse, dismissImpulse30, renderImpulseView,
   dismissLoading, dismissLoading30,
@@ -377,6 +382,7 @@ window.dismissLoading30 = dismissLoading30;
 async function init() {
   initEventDelegation();
   initDarkMode();
+  initPWAInstall();
   updateDockDarkIcon();
   initBottomSheetGestures();
   registerServiceWorker();

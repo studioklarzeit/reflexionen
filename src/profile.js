@@ -4,6 +4,7 @@ import { state } from './state.js';
 import { sb } from './config.js';
 import { showToast, esc } from './utils.js';
 import { getCourseAccess } from './data.js';
+import { shouldShowProfileInstall, hasDeferredPrompt, isIOS } from './pwainstall.js';
 
 // ══════════════════════════════════════
 // RENDER
@@ -42,7 +43,7 @@ export async function renderProfile() {
   // ── 4. Meine Angaben ──
   const detailsHtml = renderMyDetails(user, profile);
 
-  // ── 5. Einstellungen ──
+  // ── 5. Einstellungen (inkl. PWA Install) ──
   const settingsHtml = renderSettings();
 
   // ── 6. Gefahrenbereich ──
@@ -225,6 +226,26 @@ function renderSettings() {
   const until = parseInt(localStorage.getItem(key));
   const isMuted = until && Date.now() < until;
 
+  // PWA Install card
+  let installHtml = '';
+  if (shouldShowProfileInstall()) {
+    const iosDevice = isIOS();
+    const label = iosDevice ? 'Zum Home-Bildschirm' : 'App installieren';
+    const desc = iosDevice
+      ? 'Über das Teilen-Menü hinzufügen'
+      : (hasDeferredPrompt() ? 'Schnellzugriff vom Startbildschirm' : 'Über den Browser installieren');
+    installHtml = `
+      <div class="profile-install-card" data-action="triggerInstall">
+        <div class="profile-install-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div class="profile-install-text">
+          <div class="profile-install-title">${label}</div>
+          <div class="profile-install-desc">${desc}</div>
+        </div>
+      </div>`;
+  }
+
   return `
     <div class="profile-section">
       <h3>Einstellungen</h3>
@@ -238,6 +259,7 @@ function renderSettings() {
           <span class="profile-toggle-slider"></span>
         </label>
       </div>
+      ${installHtml}
     </div>`;
 }
 

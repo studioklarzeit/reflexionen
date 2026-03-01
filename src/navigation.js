@@ -5,6 +5,7 @@ import { renderExercisesList, renderQuestionsView } from './exercises.js';
 import { renderOnboarding } from './onboarding.js';
 import { renderTools } from './tools.js';
 import { updateResumeBar } from './resumebar.js';
+import { updateInstallBanner } from './pwainstall.js';
 
 // ── Header scroll listener (shared for public + app header) ──
 let _scrollListenerAttached = false;
@@ -323,6 +324,9 @@ export function navigateTo(view, params) {
 
   // Resume bar: show on home views if resume point exists
   updateResumeBar(view);
+
+  // Install banner: show on home views if not installed
+  updateInstallBanner(view);
 
   // Observe lazy background images after view switch
   setTimeout(() => window.observeLazyBgs?.(), 200);
