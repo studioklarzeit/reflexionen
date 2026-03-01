@@ -137,6 +137,16 @@ export function renderConsentScreen(isUpdate) {
       </button>
     </div>
   `;
+
+  // Direct event listeners (data-change delegation is async via _lcon)
+  const privCb = document.getElementById('consentPrivacy');
+  const healthCb = document.getElementById('consentHealth');
+  const updateBtn = () => {
+    const btn = document.getElementById('consentSubmitBtn');
+    if (btn) btn.disabled = !(privCb?.checked && healthCb?.checked);
+  };
+  if (privCb) privCb.addEventListener('change', updateBtn);
+  if (healthCb) healthCb.addEventListener('change', updateBtn);
 }
 
 /** Checkbox-Toggle: Button nur aktiv wenn beide Checkboxen gesetzt */
@@ -173,8 +183,7 @@ export async function submitConsent() {
     if (!localStorage.getItem(onboardKey)) {
       navigateTo('onboarding');
     } else {
-      const { isImpulseMuted } = await import('./weeklyimpulse.js');
-      window.finishLoading?.(!isImpulseMuted());
+      navigateTo('courses');
     }
   } catch (e) {
     console.error('submitConsent error:', e);
