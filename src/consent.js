@@ -163,32 +163,40 @@ export async function submitConsent() {
   if (btn) btn.disabled = true;
 
   try {
-    const { data, error } = await sb
+    const { error } = await sb
       .from('user_consents')
       .insert({
         user_id: state.currentUser.id,
         consent_privacy_policy: true,
         consent_health_data: true,
         consent_version: CURRENT_CONSENT_VERSION,
-      })
-      .select()
-      .single();
+      });
 
     if (error) throw error;
-    state.userConsent = data;
 
-    // Weiterleiten: Onboarding oder Kurse
-    const { navigateTo } = await import('./navigation.js');
-    const onboardKey = 'klarzeit_onboarded_' + state.currentUser.id;
-    if (!localStorage.getItem(onboardKey)) {
-      navigateTo('onboarding');
-    } else {
-      navigateTo('courses');
-    }
+    // State manuell setzen (vermeidet .select().single() Probleme)
+    state.userConsent = {
+      user_id: state.currentUser.id,
+      consent_privacy_policy: true,
+      consent_health_data: true,
+      consent_version: CURRENT_CONSENT_VERSION,
+      consented_at: new Date().toISOString(),
+      revoked_at: null,
+    };
   } catch (e) {
     console.error('submitConsent error:', e);
     showToast('Fehler beim Speichern der Einwilligung.', 'error');
     if (btn) btn.disabled = false;
+    return;
+  }
+
+  // Navigation AUSSERHALB des try/catch (immer ausfuehren wenn Insert ok)
+  const { navigateTo } = await import('./navigation.js');
+  const onboardKey = 'klarzeit_onboarded_' + state.currentUser.id;
+  if (!localStorage.getItem(onboardKey)) {
+    navigateTo('onboarding');
+  } else {
+    navigateTo('courses');
   }
 }
 
